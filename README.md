@@ -31,3 +31,14 @@ export default {
 
 ##  De donde saco las cosas
 - Iconos SVG: https://www.svgrepo.com/
+- Contraste de colores para ver si cumplen AAA -> https://app.contrast-finder.org/?lang=es
+
+
+## Colores a comprobar
+- Con fondo negro:
+  - Botones Principales: #69B6D7 - letra: 69B6D7
+  - Botones secundarios: #95B1BE - mismo de arriba  
+
+- Con fondo #DEDEDE:
+  - Botones Principales: #232CBE  - Letra: #EDEFF2
+  - Botones secundarios: #33365A  - misma de arriba
