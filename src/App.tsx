@@ -1,13 +1,21 @@
 
+import { useState } from 'react';
 import LanguageSwitcher from './components/LanguageSelector';
-import Welcome from './components/Welcome';
-import './i18n'; // Importa la configuración de i18next
+import { lightTheme, darkTheme } from './theme';
+import './i18n';
+
 
 function App() {
+
+  const [theme, setTheme] = useState('light');
+
+  const toggleTheme = () => {
+    setTheme((prev) => (prev === 'light' ? 'dark' : 'light'))
+  }
+
   return (
     <div>
       <LanguageSwitcher />
-      <Welcome />
     </div>
   );
 }
