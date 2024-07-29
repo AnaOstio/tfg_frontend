@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react';
 import LanguageSwitcher from './components/LanguageSelector';
 import './i18n';
+import Navbar from './components/NavBar';
 
 
 function App() {
@@ -24,14 +25,8 @@ function App() {
   }, []);
 
   return (
-    <div className={`${theme}`}>
-      <h1 className="text-3xl font-bold underline">
-      Hello world!
-    </h1>
-      <LanguageSwitcher />
-      <button onClick={toggleTheme} className="p-2 bg-blue-500 text-white mt-4 dark:bg-gray-700">
-        {theme === 'light' ? 'Dark' : 'Light'} Mode
-      </button>
+    <div>
+      <Navbar />
     </div>
   );
 }
