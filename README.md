@@ -34,6 +34,11 @@ export default {
 - Contraste de colores para ver si cumplen AAA -> https://app.contrast-finder.org/?lang=es
 
 
+## Paquetes instalados
+- `npm i @tanstack/react-query` 
+- `npm i -D @tanstack/eslint-plugin-query` para poder ayudar al desarrollador a encontrar errores
+- `axios` para pedir los datos a la `api`
+
 ## Colores a comprobar
 - Con fondo negro:
   - Botones Principales: #69B6D7 - letra: 69B6D7
