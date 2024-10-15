@@ -1,8 +1,9 @@
 {
-    "welcome": "Hola!", 
+    "welcome": "Hola!",
     "languages": {
         "title": "Idiomas",
         "en": "English",
         "es": "Español"
-    }
+    },
+    "error": {}
 }

@@ -1,15 +1,16 @@
+import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { MenuItem, Select, FormControl, InputLabel } from '@mui/material';
-import { SelectChangeEvent } from '@mui/material';
-import { LENGAUGES_LIST } from '../utils/constants';
-import SpainFlag from '../assets/flags/SpainFlag';
-import EnglishFlag from '../assets/flags/EnglishFlag';
+import { MenuItem, Select, FormControl, InputLabel, Box, SelectChangeEvent } from '@mui/material';
+import { LENGAUGES_LIST } from '../../utils/constants';
+import UnknowFlag from '../../assets/flags/UnknowFlag';
+import EnglishFlag from '../../assets/flags/EnglishFlag';
+import SpainFlag from '../../assets/flags/SpainFlag';
 
 const LanguageSelector: React.FC = () => {
   const { t, i18n } = useTranslation();
-  
+
   const handleChange = (event: SelectChangeEvent<string>) => {
-    i18n.changeLanguage(event.target.value);
+    i18n.changeLanguage(event.target.value as string);
   };
 
   const renderIcon = (code: string) => {
@@ -19,7 +20,7 @@ const LanguageSelector: React.FC = () => {
       case 'en':
         return <EnglishFlag width="20px" height="20px" style={{ marginRight: '8px' }} />;
       default:
-        return null;
+        return <UnknowFlag width="20px" height="20px" style={{ marginRight: '8px' }} />;
     }
   };
 
@@ -31,12 +32,14 @@ const LanguageSelector: React.FC = () => {
         id="language-selector"
         value={i18n.language}
         onChange={handleChange}
-        label="langauge"
+        label="language"
       >
-        {LENGAUGES_LIST.map((language) => (
+        {LENGAUGES_LIST.map((language: any) => (
           <MenuItem key={language.code} value={language.code}>
-            {renderIcon(language.code)}
-            {t(language.label)}
+            <Box display="flex" alignItems="center">
+              {renderIcon(language.code)}
+              {t(language.label)}
+            </Box>
           </MenuItem>
         ))}
       </Select>
