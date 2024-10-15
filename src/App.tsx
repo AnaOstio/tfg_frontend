@@ -1,13 +1,14 @@
 import './i18n';
 import Navbar from './components/common/NavBar';
-import LoginPage from './pages/users/LoginPage';
+import { RouterProvider } from 'react-router-dom';
+import router from './config/router';
 
 function App() {
 
   return (
     <div>
       <Navbar />
-      <LoginPage />
+      <RouterProvider router={router} />
     </div>
   );
 }

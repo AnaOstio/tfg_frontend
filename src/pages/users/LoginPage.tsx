@@ -3,12 +3,17 @@ import { Container, TextField, Button, Typography, Box } from '@mui/material';
 import { useLogin } from '../../hooks/useUsers';
 
 const LoginPage: React.FC = () => {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+
+    const initialState = {
+        email: '',
+        password: ''
+    }
+
+    const [data, setData] = useState(initialState);
     const { mutate, isError, isSuccess, error } = useLogin();
 
     const handleLogin = () => {
-        mutate({ email, password });
+        mutate({ email: data.email, password: data.password });
     };
 
     return (
@@ -22,8 +27,8 @@ const LoginPage: React.FC = () => {
                     variant="outlined"
                     fullWidth
                     margin="normal"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    value={data.email}
+                    onChange={(e) => setData({ ...data, email: e.target.value })}
                 />
                 <TextField
                     label="Password"
@@ -31,8 +36,8 @@ const LoginPage: React.FC = () => {
                     variant="outlined"
                     fullWidth
                     margin="normal"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    value={data.password}
+                    onChange={(e) => setData({ ...data, password: e.target.value })}
                 />
                 <Button
                     variant="contained"
