@@ -1,25 +1,23 @@
 import React, { useState } from 'react';
 import { TextField, Button, Container, Typography, Box } from '@mui/material';
+import { SignUpUserParams } from '../../utils/user';
+import { useSignup } from '../../hooks/useUsers';
 
 const SignUpPage: React.FC = () => {
 
-    const initialState = {
+    const initialState: SignUpUserParams = {
         email: '',
         password: '',
         repeatPassword: ''
     };
 
     const [data, setData] = useState(initialState);
+    const { mutate } = useSignup();
+
 
     const handleSubmit = (event: React.FormEvent) => {
         event.preventDefault();
-        if (data.password !== data.repeatPassword) {
-            alert('Passwords do not match!');
-            return;
-        }
-        // Handle sign up logic here
-        console.log('Email:', data.email);
-        console.log('Password:', data.password);
+        mutate(data);
     };
 
     return (

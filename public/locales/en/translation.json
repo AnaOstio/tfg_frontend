@@ -5,5 +5,15 @@
         "en": "English",
         "es": "Español"
     },
+    "login": {
+        "title": "Login",
+        "email": "Email",
+        "password": "Password",
+        "submit": "Login",
+        "error": {
+            "required": "This field is required",
+            "email": "Invalid email"
+        }
+    },
     "error": {}
 }

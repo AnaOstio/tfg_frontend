@@ -1,6 +1,9 @@
-import React, { useState } from 'react';
-import { Container, TextField, Button, Typography, Box } from '@mui/material';
+import React, { useRef, useState } from 'react';
+import { Container, Button, Typography, Box } from '@mui/material';
 import { useLogin } from '../../hooks/useUsers';
+import { checkEmail } from '../../validators/user';
+import { ValidatedTextField } from '../../components/common/ValidatedTextField';
+import { useTranslation } from 'react-i18next';
 
 const LoginPage: React.FC = () => {
 
@@ -9,7 +12,10 @@ const LoginPage: React.FC = () => {
         password: ''
     }
 
+    const { t } = useTranslation();
+
     const [data, setData] = useState(initialState);
+    const formValid = useRef({ email: false, password: false });
     const { mutate, isError, isSuccess, error } = useLogin();
 
     const handleLogin = () => {
@@ -20,31 +26,29 @@ const LoginPage: React.FC = () => {
         <Container maxWidth="sm">
             <Box display="flex" flexDirection="column" alignItems="center" mt={8}>
                 <Typography variant="h4" gutterBottom>
-                    Login
+                    {t('login.title')}
                 </Typography>
-                <TextField
-                    label="Email"
-                    variant="outlined"
-                    fullWidth
-                    margin="normal"
-                    value={data.email}
-                    onChange={(e) => setData({ ...data, email: e.target.value })}
+                <ValidatedTextField
+                    id='email'
+                    label={t('login.email')}
+                    validator={checkEmail}
+                    isValid={isValid => (formValid.current.email = isValid)}
+                    onChange={email => setData({ ...data, email })}
                 />
-                <TextField
-                    label="Password"
-                    type="password"
-                    variant="outlined"
-                    fullWidth
-                    margin="normal"
-                    value={data.password}
-                    onChange={(e) => setData({ ...data, password: e.target.value })}
+
+                <ValidatedTextField
+                    id='password'
+                    label={t('login.password')}
+                    validator={checkEmail}
+                    isValid={isValid => (formValid.current.password = isValid)}
+                    onChange={password => setData({ ...data, password })}
                 />
                 <Button
                     variant="contained"
                     color="primary"
                     onClick={handleLogin}
                 >
-                    Conectate
+                    {t('login.submit')}
                 </Button>
                 {isError && <Typography color="error">{(error as Error).message}</Typography>}
                 {isSuccess && <Typography color="primary">Login successful!</Typography>}
