@@ -1,12 +1,16 @@
-import { Button, Form, Input, message, Typography, Space } from 'antd';
+import { Button, Form, Input, Typography, Space } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
+import { LoginUserParams } from '../../utils/user';
+import { useLogin } from '../../hooks/useUsers';
 
 const { Title, Text } = Typography;
 
 const LoginPage = () => {
-    const onsubmit = (values: any) => {
-        message.success('Login exitoso!', values);
+    const { mutate: login } = useLogin();
+
+    const onFinish = (values: LoginUserParams) => {
+        login(values);
     };
 
     return (
@@ -27,7 +31,7 @@ const LoginPage = () => {
                 INICIAR SESIÓN
             </Title>
 
-            <Form onFinish={onsubmit} layout="vertical">
+            <Form onFinish={onFinish} layout="vertical">
                 <Form.Item
                     label="Correo electrónico"
                     name="email"

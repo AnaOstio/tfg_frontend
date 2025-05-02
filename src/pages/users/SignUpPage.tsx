@@ -1,12 +1,21 @@
-import { Button, Form, Input, Typography, Space } from 'antd';
+import { Button, Form, Input, Typography, Space, message } from 'antd';
 import { MailOutlined, LockOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
+import { useSignup } from '../../hooks/useUsers';
+import { SignUpUserParams } from '../../utils/user';
 
 const { Title, Text } = Typography;
 
 const SignUpPage = () => {
-    const onFinish = (values: any) => {
-        console.log('Registro exitoso:', values);
+
+    const { mutate: signup } = useSignup();
+
+    const onFinish = (values: SignUpUserParams) => {
+        if (values.password !== values.confirmPassword) {
+            message.error('Las contraseñas no coinciden');
+            return;
+        }
+        signup(values);
     };
 
     return (
