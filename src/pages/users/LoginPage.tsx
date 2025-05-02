@@ -1,59 +1,76 @@
-import React, { useRef, useState } from 'react';
-import { Container, Button, Typography, Box } from '@mui/material';
-import { useLogin } from '../../hooks/useUsers';
-import { checkEmail } from '../../validators/user';
-import { ValidatedTextField } from '../../components/common/ValidatedTextField';
-import { useTranslation } from 'react-i18next';
+import { Button, Form, Input, message, Typography, Space } from 'antd';
+import { UserOutlined, LockOutlined } from '@ant-design/icons';
+import { Link } from 'react-router-dom';
 
-const LoginPage: React.FC = () => {
+const { Title, Text } = Typography;
 
-    const initialState = {
-        email: '',
-        password: ''
-    }
-
-    const { t } = useTranslation();
-
-    const [data, setData] = useState(initialState);
-    const formValid = useRef({ email: false, password: false });
-    const { mutate, isError, isSuccess, error } = useLogin();
-
-    const handleLogin = () => {
-        mutate({ email: data.email, password: data.password });
+const LoginPage = () => {
+    const onsubmit = (values: any) => {
+        message.success('Login exitoso!', values);
     };
 
     return (
-        <Container maxWidth="sm">
-            <Box display="flex" flexDirection="column" alignItems="center" mt={8}>
-                <Typography variant="h4" gutterBottom>
-                    {t('login.title')}
-                </Typography>
-                <ValidatedTextField
-                    id='email'
-                    label={t('login.email')}
-                    validator={checkEmail}
-                    isValid={isValid => (formValid.current.email = isValid)}
-                    onChange={email => setData({ ...data, email })}
-                />
+        <div style={{
+            width: '90vw',
+            maxWidth: '400px',
+            margin: '5vh auto',
+            padding: '2rem',
+            backgroundColor: 'white',
+            borderRadius: '8px',
+            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)'
+        }}>
+            <Title level={2} style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
+                INICIAR SESIÓN
+            </Title>
 
-                <ValidatedTextField
-                    id='password'
-                    label={t('login.password')}
-                    validator={checkEmail}
-                    isValid={isValid => (formValid.current.password = isValid)}
-                    onChange={password => setData({ ...data, password })}
-                />
-                <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={handleLogin}
+            <Form onFinish={onsubmit} layout="vertical">
+                <Form.Item
+                    label="Correo electrónico"
+                    name="email"
+                    rules={[
+                        { required: true, message: 'Por favor ingresa tu correo electrónico' },
+                        { type: 'email', message: 'Ingresa un correo válido' }
+                    ]}
                 >
-                    {t('login.submit')}
-                </Button>
-                {isError && <Typography color="error">{(error as Error).message}</Typography>}
-                {isSuccess && <Typography color="primary">Login successful!</Typography>}
-            </Box>
-        </Container>
+                    <Input
+                        prefix={<UserOutlined />}
+                        placeholder="Placeholder text"
+                    />
+                </Form.Item>
+
+                <Form.Item
+                    label="Contraseña"
+                    name="password"
+                    rules={[{ required: true, message: 'Por favor ingresa tu contraseña' }]}
+                >
+                    <Input.Password
+                        prefix={<LockOutlined />}
+                        placeholder="Placeholder text"
+                    />
+                </Form.Item>
+
+                <Form.Item>
+                    <Button
+                        type="primary"
+                        htmlType="submit"
+                        block
+                        style={{ marginTop: '1rem' }}
+                    >
+                        Iniciar Sesión
+                    </Button>
+                </Form.Item>
+
+                <Space direction="vertical" align="center" style={{ width: '100%' }}>
+                    <Text>
+                        ¿No tienes cuenta? <Link to="/signup">Regístrate</Link>
+                    </Text>
+                </Space>
+            </Form>
+        </div>
     );
 };
 

@@ -1,68 +1,116 @@
-import React, { useState } from 'react';
-import { TextField, Button, Container, Typography, Box } from '@mui/material';
-import { SignUpUserParams } from '../../utils/user';
-import { useSignup } from '../../hooks/useUsers';
+import { Button, Form, Input, Typography, Space } from 'antd';
+import { MailOutlined, LockOutlined } from '@ant-design/icons';
+import { Link } from 'react-router-dom';
 
-const SignUpPage: React.FC = () => {
+const { Title, Text } = Typography;
 
-    const initialState: SignUpUserParams = {
-        email: '',
-        password: '',
-        repeatPassword: ''
-    };
-
-    const [data, setData] = useState(initialState);
-    const { mutate } = useSignup();
-
-
-    const handleSubmit = (event: React.FormEvent) => {
-        event.preventDefault();
-        mutate(data);
+const SignUpPage = () => {
+    const onFinish = (values: any) => {
+        console.log('Registro exitoso:', values);
     };
 
     return (
-        <Container maxWidth="sm">
-            <Box mt={5}>
-                <Typography variant="h4" component="h2" gutterBottom>
-                    Sign Up
-                </Typography>
-                <form onSubmit={handleSubmit}>
-                    <Box mb={2}>
-                        <TextField
-                            label="Email"
-                            type="email"
-                            fullWidth
-                            value={data.email}
-                            onChange={(e) => setData({ ...data, email: e.target.value })}
-                            required
-                        />
-                    </Box>
-                    <Box mb={2}>
-                        <TextField
-                            label="Password"
-                            type="password"
-                            fullWidth
-                            value={data.password}
-                            onChange={(e) => setData({ ...data, password: e.target.value })}
-                            required
-                        />
-                    </Box>
-                    <Box mb={2}>
-                        <TextField
-                            label="Repeat Password"
-                            type="password"
-                            fullWidth
-                            value={data.repeatPassword}
-                            onChange={(e) => setData({ ...data, repeatPassword: e.target.value })}
-                            required
-                        />
-                    </Box>
-                    <Button type="submit" variant="contained" color="primary" fullWidth>
-                        Sign Up
+        <div style={{
+            width: '90vw',
+            maxWidth: '400px',
+            margin: '5vh auto',
+            padding: '2rem',
+            backgroundColor: 'white',
+            borderRadius: '8px',
+            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)'
+        }}>
+            <Title level={2} style={{
+                textAlign: 'center',
+                marginBottom: '1.5rem',
+                fontSize: 'calc(1rem + 1vw)'
+            }}>
+                REGISTRO
+            </Title>
+
+            <Form
+                onFinish={onFinish}
+                layout="vertical"
+                autoComplete="off"
+            >
+                <Form.Item
+                    label="Correo electrónico"
+                    name="email"
+                    rules={[
+                        { required: true, message: 'Por favor ingresa tu correo' },
+                        { type: 'email', message: 'Correo no válido' }
+                    ]}
+                >
+                    <Input
+                        prefix={<MailOutlined />}
+                        placeholder="correo@ejemplo.com"
+                        size="large"
+                    />
+                </Form.Item>
+
+                <Form.Item
+                    label="Contraseña"
+                    name="password"
+                    rules={[
+                        { required: true, message: 'Por favor ingresa tu contraseña' },
+                        { min: 6, message: 'Mínimo 6 caracteres' }
+                    ]}
+                >
+                    <Input.Password
+                        prefix={<LockOutlined />}
+                        placeholder="*******"
+                        size="large"
+                    />
+                </Form.Item>
+
+                <Form.Item
+                    label="Repetir Contraseña"
+                    name="confirmPassword"
+                    dependencies={['password']}
+                    rules={[
+                        { required: true, message: 'Confirma tu contraseña' },
+                        ({ getFieldValue }) => ({
+                            validator(_, value) {
+                                if (!value || getFieldValue('password') === value) {
+                                    return Promise.resolve();
+                                }
+                                return Promise.reject('Las contraseñas no coinciden');
+                            },
+                        }),
+                    ]}
+                >
+                    <Input.Password
+                        prefix={<LockOutlined />}
+                        placeholder="*******"
+                        size="large"
+                    />
+                </Form.Item>
+
+                <Form.Item>
+                    <Button
+                        type="primary"
+                        htmlType="submit"
+                        block
+                        style={{
+                            marginTop: '1rem',
+                            height: '40px',
+                            fontSize: '1rem'
+                        }}
+                    >
+                        Registrarse
                     </Button>
-                </form>
-            </Box>
-        </Container>
+                </Form.Item>
+
+                <Space direction="vertical" align="center" style={{ width: '100%' }}>
+                    <Text style={{ fontSize: '0.9rem' }}>
+                        ¿Ya tienes cuenta? <Link to="/">Iniciar Sesión</Link>
+                    </Text>
+                </Space>
+            </Form>
+        </div>
     );
 };
 

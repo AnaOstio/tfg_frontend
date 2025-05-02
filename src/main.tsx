@@ -1,14 +1,18 @@
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import App from './App.tsx'
-import './index.css'
-import "./i18n";
-import ReactQuery from './config/ReactQuery.tsx';
+import { StrictMode, Suspense } from 'react'
+import { createRoot } from 'react-dom/client'
+import ReactQuery from './config/ReactQuery.tsx'
+import { RouterProvider } from 'react-router-dom'
+import LoadingSpinner from './components/LoadingSpinner.tsx'
+import router from './config/Router.tsx'
+import 'antd/dist/reset.css'
+import './styles/antd-custom.css';
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
-  <React.StrictMode>
+createRoot(document.getElementById('root')!).render(
+  <StrictMode>
     <ReactQuery>
-      <App />
+      <Suspense fallback={<LoadingSpinner />}>
+        <RouterProvider router={router} />
+      </Suspense>
     </ReactQuery>
-  </React.StrictMode >,
+  </StrictMode>,
 )

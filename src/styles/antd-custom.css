@@ -1,0 +1,20 @@
+:root {
+    --green-6: #52c41a;
+    --green-7: #389e0d;
+}
+
+/* Sobrescribe estilos de Antd */
+.ant-btn-primary {
+    background-color: var(--green-6) !important;
+    border-color: var(--green-6) !important;
+    color: black !important;
+}
+
+.ant-btn-primary:hover {
+    background-color: var(--green-7) !important;
+    border-color: var(--green-7) !important;
+}
+
+.ant-menu-item-selected {
+    color: var(--green-6) !important;
+}
