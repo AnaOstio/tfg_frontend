@@ -1,5 +1,6 @@
 import { createBrowserRouter } from "react-router-dom";
 import React from "react";
+import RootLayout from "../RootLayout";
 import ProtectedRoute from "./ProtectedRouter";
 
 const NotFoundPage = React.lazy(() => import("../components/NotFoundPage"));
@@ -10,31 +11,30 @@ const Dashboard = React.lazy(() => import("../pages/dashboard/DashboardPage"));
 const router = createBrowserRouter([
     {
         path: "/",
-        element: (
-            <LoginPage />
-        ),
+        element: <RootLayout />, // NavBar incluido aquí
+        children: [
+            {
+                index: true,
+                element: <LoginPage />,
+            },
+            {
+                path: "/signup",
+                element: <SignUpPage />,
+            },
+            {
+                path: "/dashboard",
+                element: (
+                    <ProtectedRoute>
+                        <Dashboard />
+                    </ProtectedRoute>
+                ),
+            },
+            {
+                path: "*",
+                element: <NotFoundPage />,
+            },
+        ],
     },
-    {
-        path: "/signup",
-        element: (
-            <SignUpPage />
-        ),
-    },
-    {
-        path: "*",
-        element: (
-            <NotFoundPage />
-        ),
-    },
-    {
-        path: "/dashboard",
-        element: (
-            <ProtectedRoute>
-                <Dashboard />
-            </ProtectedRoute>
-        ),
-    }
-
 ]);
 
 export default router;
