@@ -1,18 +1,28 @@
 import React from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useLocation } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { selectIsAuthenticated, selectAuthStatus } from '../redux/slices/authSlice';
+import { Spin } from 'antd';
 
 interface ProtectedRouteProps {
     children: React.ReactNode;
 }
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
-    const token = localStorage.getItem('authToken');
+    const location = useLocation();
+    const isAuthenticated = useSelector(selectIsAuthenticated);
+    const authStatus = useSelector(selectAuthStatus);
 
-    // aqui habra que hacer peticion de si sigue activo el token o no
+    // Opcional: Verificación adicional del token
+    // const { verifyToken } = useAuthActions();
+    // React.useEffect(() => { verifyToken() }, []);
 
-    if (!token) {
-        // Si no está autenticado, redirige al login
-        return <Navigate to="/" replace />;
+    if (authStatus === 'loading') {
+        return <Spin size="large" fullscreen />;
+    }
+
+    if (!isAuthenticated) {
+        return <Navigate to="/" state={{ from: location }} replace />;
     }
 
     return <>{children}</>;
