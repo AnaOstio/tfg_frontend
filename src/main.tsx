@@ -7,16 +7,19 @@ import router from './config/router.tsx'
 import 'antd/dist/reset.css'
 import './styles/antd-custom.css';
 import { Provider } from 'react-redux'
-import { store } from './redux/store.ts'
+import { persistor, store } from './redux/store.ts'
+import { PersistGate } from 'redux-persist/integration/react'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <Provider store={store}>
-      <ReactQuery>
-        <Suspense fallback={<LoadingSpinner />}>
-          <RouterProvider router={router} />
-        </Suspense>
-      </ReactQuery>
+      <PersistGate loading={null} persistor={persistor}>
+        <ReactQuery>
+          <Suspense fallback={<LoadingSpinner />}>
+            <RouterProvider router={router} />
+          </Suspense>
+        </ReactQuery>
+      </PersistGate>
     </Provider>
   </StrictMode>,
 )
