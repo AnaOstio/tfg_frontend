@@ -1,9 +1,9 @@
 :root {
     --green-6: #52c41a;
     --green-7: #389e0d;
+    --green-1: #f6ffed;
 }
 
-/* Sobrescribe estilos de Antd */
 .ant-btn-primary {
     background-color: var(--green-6) !important;
     border-color: var(--green-6) !important;
@@ -15,6 +15,35 @@
     border-color: var(--green-7) !important;
 }
 
+/* Botón secundario (default) - Estilo outline verde */
+.ant-btn-default {
+    border-color: var(--green-6) !important;
+    color: var(--green-6) !important;
+    color: black !important;
+}
+
+.ant-btn-default:hover {
+    border-color: var(--green-7) !important;
+    color: var(--green-7) !important;
+    background-color: var(--green-1) !important;
+}
+
+/* Botón de texto (sin borde) */
+.ant-btn-text {
+    color: var(--green-6) !important;
+}
+
+.ant-btn-text:hover {
+    color: var(--green-7) !important;
+    background-color: rgba(82, 196, 26, 0.1) !important;
+}
+
+/* Efecto para todos los botones */
+.ant-btn {
+    transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1) !important;
+}
+
+/* Menú seleccionado */
 .ant-menu-item-selected {
     color: var(--green-6) !important;
 }

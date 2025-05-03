@@ -42,7 +42,7 @@ const LoginPage = () => {
                 >
                     <Input
                         prefix={<UserOutlined />}
-                        placeholder="Placeholder text"
+                        placeholder="correo@ejemplo.com"
                     />
                 </Form.Item>
 
@@ -53,7 +53,7 @@ const LoginPage = () => {
                 >
                     <Input.Password
                         prefix={<LockOutlined />}
-                        placeholder="Placeholder text"
+                        placeholder="*********"
                     />
                 </Form.Item>
 
