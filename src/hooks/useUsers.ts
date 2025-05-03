@@ -3,8 +3,11 @@ import { login, signup } from '../api/users';
 import { useNavigate } from 'react-router-dom';
 import { LoginUserParams, SignUpUserParams, AuthResponse } from '../utils/user';
 import { message } from 'antd';
+import { useAppDispatch } from '../redux/hooks';
+import { clearCredentials, setCredentials } from '../redux/slices/authSlice';
 
 export const useLogin = () => {
+    const dispatch = useAppDispatch();
     const navigate = useNavigate();
 
     return useMutation<AuthResponse, Error, LoginUserParams>({
@@ -15,6 +18,7 @@ export const useLogin = () => {
             return login(credentials);
         },
         onSuccess: (data) => {
+            dispatch(setCredentials(data)); // Guarda en Redux
             localStorage.setItem('authToken', data.token);
             message.success(`Bienvenido ${data.user.email}`);
             navigate('/dashboard');
@@ -26,6 +30,7 @@ export const useLogin = () => {
 };
 
 export const useSignup = () => {
+    const dispatch = useAppDispatch();
     const navigate = useNavigate();
 
     return useMutation<AuthResponse, Error, SignUpUserParams>({
@@ -41,8 +46,9 @@ export const useSignup = () => {
             return signup(credentials);
         },
         onSuccess: (data) => {
-            message.success(`Cuenta creada para ${data.user.email}`);
+            dispatch(setCredentials(data)); // Guarda en Redux
             localStorage.setItem('authToken', data.token);
+            message.success(`Cuenta creada para ${data.user.email}`);
             navigate('/dashboard');
         },
         onError: (error) => {
@@ -50,3 +56,14 @@ export const useSignup = () => {
         }
     });
 };
+
+export const useLogout = () => {
+    const dispatch = useAppDispatch();
+    const navigate = useNavigate();
+
+    return () => {
+        dispatch(clearCredentials());
+        localStorage.removeItem('authToken');
+        navigate('/login');
+    };
+}
