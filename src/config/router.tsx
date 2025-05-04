@@ -2,6 +2,8 @@ import { createBrowserRouter } from "react-router-dom";
 import React from "react";
 import RootLayout from "../RootLayout";
 import ProtectedRoute from "./ProtectedRouter";
+import SuccessPage from "../components/SuccesPage";
+import ErrorPage from "../components/ErrorPage";
 
 const NotFoundPage = React.lazy(() => import("../components/NotFoundPage"));
 const LoginPage = React.lazy(() => import("../pages/users/LoginPage"));
@@ -20,6 +22,19 @@ const router = createBrowserRouter([
             {
                 path: "/signup",
                 element: <SignUpPage />,
+            },
+            {
+                path: "/success",
+                element: <SuccessPage
+                    title="Asignatura añadida con éxito"
+                    description="Si desea añadir más asignaturas, pulse el siguiente botón"
+                    addMoreButtonText="Añadir Asignaturas"
+                    backToListButtonText="Volver al listado de Asignaturas"
+                />,
+            },
+            {
+                path: "/error",
+                element: <ErrorPage />,
             },
             {
                 path: "/dashboard",
