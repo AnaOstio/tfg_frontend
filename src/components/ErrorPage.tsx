@@ -1,11 +1,10 @@
-import React from 'react';
 import { Button, Card, Typography } from 'antd';
 import { CloseCircleFilled } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 
 const { Title, Paragraph } = Typography;
 
-const ErrorPage: React.FC = () => {
+const ErrorPage = () => {
     const navigate = useNavigate();
 
     const handleBackToHome = () => {
