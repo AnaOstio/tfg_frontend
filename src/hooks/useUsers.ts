@@ -64,6 +64,6 @@ export const useLogout = () => {
     return () => {
         dispatch(clearCredentials());
         localStorage.removeItem('authToken');
-        navigate('/login');
+        navigate('/');
     };
 }
