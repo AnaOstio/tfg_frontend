@@ -1,5 +1,7 @@
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import authReducer from './slices/authSlice';
+import titleMemoryReducer from './slices/titleMemorySlice';
+import universitiesReducer from './slices/universitiesSlice';
 import { persistStore, persistReducer } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
 
@@ -12,7 +14,9 @@ const persistConfig = {
 };
 
 const rootReducer = combineReducers({
-    auth: authReducer
+    auth: authReducer,
+    titleMemory: titleMemoryReducer,
+    universities: universitiesReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

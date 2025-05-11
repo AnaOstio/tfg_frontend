@@ -1,5 +1,5 @@
 import { useMutation } from '@tanstack/react-query';
-import { login, signup } from '../api/users';
+import { login, signup, verifyToken } from '../api/users';
 import { useNavigate } from 'react-router-dom';
 import { LoginUserParams, SignUpUserParams, AuthResponse } from '../utils/user';
 import { message } from 'antd';
@@ -67,3 +67,20 @@ export const useLogout = () => {
         navigate('/');
     };
 }
+
+export const useVerifyToken = () => {
+    const dispatch = useAppDispatch();
+    const navigate = useNavigate();
+
+    return useMutation({
+        mutationFn: async () => {
+            return verifyToken();
+        },
+        onError: (_) => {
+            dispatch(clearCredentials());
+            localStorage.removeItem('authToken');
+            message.error('La sesión ha expirado');
+            navigate('/');
+        }
+    });
+};

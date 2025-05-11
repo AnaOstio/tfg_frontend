@@ -18,3 +18,11 @@ export type AuthResponse = {
         status: string;
     };
 };
+
+export interface VerifyTokenResponse {
+    success: boolean;
+    message: string;
+    user: {
+        id: string;
+    };
+}

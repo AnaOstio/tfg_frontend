@@ -4,6 +4,7 @@ import RootLayout from "../RootLayout";
 import ProtectedRoute from "./ProtectedRouter";
 import SuccessPage from "../components/SuccesPage";
 import ErrorPage from "../components/ErrorPage";
+import TitleMemoryForm from "../pages/titleMemory/TitleMemoryForm";
 
 const NotFoundPage = React.lazy(() => import("../components/NotFoundPage"));
 const LoginPage = React.lazy(() => import("../pages/users/LoginPage"));
@@ -22,6 +23,10 @@ const router = createBrowserRouter([
             {
                 path: "/signup",
                 element: <SignUpPage />,
+            },
+            {
+                path: '/title-memory',
+                element: <TitleMemoryForm />,
             },
             {
                 path: "/success",
