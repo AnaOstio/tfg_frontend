@@ -80,7 +80,7 @@ const titleMemorySlice = createSlice({
             const comp = state.competencies[type].find((c) => c.id === id);
             if (comp) comp[field] = value;
         },
-        saveTitleMemory(state, action: PayloadAction<TitleMemoryState>) {
+        saveTitleMemory(_, action: PayloadAction<TitleMemoryState>) {
             return action.payload;
         },
 
