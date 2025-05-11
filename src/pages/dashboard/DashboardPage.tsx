@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Layout, Card, Checkbox, Pagination, Row, Col, Spin, message } from 'antd';
 import UniversityFilter from '../../components/filters/UniversityFilter';
+import { ACADEMIC_BRANCHES, ACADEMIC_LEVEL } from '../../utils/const';
+import AcademicFieldFilter from '../../components/filters/AcademicField';
 
 const { Content, Sider } = Layout;
 
@@ -14,6 +16,12 @@ interface TitleMemory {
     academicField: string;
 }
 
+interface Filters {
+    academicLevel: string[];
+    academicFields: string[];
+    branchAcademic: string[];
+}
+
 const TitleMemoriesView: React.FC = () => {
     const [loading, setLoading] = useState(false);
     const [data, setData] = useState<TitleMemory[]>([]);
@@ -24,8 +32,10 @@ const TitleMemoriesView: React.FC = () => {
         pageSize: 12,
         total: 0,
     });
-    const [filters, setFilters] = useState({
-        academicLevel: ['Grado', 'Máster'],
+    const [filters, setFilters] = useState<Filters>({
+        academicLevel: [],
+        academicFields: [],
+        branchAcademic: [],
     });
 
     const fetchData = async () => {
@@ -58,7 +68,7 @@ const TitleMemoriesView: React.FC = () => {
 
     useEffect(() => {
         fetchData();
-    }, [pagination.current, filters.academicLevel]);
+    }, [pagination.current, filters]);
 
     const handlePageChange = (page: number) => {
         setPagination({ ...pagination, current: page });
@@ -89,13 +99,33 @@ const TitleMemoriesView: React.FC = () => {
                     <div style={{ marginBottom: '0.5em' }}>
                         <h3 style={{ marginBottom: '8px', fontWeight: 500 }}>Nivel Académico</h3>
                         <Checkbox.Group
-                            options={['Grado', 'Máster']}
+                            options={ACADEMIC_LEVEL}
                             value={filters.academicLevel}
                             onChange={handleFilterChange}
                             style={{ display: 'flex', flexDirection: 'column' }}
                         />
                     </div>
                 </Card>
+
+                <Card
+                    style={{ width: '100%' }}
+                >
+                    <div style={{ marginBottom: '0.5em' }}>
+                        <h3 style={{ marginBottom: '8px', fontWeight: 500 }}>Rama Académica</h3>
+                        <Checkbox.Group
+                            options={ACADEMIC_BRANCHES}
+                            value={filters.academicLevel}
+                            onChange={handleFilterChange}
+                            style={{ display: 'flex', flexDirection: 'column' }}
+                        />
+                    </div>
+                </Card>
+
+
+                <AcademicFieldFilter
+                    value={filters.academicFields}
+                    onChange={(fields) => setFilters({ ...filters, academicFields: fields })}
+                />
 
                 <UniversityFilter
                     selectedUniversities={selectedUniversities}
