@@ -55,8 +55,7 @@ export const CompetenciesStep: React.FC<CompetenciesStepProps> = (props) => {
                             onAddCompetency={() => onAddCompetency(type)}
                             onRemoveCompetency={(id) => onRemoveCompetency(type, id)}
                             onNewCompetencyChange={(field, val) => onNewCompetencyChange(type, field, val)}
-                            type={'basic'}
-                            title={''} />
+                        />
                     </Collapse.Panel>
                 ))}
             </Collapse>

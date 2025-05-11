@@ -49,7 +49,7 @@ export interface TitleMemoryState {
         basic: Competency[];
         general: Competency[];
         transversal: Competency[];
-        specific: Competency[];   // si lo necesitas
+        specific: Competency[];
     };
     learningOutcomes: LearningOutcome[];
 }

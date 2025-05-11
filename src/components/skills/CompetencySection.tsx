@@ -4,8 +4,6 @@ import { SearchOutlined, PlusOutlined, DeleteOutlined } from '@ant-design/icons'
 import { Competency } from '../../utils/titleMemory';
 
 interface CompetencySectionProps {
-    type: 'basicas' | 'general' | 'transversal' | 'especificas';
-    title: string;
 
     /** Datos */
     competencies: Competency[];
