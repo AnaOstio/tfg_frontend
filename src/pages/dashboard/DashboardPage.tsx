@@ -3,6 +3,8 @@ import { Layout, Card, Checkbox, Pagination, Row, Col, Spin, message } from 'ant
 import UniversityFilter from '../../components/filters/UniversityFilter';
 import { ACADEMIC_BRANCHES, ACADEMIC_LEVEL } from '../../utils/const';
 import AcademicFieldFilter from '../../components/filters/AcademicField';
+import NoData from '../../components/NoData';
+import LoadingSpinner from '../../components/LoadingSpinner';
 
 const { Content, Sider } = Layout;
 
@@ -78,6 +80,9 @@ const TitleMemoriesView: React.FC = () => {
         setFilters({ ...filters, academicLevel: checkedValues });
         setPagination({ ...pagination, current: 1 }); // Reset to first page
     };
+
+    { loading && <LoadingSpinner /> }
+    if (data.length === 0) return <NoData onRefresh={fetchData} />
 
     return (
         <Layout style={{ minHeight: '100vh', background: 'transparent' }}>

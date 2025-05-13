@@ -39,10 +39,17 @@ export const ACADEMIC_BRANCHES = [
     "Ciencias de la Salud",
     "Ciencias Sociales y Jurídicas",
     "Ingeniería y Arquitectura"
-]
+];
 
 export const ACADEMIC_LEVEL = [
     "Grado",
     "Máster",
     "Doctorado"
+];
+
+export const SKILLS_TYPES = [
+    "Basicas",
+    "Generales",
+    "Transversales",
+    "Especificas"
 ];
