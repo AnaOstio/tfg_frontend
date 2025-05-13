@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Layout, Card, Checkbox, Pagination, Row, Col, Spin, message } from 'antd';
-import UniversityFilter from '../../components/filters/UniversityFilter';
-import { ACADEMIC_BRANCHES, ACADEMIC_LEVEL } from '../../utils/const';
-import AcademicFieldFilter from '../../components/filters/AcademicField';
+import { Layout, Card, Pagination, Row, Col, Spin, message } from 'antd';
+import GeneralFilters from '../../components/filters/GeneralFilters';
 import NoData from '../../components/NoData';
 import LoadingSpinner from '../../components/LoadingSpinner';
+import { Filters } from '../../components/filters/types/types';
 
 const { Content, Sider } = Layout;
 
@@ -18,17 +17,9 @@ interface TitleMemory {
     academicField: string;
 }
 
-interface Filters {
-    academicLevel: string[];
-    academicFields: string[];
-    branchAcademic: string[];
-}
-
 const TitleMemoriesView: React.FC = () => {
     const [loading, setLoading] = useState(false);
     const [data, setData] = useState<TitleMemory[]>([]);
-    const [selectedUniversities, setSelectedUniversities] = useState<string[]>([]);
-    const [selectedCenters, setSelectedCenters] = useState<string[]>([]);
     const [pagination, setPagination] = useState({
         current: 1,
         pageSize: 12,
@@ -38,6 +29,9 @@ const TitleMemoriesView: React.FC = () => {
         academicLevel: [],
         academicFields: [],
         branchAcademic: [],
+        titleName: '',
+        universities: [],
+        centers: [],
     });
 
     const fetchData = async () => {
@@ -47,8 +41,8 @@ const TitleMemoriesView: React.FC = () => {
                 page: pagination.current.toString(),
                 limit: pagination.pageSize.toString(),
                 academicLevel: filters.academicLevel.join(','),
-                universities: selectedUniversities.join(','),
-                centers: selectedCenters.join(','),
+                academicFields: filters.academicFields.join(','),
+                branchAcademic: filters.branchAcademic.join(','),
             });
 
             const response = await fetch(`http://localhost:3003/api/title-memories?${params}`);
@@ -76,9 +70,9 @@ const TitleMemoriesView: React.FC = () => {
         setPagination({ ...pagination, current: page });
     };
 
-    const handleFilterChange = (checkedValues: any) => {
-        setFilters({ ...filters, academicLevel: checkedValues });
-        setPagination({ ...pagination, current: 1 }); // Reset to first page
+    const handleFilterChange = (filterType: keyof Filters, values: string[]) => {
+        setFilters({ ...filters, [filterType]: values });
+        setPagination({ ...pagination, current: 1 });
     };
 
     { loading && <LoadingSpinner /> }
@@ -96,46 +90,9 @@ const TitleMemoriesView: React.FC = () => {
                 breakpoint="lg"
                 collapsedWidth="0"
             >
-                <Card
-                    title="Filtros"
-                    style={{ width: '100%' }}
-                >
-                    <div style={{ marginBottom: '0.5em' }}>
-                        <h3 style={{ marginBottom: '8px', fontWeight: 500 }}>Nivel Académico</h3>
-                        <Checkbox.Group
-                            options={ACADEMIC_LEVEL}
-                            value={filters.academicLevel}
-                            onChange={handleFilterChange}
-                            style={{ display: 'flex', flexDirection: 'column' }}
-                        />
-                    </div>
-                </Card>
-
-                <Card
-                    style={{ width: '100%' }}
-                >
-                    <div style={{ marginBottom: '0.5em' }}>
-                        <h3 style={{ marginBottom: '8px', fontWeight: 500 }}>Rama Académica</h3>
-                        <Checkbox.Group
-                            options={ACADEMIC_BRANCHES}
-                            value={filters.academicLevel}
-                            onChange={handleFilterChange}
-                            style={{ display: 'flex', flexDirection: 'column' }}
-                        />
-                    </div>
-                </Card>
-
-
-                <AcademicFieldFilter
-                    value={filters.academicFields}
-                    onChange={(fields) => setFilters({ ...filters, academicFields: fields })}
-                />
-
-                <UniversityFilter
-                    selectedUniversities={selectedUniversities}
-                    selectedCenters={selectedCenters}
-                    onUniversityChange={setSelectedUniversities}
-                    onCenterChange={setSelectedCenters}
+                <GeneralFilters
+                    filters={filters}
+                    onFilterChange={handleFilterChange}
                 />
             </Sider>
 
@@ -177,11 +134,10 @@ const TitleMemoriesView: React.FC = () => {
                                 />
                             </div>
                         </>
-
                     </Content>
                 )}
             </Layout>
-        </Layout >
+        </Layout>
     );
 };
 

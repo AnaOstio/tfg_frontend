@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Card, Checkbox, Button } from 'antd';
+import { Checkbox, Button } from 'antd';
 import { ACADEMIC_FIELDS } from '../../utils/const';
 
 interface AcademicFieldFilterProps {
@@ -18,7 +18,7 @@ const AcademicFieldFilter: React.FC<
     };
 
     return (
-        <Card style={{ width: '100%' }}>
+        <>
             <div style={{ marginBottom: '0.5em' }}>
                 <h3 style={{ marginBottom: '8px', fontWeight: 500 }}>Campo Académico</h3>
 
@@ -43,7 +43,7 @@ const AcademicFieldFilter: React.FC<
                     </Button>
                 )}
             </div>
-        </Card>
+        </>
     );
 };
 

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Input, Checkbox, Button, Card, Spin } from 'antd';
+import { Input, Checkbox, Button, Spin } from 'antd';
 import { useSelector } from 'react-redux';
 import { selectUniversitiesData } from '../../redux/slices/universitiesSlice';
 
@@ -51,10 +51,8 @@ const UniversityFilter: React.FC<{
         : filteredUniversities.slice(0, 5);
 
     return (
-        <Card
-            title="Filtrar por Universidades y Centros"
-            style={{ width: '100%' }}
-        >
+        <>
+            <h3 style={{ marginBottom: '8px', fontWeight: 500 }}>Universidades y Centros</h3>
             <Search
                 placeholder="Buscar universidad o centro..."
                 allowClear
@@ -113,7 +111,7 @@ const UniversityFilter: React.FC<{
                     </Button>
                 )}
             </Spin>
-        </Card>
+        </>
     );
 };
 
