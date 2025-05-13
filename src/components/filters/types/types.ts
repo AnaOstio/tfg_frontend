@@ -5,4 +5,5 @@ export interface Filters {
     titleName: string;
     universities: string[];
     centers: string[];
+    year: [number, number];
 }

@@ -1,0 +1,1 @@
+export const YEAR_RANGE: [number, number] = [2000, new Date().getFullYear() + 10];  

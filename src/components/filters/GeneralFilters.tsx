@@ -5,10 +5,11 @@ import { ACADEMIC_BRANCHES, ACADEMIC_LEVEL } from '../../utils/const';
 import AcademicFieldFilter from './AcademicField';
 import { Filters } from './types/types';
 import Search from 'antd/es/input/Search';
+import YearSlider from './YearFilter';
 
 interface GeneralFiltersProps {
     filters: Filters;
-    onFilterChange: (filterType: keyof Filters, values: string[]) => void;
+    onFilterChange: (filterType: keyof Filters, values: string[] | [number, number]) => void;
 }
 
 const GeneralFilters: React.FC<GeneralFiltersProps> = ({
@@ -59,6 +60,13 @@ const GeneralFilters: React.FC<GeneralFiltersProps> = ({
                     selectedCenters={filters.centers}
                     onUniversityChange={(values) => onFilterChange('universities', values)}
                     onCenterChange={(values) => onFilterChange('centers', values)}
+                />
+            </div>
+
+            <div>
+                <YearSlider
+                    value={filters.year}
+                    onChange={(values) => onFilterChange('year', values)}
                 />
             </div>
         </Card>

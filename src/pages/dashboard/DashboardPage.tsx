@@ -4,6 +4,7 @@ import GeneralFilters from '../../components/filters/GeneralFilters';
 import NoData from '../../components/NoData';
 import LoadingSpinner from '../../components/LoadingSpinner';
 import { Filters } from '../../components/filters/types/types';
+import { YEAR_RANGE } from '../../components/filters/consts/cosnts';
 
 const { Content, Sider } = Layout;
 
@@ -32,6 +33,7 @@ const TitleMemoriesView: React.FC = () => {
         titleName: '',
         universities: [],
         centers: [],
+        year: YEAR_RANGE,
     });
 
     const fetchData = async () => {
@@ -70,7 +72,7 @@ const TitleMemoriesView: React.FC = () => {
         setPagination({ ...pagination, current: page });
     };
 
-    const handleFilterChange = (filterType: keyof Filters, values: string[]) => {
+    const handleFilterChange = (filterType: keyof Filters, values: string[] | [number, number]) => {
         setFilters({ ...filters, [filterType]: values });
         setPagination({ ...pagination, current: 1 });
     };
