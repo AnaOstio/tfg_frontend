@@ -82,7 +82,6 @@ const TitleMemoriesView: React.FC = () => {
     };
 
     { loading && <LoadingSpinner /> }
-    if (data.length === 0) return <NoData onRefresh={fetchData} />
 
     return (
         <Layout style={{ minHeight: '100vh', background: 'transparent' }}>
@@ -142,43 +141,47 @@ const TitleMemoriesView: React.FC = () => {
 
             {/* Contenido principal */}
             <Layout>
-                <Content style={{ padding: '24px' }}>
-                    <h1 style={{ fontSize: '24px', marginBottom: '24px' }}>Memorias de título</h1>
+                {data.length === 0 ? <NoData onRefresh={fetchData} /> : (
+                    <Content style={{ padding: '24px' }}>
+                        <>
+                            <h1 style={{ fontSize: '24px', marginBottom: '24px' }}>Memorias de título</h1>
 
-                    {/* Grid de memorias */}
-                    <Spin spinning={loading}>
-                        <Row gutter={[16, 16]}>
-                            {data.map((item) => (
-                                <Col xs={24} sm={12} md={8} lg={6} key={item._id}>
-                                    <Card
-                                        title={item.name}
-                                        hoverable
-                                        style={{ height: '100%' }}
-                                    >
-                                        <p><strong>Universidad:</strong> {item.universities.join(', ')}</p>
-                                        <p><strong>Centro:</strong> {item.centers.join(', ')}</p>
-                                        <p><strong>Créditos:</strong> {item.totalCredits}</p>
-                                        <p><strong>Nivel:</strong> {item.academicLevel}</p>
-                                        <p><strong>Ámbito:</strong> {item.academicField}</p>
-                                    </Card>
-                                </Col>
-                            ))}
-                        </Row>
-                    </Spin>
+                            <Spin spinning={loading}>
+                                <Row gutter={[16, 16]}>
+                                    {data.map((item) => (
+                                        <Col xs={24} sm={12} md={8} lg={6} key={item._id}>
+                                            <Card
+                                                title={item.name}
+                                                hoverable
+                                                style={{ height: '100%' }}
+                                            >
+                                                <p><strong>Universidad:</strong> {item.universities.join(', ')}</p>
+                                                <p><strong>Centro:</strong> {item.centers.join(', ')}</p>
+                                                <p><strong>Créditos:</strong> {item.totalCredits}</p>
+                                                <p><strong>Nivel:</strong> {item.academicLevel}</p>
+                                                <p><strong>Ámbito:</strong> {item.academicField}</p>
+                                            </Card>
+                                        </Col>
+                                    ))}
+                                </Row>
+                            </Spin>
 
-                    {/* Paginación */}
-                    <div style={{ marginTop: '24px', textAlign: 'center' }}>
-                        <Pagination
-                            current={pagination.current}
-                            pageSize={pagination.pageSize}
-                            total={pagination.total}
-                            onChange={handlePageChange}
-                            showSizeChanger={false}
-                        />
-                    </div>
-                </Content>
+                            {/* Paginación */}
+                            <div style={{ marginTop: '24px', textAlign: 'center' }}>
+                                <Pagination
+                                    current={pagination.current}
+                                    pageSize={pagination.pageSize}
+                                    total={pagination.total}
+                                    onChange={handlePageChange}
+                                    showSizeChanger={false}
+                                />
+                            </div>
+                        </>
+
+                    </Content>
+                )}
             </Layout>
-        </Layout>
+        </Layout >
     );
 };
 
