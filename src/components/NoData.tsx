@@ -26,7 +26,7 @@ const NoData = ({
         }}>
             <Empty
                 image={<SmileOutlined style={{ fontSize: '48px', color: '#1890ff' }} />}
-                imageStyle={{ height: 60 }}
+                styles={{ image: { height: 60 } }}
                 description={
                     <>
                         <h3>{message}</h3>

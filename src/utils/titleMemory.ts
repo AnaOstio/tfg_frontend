@@ -1,5 +1,7 @@
 // features/titleMemory/types.ts
 
+import { Filters } from "../components/filters/types/types";
+
 // Niveles académicos permitidos
 export type AcademicLevel = 'Grado' | 'Máster' | 'Doctorado';
 
@@ -52,4 +54,10 @@ export interface TitleMemoryState {
         specific: Competency[];
     };
     learningOutcomes: LearningOutcome[];
+}
+
+export interface TitleMemoriesSearchParams {
+    filters: Filters;
+    page: number;
+    limit: number;
 }

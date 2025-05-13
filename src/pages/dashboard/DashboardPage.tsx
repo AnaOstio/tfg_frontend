@@ -6,6 +6,7 @@ import NoData from '../../components/NoData';
 import { Filters } from '../../components/filters/types/types';
 import { YEAR_RANGE } from '../../components/filters/consts/cosnts';
 import useIsMobileOrTablet from '../../hooks/useIsMobileOrTablet';
+import { useTitleMemoriesSearch } from '../../hooks/useTitleMemories';
 
 const { Content } = Layout;
 
@@ -38,33 +39,19 @@ const TitleMemoriesView: React.FC = () => {
     });
     const [filtersVisible, setFiltersVisible] = useState(false);
     const isMobileOrTablet = useIsMobileOrTablet();
+    const { mutate: searchTitleMemories } = useTitleMemoriesSearch({
+        setData,
+        setPagination,
+        setLoading
+    });
 
     const fetchData = async () => {
         setLoading(true);
-        try {
-            const params = new URLSearchParams({
-                page: pagination.current.toString(),
-                limit: pagination.pageSize.toString(),
-                academicLevel: filters.academicLevel.join(','),
-                academicFields: filters.academicFields.join(','),
-                branchAcademic: filters.branchAcademic.join(','),
-            });
-
-            const response = await fetch(`http://localhost:3003/api/title-memories?${params}`);
-            if (!response.ok) throw new Error('Error al cargar los datos');
-
-            const result = await response.json();
-            setData(result.data);
-            setPagination({
-                ...pagination,
-                total: result.pagination.total,
-            });
-        } catch (error) {
-            message.error('Error al cargar las memorias de título');
-            console.error(error);
-        } finally {
-            setLoading(false);
-        }
+        searchTitleMemories({
+            filters,
+            page: pagination.current,
+            limit: pagination.pageSize,
+        });
     };
 
     useEffect(() => {
