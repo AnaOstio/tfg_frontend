@@ -7,7 +7,6 @@ import {
     updateCredits, updateGeneralInfo
 } from '../../redux/slices/titleMemorySlice';
 import {
-    fetchUniversities,
     selectUniversitiesData,
     selectUniversitiesLoading,
     selectUniversitiesError,
@@ -44,11 +43,6 @@ export const TitleMemoryForm: React.FC = () => {
         transversal: { code: '', description: '' },
         specific: { code: '', description: '' }
     });
-
-    // Cargar universidades al montar el componente
-    useEffect(() => {
-        dispatch(fetchUniversities());
-    }, [dispatch]);
 
     // Manejar errores de carga
     useEffect(() => {

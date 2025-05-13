@@ -19,7 +19,6 @@ const initialState: UniversitiesState = {
     error: null,
 };
 
-// Thunk para cargar el JSON al iniciar la app
 export const fetchUniversities = createAsyncThunk<
     UniversityData[],
     void,

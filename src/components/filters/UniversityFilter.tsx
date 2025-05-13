@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Input, Checkbox, Button, Card, Spin } from 'antd';
-import { useDispatch, useSelector } from 'react-redux';
-import { fetchUniversities, selectUniversitiesData } from '../../redux/slices/universitiesSlice';
-import { AppDispatch } from '../../redux/store';
+import { useSelector } from 'react-redux';
+import { selectUniversitiesData } from '../../redux/slices/universitiesSlice';
 
 const { Search } = Input;
 
@@ -12,17 +11,12 @@ const UniversityFilter: React.FC<{
     onUniversityChange: (universities: string[]) => void;
     onCenterChange: (centers: string[]) => void;
 }> = ({ selectedUniversities, selectedCenters, onUniversityChange, onCenterChange }) => {
-    const dispatch = useDispatch<AppDispatch>();
     const universitiesData = useSelector(selectUniversitiesData);
     const [searchTerm, setSearchTerm] = useState('');
     const [showAllUniversities, setShowAllUniversities] = useState(false);
     const [showAllCenters, setShowAllCenters] = useState(false);
     const [filteredUniversities, setFilteredUniversities] = useState<typeof universitiesData>([]);
     const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        dispatch(fetchUniversities());
-    }, [dispatch]);
 
     // Inicializar y filtrar universidades
     useEffect(() => {
