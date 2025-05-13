@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Layout, Card, Pagination, Row, Col, Spin, message } from 'antd';
+import { Layout, Card, Pagination, Row, Col, Spin, message, Button, Drawer } from 'antd';
+import { MenuOutlined, CloseOutlined } from '@ant-design/icons';
 import GeneralFilters from '../../components/filters/GeneralFilters';
 import NoData from '../../components/NoData';
-import LoadingSpinner from '../../components/LoadingSpinner';
 import { Filters } from '../../components/filters/types/types';
 import { YEAR_RANGE } from '../../components/filters/consts/cosnts';
+import useIsMobileOrTablet from '../../hooks/useIsMobileOrTablet';
 
-const { Content, Sider } = Layout;
+const { Content } = Layout;
 
 interface TitleMemory {
     _id: string;
@@ -35,6 +36,8 @@ const TitleMemoriesView: React.FC = () => {
         centers: [],
         year: YEAR_RANGE,
     });
+    const [filtersVisible, setFiltersVisible] = useState(false);
+    const isMobileOrTablet = useIsMobileOrTablet();
 
     const fetchData = async () => {
         setLoading(true);
@@ -77,31 +80,74 @@ const TitleMemoriesView: React.FC = () => {
         setPagination({ ...pagination, current: 1 });
     };
 
-    { loading && <LoadingSpinner /> }
+    const toggleFilters = () => {
+        setFiltersVisible(!filtersVisible);
+    };
 
     return (
         <Layout style={{ minHeight: '100vh', background: 'transparent' }}>
-            {/* Sidebar de filtros */}
-            <Sider
-                width={"20%"}
-                style={{
-                    background: 'transparent',
-                    padding: '24px 16px',
-                    marginRight: '24px'
-                }}
-                breakpoint="lg"
-                collapsedWidth="0"
-            >
-                <GeneralFilters
-                    filters={filters}
-                    onFilterChange={handleFilterChange}
-                />
-            </Sider>
+            {/* Botón de hamburguesa solo en móvil/tablet */}
+            {isMobileOrTablet && !filtersVisible && (
+                <Button
+                    type="primary"
+                    icon={filtersVisible ? <CloseOutlined /> : <MenuOutlined />}
+                    onClick={toggleFilters}
+                    style={{
+                        position: 'fixed',
+                        top: '8%',
+                        left: '16px',
+                        zIndex: 1001
+                    }}
+                >
+                    {filtersVisible ? 'Cerrar filtros' : 'Abrir filtros'}
+                </Button>
+            )}
+
+            {/* Sidebar de filtros - Versión escritorio */}
+            {!isMobileOrTablet && (
+                <Layout.Sider
+                    width={"20%"}
+                    style={{
+                        background: 'transparent',
+                        padding: '24px 16px',
+                        marginRight: '24px'
+                    }}
+                >
+                    <GeneralFilters
+                        filters={filters}
+                        onFilterChange={handleFilterChange}
+                    />
+                </Layout.Sider>
+            )}
+
+            {/* Drawer para móvil/tablet */}
+            {isMobileOrTablet && (
+                <Drawer
+                    title="Filtros"
+                    placement="left"
+                    closable={true}
+                    onClose={toggleFilters}
+                    visible={filtersVisible}
+                    width="100%"
+                    bodyStyle={{ padding: '16px' }}
+                >
+                    <GeneralFilters
+                        filters={filters}
+                        onFilterChange={(type, values) => {
+                            handleFilterChange(type, values);
+                            setFiltersVisible(false); // Cierra el drawer al aplicar filtros
+                        }}
+                    />
+                </Drawer>
+            )}
 
             {/* Contenido principal */}
             <Layout>
-                {data.length === 0 ? <NoData onRefresh={fetchData} /> : (
-                    <Content style={{ padding: '24px' }}>
+                <Content style={{
+                    padding: '24px',
+                    marginLeft: isMobileOrTablet ? 0 : '24px' // Ajuste de margen para móvil
+                }}>
+                    {data.length === 0 ? <NoData onRefresh={fetchData} /> : (
                         <>
                             <h1 style={{ fontSize: '24px', marginBottom: '24px' }}>Memorias de título</h1>
 
@@ -136,8 +182,8 @@ const TitleMemoriesView: React.FC = () => {
                                 />
                             </div>
                         </>
-                    </Content>
-                )}
+                    )}
+                </Content>
             </Layout>
         </Layout>
     );
