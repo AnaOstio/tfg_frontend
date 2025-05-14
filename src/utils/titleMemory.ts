@@ -60,4 +60,5 @@ export interface TitleMemoriesSearchParams {
     filters: Filters;
     page: number;
     limit: number;
+    fromUser?: boolean;
 }

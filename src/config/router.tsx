@@ -14,7 +14,7 @@ const Dashboard = React.lazy(() => import("../pages/dashboard/DashboardPage"));
 const router = createBrowserRouter([
     {
         path: "/",
-        element: <RootLayout />, // NavBar incluido aquí
+        element: <RootLayout />,
         children: [
             {
                 index: true,
@@ -47,7 +47,16 @@ const router = createBrowserRouter([
                     <ProtectedRoute>
                         <Dashboard />
                     </ProtectedRoute>
-                ),
+                )
+            },
+            {
+                path: "/my-title-memory",
+                element: (
+                    <ProtectedRoute>
+                        <Dashboard fromUser />
+                    </ProtectedRoute>
+                )
+
             },
             {
                 path: "*",

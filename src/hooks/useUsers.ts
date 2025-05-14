@@ -70,7 +70,6 @@ export const useLogout = () => {
 
 export const useVerifyToken = () => {
     const dispatch = useAppDispatch();
-    const navigate = useNavigate();
 
     return useMutation({
         mutationFn: async () => {
@@ -80,7 +79,6 @@ export const useVerifyToken = () => {
             dispatch(clearCredentials());
             localStorage.removeItem('authToken');
             message.error('La sesión ha expirado');
-            navigate('/');
         }
     });
 };

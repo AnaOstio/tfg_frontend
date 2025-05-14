@@ -18,9 +18,14 @@ interface TitleMemory {
     totalCredits: number;
     academicLevel: string;
     academicField: string;
+    fromUser?: boolean;
 }
 
-const TitleMemoriesView: React.FC = () => {
+interface TitleMemoriesViewProps {
+    fromUser?: boolean;
+}
+
+const TitleMemoriesView: React.FC<TitleMemoriesViewProps> = ({ fromUser = false }) => {
     const [loading, setLoading] = useState(false);
     const [data, setData] = useState<TitleMemory[]>([]);
     const [pagination, setPagination] = useState({
@@ -51,6 +56,7 @@ const TitleMemoriesView: React.FC = () => {
             filters,
             page: pagination.current,
             limit: pagination.pageSize,
+            fromUser: fromUser,
         });
     };
 
@@ -136,14 +142,32 @@ const TitleMemoriesView: React.FC = () => {
                 }}>
                     {data.length === 0 ? <NoData onRefresh={fetchData} /> : (
                         <>
-                            <h1 style={{ fontSize: '24px', marginBottom: '24px' }}>Memorias de título</h1>
+                            <h1 style={{ fontSize: '24px', marginBottom: '24px' }}>
+                                {fromUser ? 'Mis memorias de título' : 'Memorias de título'}
+                            </h1>
 
                             <Spin spinning={loading}>
                                 <Row gutter={[16, 16]}>
                                     {data.map((item) => (
                                         <Col xs={24} sm={12} md={8} lg={6} key={item._id}>
                                             <Card
-                                                title={item.name}
+                                                title={
+                                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                        <span>{item.name}</span>
+                                                        {fromUser && (
+                                                            <Button
+                                                                type="primary"
+                                                                size="small"
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation();
+                                                                    // Tu función de manejo aquí
+                                                                }}
+                                                            >
+                                                                Acción
+                                                            </Button>
+                                                        )}
+                                                    </div>
+                                                }
                                                 hoverable
                                                 style={{ height: '100%' }}
                                             >
