@@ -14,7 +14,7 @@ interface SkillSectionProps {
     onSearchChange: (value: string) => void;
     onAddSkill: () => void;
     onRemoveSkill: (id: string) => void;
-    onNewSkillChange: (field: 'code' | 'description' | 'type', value: string) => void;
+    onNewSkillChange: (field: 'code' | 'description', value: string) => void;
 }
 
 export const SkillSection: React.FC<SkillSectionProps> = ({
@@ -69,21 +69,12 @@ export const SkillSection: React.FC<SkillSectionProps> = ({
                             }
                         />
                     </Col>
-                    <Col span={10}>
+                    <Col span={18}>
                         <Input
                             placeholder="Descripción"
                             value={newSkill.description}
                             onChange={(e) =>
                                 onNewSkillChange('description', e.target.value)
-                            }
-                        />
-                    </Col>
-                    <Col span={8}>
-                        <Input
-                            placeholder="Tipo"
-                            value={newSkill.type}
-                            onChange={(e) =>
-                                onNewSkillChange('type', e.target.value)
                             }
                         />
                     </Col>
@@ -117,8 +108,12 @@ export const SkillSection: React.FC<SkillSectionProps> = ({
                         ]}
                     >
                         <List.Item.Meta
-                            title={<strong>{skill.code}</strong>}
-                            description={skill.description}
+                            description={
+                                <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                                    <strong>{skill.code}</strong>
+                                    <span>{skill.description}</span>
+                                </div>
+                            }
                         />
                     </List.Item>
                 )}

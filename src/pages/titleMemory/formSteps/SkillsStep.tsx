@@ -27,7 +27,7 @@ interface SkillsStepProps {
     onRemoveSkill: (type: 'basic' | 'general' | 'transversal' | 'specific', id: string) => void;
     onNewSkillChange: (
         type: 'basic' | 'general' | 'transversal' | 'specific',
-        field: 'code' | 'description' | 'type',
+        field: 'code' | 'description',
         value: string
     ) => void;
     onPrev: () => void;
