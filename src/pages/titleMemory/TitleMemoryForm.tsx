@@ -14,6 +14,7 @@ import {
 import { GeneralInfoStep } from './formSteps/GeneralInfoStep';
 import { SkillsStep } from './formSteps/SkillsStep';
 import { ReviewStep } from './formSteps/ReviewStep';
+import { Skill } from '../../utils/skill';
 
 const { Step } = Steps;
 
@@ -34,8 +35,16 @@ export const TitleMemoryForm: React.FC = () => {
     const [centerSearchText, setCenterSearchText] = useState('');
 
     // Estados para competencias
-    const [searchText, setSearchText] = useState({
-        basic: '', general: '', transversal: '', specific: ''
+    const [selectedSkill, setSelectedSkill] = useState<{
+        basic: Skill | null;
+        general: Skill | null;
+        transversal: Skill | null;
+        specific: Skill | null;
+    }>({
+        basic: null,
+        general: null,
+        transversal: null,
+        specific: null,
     });
     const [newSkill, setNewSkill] = useState({
         basic: { code: '', description: '', type: '' },
@@ -151,8 +160,8 @@ export const TitleMemoryForm: React.FC = () => {
         dispatch(removeSkill({ type, id }));
     };
 
-    const handleSearchChange = (type: 'basic' | 'general' | 'transversal' | 'specific', value: string) => {
-        setSearchText(prev => ({ ...prev, [type]: value }));
+    const handleSearchChange = (type: 'basic' | 'general' | 'transversal' | 'specific', value: Skill) => {
+        setSelectedSkill(prev => ({ ...prev, [type]: value }));
     };
 
     const handleNewSkillChange = (
@@ -208,10 +217,10 @@ export const TitleMemoryForm: React.FC = () => {
             title: 'Competencias',
             content: (
                 <SkillsStep
-                    skills={titleMemory.competencies}
-                    searchText={searchText}
+                    skills={titleMemory.skills}
+                    selectedSkill={selectedSkill}
                     newSkill={newSkill}
-                    onSearchChange={handleSearchChange}
+                    onSelectSkill={handleSearchChange}
                     onAddSkill={handleAddSkill}
                     onRemoveSkill={handleRemoveSkill}
                     onNewSkillChange={handleNewSkillChange}

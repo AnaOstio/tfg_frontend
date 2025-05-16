@@ -41,7 +41,7 @@ export interface Credits {
 export interface TitleMemoryState {
     generalInfo: GeneralInfo;
     credits: Credits;
-    competencies: {
+    skills: {
         basic: Skill[];
         general: Skill[];
         transversal: Skill[];

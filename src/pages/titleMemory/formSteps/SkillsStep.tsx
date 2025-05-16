@@ -3,40 +3,24 @@ import { Card, Collapse, Button } from 'antd';
 import { SkillSection } from '../../../components/skills/SkillSection';
 import { Skill } from '../../../utils/skill';
 
+
+export type SkillType = 'basic' | 'general' | 'transversal' | 'specific';
+
 interface SkillsStepProps {
-    skills: {
-        basic: Skill[];
-        general: Skill[];
-        transversal: Skill[];
-        specific: Skill[];
-    };
-    searchText: {
-        basic: string;
-        general: string;
-        transversal: string;
-        specific: string;
-    };
-    newSkill: {
-        basic: { code: string; description: string, type: string };
-        general: { code: string; description: string, type: string };
-        transversal: { code: string; description: string, type: string };
-        specific: { code: string; description: string, type: string };
-    };
-    onSearchChange: (type: 'basic' | 'general' | 'transversal' | 'specific', value: string) => void;
-    onAddSkill: (type: 'basic' | 'general' | 'transversal' | 'specific') => void;
-    onRemoveSkill: (type: 'basic' | 'general' | 'transversal' | 'specific', id: string) => void;
-    onNewSkillChange: (
-        type: 'basic' | 'general' | 'transversal' | 'specific',
-        field: 'code' | 'description',
-        value: string
-    ) => void;
+    skills: Record<SkillType, Skill[]>;
+    selectedSkill: Record<SkillType, Skill | null>;
+    newSkill: Record<SkillType, { code: string; description: string; type: string }>;
+    onSelectSkill: (type: SkillType, skill: Skill) => void;
+    onAddSkill: (type: SkillType) => void;
+    onRemoveSkill: (type: SkillType, id: string) => void;
+    onNewSkillChange: (type: SkillType, field: 'code' | 'description' | 'type', value: string) => void;
     onPrev: () => void;
     onNext: () => void;
 }
 
 export const SkillsStep: React.FC<SkillsStepProps> = (props) => {
-    const { skills, searchText, newSkill,
-        onSearchChange, onAddSkill, onRemoveSkill,
+    const { skills, selectedSkill, newSkill,
+        onSelectSkill, onAddSkill, onRemoveSkill,
         onNewSkillChange, onPrev, onNext } = props;
 
     return (
@@ -49,9 +33,9 @@ export const SkillsStep: React.FC<SkillsStepProps> = (props) => {
                     >
                         <SkillSection
                             skills={skills[type]}
-                            searchText={searchText[type]}
+                            selectedSkill={selectedSkill[type]}
                             newSkill={newSkill[type]}
-                            onSearchChange={(val) => onSearchChange(type, val)}
+                            onSelectSkill={(skill) => onSelectSkill(type, skill)}
                             onAddSkill={() => onAddSkill(type)}
                             onRemoveSkill={(id) => onRemoveSkill(type, id)}
                             onNewSkillChange={(field, val) => onNewSkillChange(type, field, val)}

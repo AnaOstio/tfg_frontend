@@ -16,10 +16,11 @@ export function InfiniteSearchSelectInput<T>({
     fetchData,
     renderItem,
     onSelect,
-    value,
+    value = '',
     pageSize = 10,
 }: InfiniteSearchSelectInputProps<T>) {
     const [search, setSearch] = useState('');
+    const [inputValue, setInputValue] = useState(value);
     const [data, setData] = useState<T[]>([]);
     const [page, setPage] = useState(1);
     const [hasMore, setHasMore] = useState(true);
@@ -47,6 +48,10 @@ export function InfiniteSearchSelectInput<T>({
     }, 300);
 
     useEffect(() => {
+        setInputValue(value);
+    }, [value]);
+
+    useEffect(() => {
         if (dropdownVisible) {
             load(true);
         }
@@ -62,7 +67,16 @@ export function InfiniteSearchSelectInput<T>({
     const dropdownRender = () => (
         <div
             ref={listRef}
-            style={{ maxHeight: 250, overflowY: 'auto', padding: 8 }}
+            style={{
+                maxHeight: 250,
+                overflowY: 'auto',
+                padding: 8,
+                backgroundColor: '#fff',
+                zIndex: 1050,
+                position: 'relative',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+                borderRadius: 4,
+            }}
             onScroll={handleScroll}
         >
             <List
@@ -93,12 +107,13 @@ export function InfiniteSearchSelectInput<T>({
         >
             <Input
                 placeholder={placeholder}
-                value={value}
+                value={inputValue}
                 onChange={e => {
+                    setInputValue(e.target.value);
                     debouncedSearch(e.target.value);
                 }}
                 onFocus={() => setDropdownVisible(true)}
-                onBlur={() => setTimeout(() => setDropdownVisible(false), 200)} // para que se pueda hacer click
+                onBlur={() => setTimeout(() => setDropdownVisible(false), 200)}
             />
         </Dropdown>
     );

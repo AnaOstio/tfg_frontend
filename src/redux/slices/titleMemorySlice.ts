@@ -20,7 +20,7 @@ const initialState: TitleMemoryState = {
         practices: 0,
         finalWork: 0,
     },
-    competencies: {
+    skills: {
         basic: [],
         general: [],
         transversal: [],
@@ -49,36 +49,36 @@ const titleMemorySlice = createSlice({
         addSkill(
             state,
             action: PayloadAction<{
-                type: keyof TitleMemoryState['competencies'];
+                type: keyof TitleMemoryState['skills'];
                 skill: Skill;
             }>
         ) {
             const { type, skill } = action.payload;
-            state.competencies[type].push(skill);
+            state.skills[type].push(skill);
         },
         removeSkill(
             state,
             action: PayloadAction<{
-                type: keyof TitleMemoryState['competencies'];
+                type: keyof TitleMemoryState['skills'];
                 id: string;
             }>
         ) {
             const { type, id } = action.payload;
-            state.competencies[type] = state.competencies[type].filter(
+            state.skills[type] = state.skills[type].filter(
                 (comp) => comp.id !== id
             );
         },
         updateSkill(
             state,
             action: PayloadAction<{
-                type: keyof TitleMemoryState['competencies'];
+                type: keyof TitleMemoryState['skills'];
                 id: string;
                 field: keyof Skill;
                 value: string;
             }>
         ) {
             const { type, id, field, value } = action.payload;
-            const comp = state.competencies[type].find((c) => c.id === id);
+            const comp = state.skills[type].find((c) => c.id === id);
             if (comp) comp[field] = value;
         },
         saveTitleMemory(_, action: PayloadAction<TitleMemoryState>) {
