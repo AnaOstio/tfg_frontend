@@ -1,30 +1,30 @@
 import React from 'react';
 import { Row, Col, Input, Button, List } from 'antd';
 import { SearchOutlined, PlusOutlined, DeleteOutlined } from '@ant-design/icons';
-import { Competency } from '../../utils/titleMemory';
+import { Skill } from '../../utils/skill';
 
-interface CompetencySectionProps {
+interface SkillSectionProps {
 
     /** Datos */
-    competencies: Competency[];
+    skills: Skill[];
     searchText: string;
-    newCompetency: { code: string; description: string };
+    newSkill: { code: string; description: string, type: string };
 
     /** Callbacks */
     onSearchChange: (value: string) => void;
-    onAddCompetency: () => void;
-    onRemoveCompetency: (id: string) => void;
-    onNewCompetencyChange: (field: 'code' | 'description', value: string) => void;
+    onAddSkill: () => void;
+    onRemoveSkill: (id: string) => void;
+    onNewSkillChange: (field: 'code' | 'description' | 'type', value: string) => void;
 }
 
-export const CompetencySection: React.FC<CompetencySectionProps> = ({
-    competencies,
+export const SkillSection: React.FC<SkillSectionProps> = ({
+    skills,
     searchText,
-    newCompetency,
+    newSkill,
     onSearchChange,
-    onAddCompetency,
-    onRemoveCompetency,
-    onNewCompetencyChange,
+    onAddSkill,
+    onRemoveSkill,
+    onNewSkillChange,
 }) => {
     return (
         <>
@@ -42,7 +42,7 @@ export const CompetencySection: React.FC<CompetencySectionProps> = ({
                     <Button
                         type="primary"
                         icon={<PlusOutlined />}
-                        onClick={onAddCompetency}
+                        onClick={onAddSkill}
                         block
                     >
                         Añadir
@@ -60,21 +60,30 @@ export const CompetencySection: React.FC<CompetencySectionProps> = ({
                 }}
             >
                 <Row gutter={8} align="middle">
-                    <Col span={10}>
+                    <Col span={4}>
                         <Input
                             placeholder="Código"
-                            value={newCompetency.code}
+                            value={newSkill.code}
                             onChange={(e) =>
-                                onNewCompetencyChange('code', e.target.value)
+                                onNewSkillChange('code', e.target.value)
                             }
                         />
                     </Col>
-                    <Col span={12}>
+                    <Col span={10}>
                         <Input
                             placeholder="Descripción"
-                            value={newCompetency.description}
+                            value={newSkill.description}
                             onChange={(e) =>
-                                onNewCompetencyChange('description', e.target.value)
+                                onNewSkillChange('description', e.target.value)
+                            }
+                        />
+                    </Col>
+                    <Col span={8}>
+                        <Input
+                            placeholder="Tipo"
+                            value={newSkill.type}
+                            onChange={(e) =>
+                                onNewSkillChange('type', e.target.value)
                             }
                         />
                     </Col>
@@ -82,10 +91,10 @@ export const CompetencySection: React.FC<CompetencySectionProps> = ({
                         <Button
                             type="primary"
                             icon={<PlusOutlined />}
-                            onClick={onAddCompetency}
+                            onClick={onAddSkill}
                             disabled={
-                                !newCompetency.code.trim() ||
-                                !newCompetency.description.trim()
+                                !newSkill.code.trim() ||
+                                !newSkill.description.trim()
                             }
                         />
                     </Col>
@@ -94,22 +103,22 @@ export const CompetencySection: React.FC<CompetencySectionProps> = ({
 
             {/* 📋 Listado de competencias */}
             <List
-                dataSource={competencies}
+                dataSource={skills}
                 locale={{ emptyText: 'Sin competencias añadidas' }}
-                renderItem={(comp) => (
+                renderItem={(skill) => (
                     <List.Item
-                        key={comp.id}
+                        key={skill.id}
                         actions={[
                             <Button
                                 danger
                                 icon={<DeleteOutlined />}
-                                onClick={() => onRemoveCompetency(comp.id)}
+                                onClick={() => onRemoveSkill(skill.id)}
                             />,
                         ]}
                     >
                         <List.Item.Meta
-                            title={<strong>{comp.code}</strong>}
-                            description={comp.description}
+                            title={<strong>{skill.code}</strong>}
+                            description={skill.description}
                         />
                     </List.Item>
                 )}

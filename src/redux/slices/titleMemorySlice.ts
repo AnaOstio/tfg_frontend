@@ -1,6 +1,7 @@
 // features/titleMemory/titleMemorySlice.ts
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { AcademicLevel, AcademicReign, Competency, LearningOutcome, TitleMemoryState } from '../../utils/titleMemory';
+import { AcademicLevel, AcademicReign, LearningOutcome, TitleMemoryState } from '../../utils/titleMemory';
+import { Skill } from '../../utils/skill';
 
 const initialState: TitleMemoryState = {
     generalInfo: {
@@ -45,17 +46,17 @@ const titleMemorySlice = createSlice({
         ) {
             state.credits = { ...state.credits, ...action.payload };
         },
-        addCompetency(
+        addSkill(
             state,
             action: PayloadAction<{
                 type: keyof TitleMemoryState['competencies'];
-                competency: Competency;
+                skill: Skill;
             }>
         ) {
-            const { type, competency } = action.payload;
-            state.competencies[type].push(competency);
+            const { type, skill } = action.payload;
+            state.competencies[type].push(skill);
         },
-        removeCompetency(
+        removeSkill(
             state,
             action: PayloadAction<{
                 type: keyof TitleMemoryState['competencies'];
@@ -67,12 +68,12 @@ const titleMemorySlice = createSlice({
                 (comp) => comp.id !== id
             );
         },
-        updateCompetency(
+        updateSkill(
             state,
             action: PayloadAction<{
                 type: keyof TitleMemoryState['competencies'];
                 id: string;
-                field: keyof Competency;
+                field: keyof Skill;
                 value: string;
             }>
         ) {
@@ -111,34 +112,34 @@ const titleMemorySlice = createSlice({
             const outcome = state.learningOutcomes.find((o) => o.id === id);
             if (outcome) (outcome as any)[field] = value;
         },
-        addOutcomeCompetency(
+        addOutcomeSkill(
             state,
             action: PayloadAction<{
                 outcomeId: string;
-                competencyCode: string;
+                skillCode: string;
             }>
         ) {
-            const { outcomeId, competencyCode } = action.payload;
+            const { outcomeId, skillCode } = action.payload;
             const outcome = state.learningOutcomes.find((o) => o.id === outcomeId);
             if (
                 outcome &&
-                !outcome.associatedCompetencies.includes(competencyCode)
+                !outcome.associatedCompetencies.includes(skillCode)
             ) {
-                outcome.associatedCompetencies.push(competencyCode);
+                outcome.associatedCompetencies.push(skillCode);
             }
         },
-        removeOutcomeCompetency(
+        removeOutcomeSkill(
             state,
             action: PayloadAction<{
                 outcomeId: string;
-                competencyCode: string;
+                skillCode: string;
             }>
         ) {
-            const { outcomeId, competencyCode } = action.payload;
+            const { outcomeId, skillCode } = action.payload;
             const outcome = state.learningOutcomes.find((o) => o.id === outcomeId);
             if (outcome) {
                 outcome.associatedCompetencies = outcome.associatedCompetencies.filter(
-                    (c) => c !== competencyCode
+                    (c) => c !== skillCode
                 );
             }
         },
@@ -148,15 +149,15 @@ const titleMemorySlice = createSlice({
 export const {
     updateGeneralInfo,
     updateCredits,
-    addCompetency,
-    removeCompetency,
-    updateCompetency,
+    addSkill,
+    removeSkill,
+    updateSkill,
     saveTitleMemory,
     addLearningOutcome,
     removeLearningOutcome,
     updateLearningOutcome,
-    addOutcomeCompetency,
-    removeOutcomeCompetency,
+    addOutcomeSkill,
+    removeOutcomeSkill,
 } = titleMemorySlice.actions;
 
 export default titleMemorySlice.reducer;

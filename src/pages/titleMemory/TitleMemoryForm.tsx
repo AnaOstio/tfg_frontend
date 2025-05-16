@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Steps, Form, notification } from 'antd';
 import { AppDispatch, RootState } from '../../redux/store';
 import {
-    addCompetency, removeCompetency, saveTitleMemory,
+    addSkill, removeSkill, saveTitleMemory,
     updateCredits, updateGeneralInfo
 } from '../../redux/slices/titleMemorySlice';
 import {
@@ -12,7 +12,7 @@ import {
     selectUniversitiesError,
 } from '../../redux/slices/universitiesSlice';
 import { GeneralInfoStep } from './formSteps/GeneralInfoStep';
-import { CompetenciesStep } from './formSteps/CompetenciesStep';
+import { SkillsStep } from './formSteps/SkillsStep';
 import { ReviewStep } from './formSteps/ReviewStep';
 
 const { Step } = Steps;
@@ -37,11 +37,11 @@ export const TitleMemoryForm: React.FC = () => {
     const [searchText, setSearchText] = useState({
         basic: '', general: '', transversal: '', specific: ''
     });
-    const [newCompetency, setNewCompetency] = useState({
-        basic: { code: '', description: '' },
-        general: { code: '', description: '' },
-        transversal: { code: '', description: '' },
-        specific: { code: '', description: '' }
+    const [newSkill, setNewSkill] = useState({
+        basic: { code: '', description: '', type: '' },
+        general: { code: '', description: '', type: '' },
+        transversal: { code: '', description: '', type: '' },
+        specific: { code: '', description: '', type: '' }
     });
 
     // Manejar errores de carga
@@ -133,34 +133,34 @@ export const TitleMemoryForm: React.FC = () => {
     };
 
     // Handlers de competencias
-    const handleAddCompetency = (type: 'basic' | 'general' | 'transversal' | 'specific') => {
-        const { code, description } = newCompetency[type];
+    const handleAddSkill = (type: 'basic' | 'general' | 'transversal' | 'specific') => {
+        const { code, description } = newSkill[type];
         if (code.trim() && description.trim()) {
-            dispatch(addCompetency({
+            dispatch(addSkill({
                 type,
-                competency: { id: Date.now().toString(), code, description }
+                skill: { id: Date.now().toString(), code, description, type: type }
             }));
-            setNewCompetency(prev => ({
+            setNewSkill(prev => ({
                 ...prev,
                 [type]: { code: '', description: '' }
             }));
         }
     };
 
-    const handleRemoveCompetency = (type: 'basic' | 'general' | 'transversal' | 'specific', id: string) => {
-        dispatch(removeCompetency({ type, id }));
+    const handleRemoveSkill = (type: 'basic' | 'general' | 'transversal' | 'specific', id: string) => {
+        dispatch(removeSkill({ type, id }));
     };
 
     const handleSearchChange = (type: 'basic' | 'general' | 'transversal' | 'specific', value: string) => {
         setSearchText(prev => ({ ...prev, [type]: value }));
     };
 
-    const handleNewCompetencyChange = (
+    const handleNewSkillChange = (
         type: 'basic' | 'general' | 'transversal' | 'specific',
-        field: 'code' | 'description',
+        field: 'code' | 'description' | 'type',
         value: string
     ) => {
-        setNewCompetency(prev => ({
+        setNewSkill(prev => ({
             ...prev,
             [type]: { ...prev[type], [field]: value }
         }));
@@ -207,14 +207,14 @@ export const TitleMemoryForm: React.FC = () => {
         {
             title: 'Competencias',
             content: (
-                <CompetenciesStep
-                    competencies={titleMemory.competencies}
+                <SkillsStep
+                    skills={titleMemory.competencies}
                     searchText={searchText}
-                    newCompetency={newCompetency}
+                    newSkill={newSkill}
                     onSearchChange={handleSearchChange}
-                    onAddCompetency={handleAddCompetency}
-                    onRemoveCompetency={handleRemoveCompetency}
-                    onNewCompetencyChange={handleNewCompetencyChange}
+                    onAddSkill={handleAddSkill}
+                    onRemoveSkill={handleRemoveSkill}
+                    onNewSkillChange={handleNewSkillChange}
                     onPrev={handlePrev}
                     onNext={handleNext}
                 />

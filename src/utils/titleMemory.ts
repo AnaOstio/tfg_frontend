@@ -1,19 +1,13 @@
 // features/titleMemory/types.ts
 
 import { Filters } from "../components/filters/types/types";
+import { Skill } from "./skill";
 
 // Niveles académicos permitidos
 export type AcademicLevel = 'Grado' | 'Máster' | 'Doctorado';
 
 // Ramas académicas permitidas
 export type AcademicReign = 'Artes' | 'Ciencias' | 'Ingeniería' | 'Humanidades';
-
-// Estructura de una Competencia
-export interface Competency {
-    id: string;
-    code: string;
-    description: string;
-}
 
 // Estructura de un Resultado de Aprendizaje
 export interface LearningOutcome {
@@ -48,10 +42,10 @@ export interface TitleMemoryState {
     generalInfo: GeneralInfo;
     credits: Credits;
     competencies: {
-        basic: Competency[];
-        general: Competency[];
-        transversal: Competency[];
-        specific: Competency[];
+        basic: Skill[];
+        general: Skill[];
+        transversal: Skill[];
+        specific: Skill[];
     };
     learningOutcomes: LearningOutcome[];
 }
