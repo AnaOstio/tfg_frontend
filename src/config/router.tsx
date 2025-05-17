@@ -13,6 +13,7 @@ const Dashboard = React.lazy(() => import("../pages/dashboard/DashboardPage"));
 const AddSubjectPage = React.lazy(() => import("../pages/subjects/SubjectForm"));
 const TitleMemoryDetails = React.lazy(() => import("../pages/titleMemory/TitleMemoryDetails"));
 const SubjectDetails = React.lazy(() => import("../pages/subjects/SubjectDetails"));
+const UploadSubjectsScreen = React.lazy(() => import("../pages/subjects/upload/UploadSubjectsScreen"));
 
 const router = createBrowserRouter([
     {
@@ -68,6 +69,14 @@ const router = createBrowserRouter([
                     </ProtectedRoute>
                 )
 
+            },
+            {
+                path: "/upload-subjects",
+                element: (
+                    <ProtectedRoute>
+                        <UploadSubjectsScreen />
+                    </ProtectedRoute>
+                )
             },
             {
                 path: "/title-memory/details/:id",

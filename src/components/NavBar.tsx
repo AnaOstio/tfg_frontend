@@ -37,7 +37,6 @@ const NavBar = () => {
                 style={{
                     flex: 1,
                     minWidth: 0,
-                    justifyContent: 'center',
                     background: 'transparent',
                     borderBottom: 'none'
                 }}
@@ -53,6 +52,12 @@ const NavBar = () => {
                         </Menu.Item>
                         <Menu.Item key="create-title-memory">
                             <Link to="/title-memory" style={{ color: 'white' }}>Crear memoria de título</Link>
+                        </Menu.Item>
+                        <Menu.Item key="upload-subjects">
+                            <Link to="/upload-subjects" style={{ color: 'white' }}>Subir asignaturas</Link>
+                        </Menu.Item>
+                        <Menu.Item key="upload-title-memories">
+                            <Link to="/upload-title-memories" style={{ color: 'white' }}>Subir asignaturas</Link>
                         </Menu.Item>
                     </>
                 )}
