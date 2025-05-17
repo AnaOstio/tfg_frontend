@@ -60,11 +60,12 @@ const TitleMemoriesView: React.FC<TitleMemoriesViewProps> = ({ fromUser = false 
             limit: pagination.pageSize,
             fromUser: fromUser,
         });
+
     };
 
     useEffect(() => {
         fetchData();
-    }, [pagination.current, filters]);
+    }, [pagination.current, filters, fromUser]);
 
     const handlePageChange = (page: number) => {
         setPagination({ ...pagination, current: page });
