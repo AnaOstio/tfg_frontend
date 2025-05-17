@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Layout, Card, Pagination, Row, Col, Spin, message, Button, Drawer } from 'antd';
+import { Layout, Card, Pagination, Row, Col, Spin, message, Button, Drawer, Dropdown, Menu, MenuProps } from 'antd';
 import { MenuOutlined, CloseOutlined } from '@ant-design/icons';
 import GeneralFilters from '../../components/filters/GeneralFilters';
 import NoData from '../../components/NoData';
@@ -7,6 +7,7 @@ import { Filters } from '../../components/filters/types/types';
 import { YEAR_RANGE } from '../../components/filters/consts/cosnts';
 import useIsMobileOrTablet from '../../hooks/useIsMobileOrTablet';
 import { useTitleMemoriesSearch } from '../../hooks/useTitleMemories';
+import useConfirmation from '../../hooks/useConfirmation';
 
 const { Content } = Layout;
 
@@ -76,6 +77,65 @@ const TitleMemoriesView: React.FC<TitleMemoriesViewProps> = ({ fromUser = false 
     const toggleFilters = () => {
         setFiltersVisible(!filtersVisible);
     };
+
+    const { showConfirmation, ConfirmationModal } = useConfirmation();
+
+    const handleDelete = (itemId: string) => {
+        // Aquí va tu lógica real para eliminar
+        console.log('Eliminando memoria:', itemId);
+    };
+
+
+    const getActionItems = (item: TitleMemory): MenuProps['items'] => [
+        {
+            key: 'edit',
+            label: (
+                <div onClick={(e) => {
+                    console.log('Editando memoria:', item._id);
+                }}>
+                    Editar
+                </div>
+            ),
+        },
+        {
+            key: 'delete',
+            label: (
+                <div onClick={(e) => {
+                    e.stopPropagation();
+                    showConfirmation(
+                        '¿Desea eliminar esta memoria de título?',
+                        () => handleDelete(item._id)
+                    );
+                }}>
+                    Eliminar
+                </div>
+            ),
+        },
+        {
+            key: 'clone',
+            label: (
+                <div onClick={(e) => {
+                    e.stopPropagation();
+                    // Lógica para clonar
+                    message.info(`Clonando memoria: ${item.name}`);
+                }}>
+                    Clonar
+                </div>
+            ),
+        },
+        {
+            key: 'add-subject',
+            label: (
+                <div onClick={(e) => {
+                    e.stopPropagation();
+                    // Lógica para añadir asignatura
+                    message.info(`Añadiendo asignatura a: ${item.name}`);
+                }}>
+                    Añadir asignatura
+                </div>
+            ),
+        },
+    ];
 
     return (
         <Layout style={{ minHeight: '100vh', background: 'transparent' }}>
@@ -155,16 +215,18 @@ const TitleMemoriesView: React.FC<TitleMemoriesViewProps> = ({ fromUser = false 
                                                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                                         <span>{item.name}</span>
                                                         {fromUser && (
-                                                            <Button
-                                                                type="primary"
-                                                                size="small"
-                                                                onClick={(e) => {
-                                                                    e.stopPropagation();
-                                                                    // Tu función de manejo aquí
-                                                                }}
+                                                            <Dropdown
+                                                                menu={{ items: getActionItems(item) }}
+                                                                trigger={['click']}
                                                             >
-                                                                Acción
-                                                            </Button>
+                                                                <Button
+                                                                    type="primary"
+                                                                    size="small"
+                                                                    onClick={(e) => e.stopPropagation()}
+                                                                >
+                                                                    Acciones
+                                                                </Button>
+                                                            </Dropdown>
                                                         )}
                                                     </div>
                                                 }
@@ -196,6 +258,7 @@ const TitleMemoriesView: React.FC<TitleMemoriesViewProps> = ({ fromUser = false 
                     )}
                 </Content>
             </Layout>
+            <ConfirmationModal />
         </Layout>
     );
 };
