@@ -1,50 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import { Layout, Typography, Divider } from 'antd';
 import { useParams } from 'react-router-dom';
-import { Layout, Menu, Card, Table, Typography, Divider, Row, Col, Tag } from 'antd';
-import {
-    BookOutlined,
-    AppstoreOutlined,
-    BarsOutlined,
-    CheckCircleOutlined,
-    BankOutlined,
-    ClusterOutlined,
-    FlagOutlined
-} from '@ant-design/icons';
+import { TitleMemory } from './types';
+import GeneralInfoCard from './details/GeneralInfoCard';
+import CreditsDistributionCard from './details/CreditsDistributionCard';
+import SkillsTable from './details/SkillsTables';
+import OutcomesTable from './details/OutcomesTable';
+import TitleSidebar from './details/TitleSidebar';
 
-const { Content, Sider } = Layout;
-const { Title, Text } = Typography;
-
-interface Skill {
-    _id: string;
-    code: string;
-    description: string;
-    type: string;
-}
-
-interface LearningOutcome {
-    _id: string;
-    description: string;
-    associatedSkills: string[];
-}
-
-interface TitleMemory {
-    _id: string;
-    titleCode: number;
-    universities: string[];
-    centers: string[];
-    name: string;
-    academicLevel: string;
-    branch: string;
-    academicField: string;
-    status: string;
-    yearDelivery: number;
-    totalCredits: number;
-    distributedCredits: {
-        [key: string]: number;
-    };
-    skills: Skill[];
-    learningOutcomes: LearningOutcome[];
-}
+const { Content } = Layout;
+const { Title } = Typography;
 
 const TitleMemoryDetails: React.FC = () => {
     const { id } = useParams<{ id: string }>();
@@ -110,153 +75,20 @@ const TitleMemoryDetails: React.FC = () => {
         fetchTitleMemory();
     }, [id]);
 
-    const menuItems = [
-        {
-            key: 'general',
-            icon: <AppstoreOutlined />,
-            label: 'Datos Generales',
-        },
-        {
-            key: 'skills',
-            icon: <CheckCircleOutlined />,
-            label: 'Competencias',
-        },
-        {
-            key: 'outcomes',
-            icon: <BarsOutlined />,
-            label: 'Resultados de Aprendizaje',
-        },
-    ];
-
     const renderContent = () => {
         if (!titleMemory) return null;
-
         switch (selectedMenuKey) {
             case 'general':
                 return (
                     <>
-                        <Card title="Información Básica" loading={loading}>
-                            <Row gutter={16}>
-                                <Col span={12}>
-                                    <Text strong>Universidad:</Text>
-                                    <div>{titleMemory.universities.join(', ')}</div>
-                                </Col>
-                                <Col span={12}>
-                                    <Text strong>Centro:</Text>
-                                    <div>{titleMemory.centers.join(', ')}</div>
-                                </Col>
-                            </Row>
-                            <Divider />
-                            <Row gutter={16}>
-                                <Col span={8}>
-                                    <Text strong>Nivel Académico:</Text>
-                                    <div>{titleMemory.academicLevel}</div>
-                                </Col>
-                                <Col span={8}>
-                                    <Text strong>Rama:</Text>
-                                    <div>{titleMemory.branch}</div>
-                                </Col>
-                                <Col span={8}>
-                                    <Text strong>Área Académica:</Text>
-                                    <div>{titleMemory.academicField}</div>
-                                </Col>
-                            </Row>
-                            <Divider />
-                            <Row gutter={16}>
-                                <Col span={12}>
-                                    <Text strong>Estado:</Text>
-                                    <div>
-                                        <Tag color={titleMemory.status === 'Activo' ? 'green' : 'red'}>
-                                            {titleMemory.status}
-                                        </Tag>
-                                    </div>
-                                </Col>
-                                <Col span={12}>
-                                    <Text strong>Año de Entrega:</Text>
-                                    <div>{titleMemory.yearDelivery}</div>
-                                </Col>
-                            </Row>
-                        </Card>
-
-                        <Card title="Distribución de Créditos" style={{ marginTop: 16 }} loading={loading}>
-                            <Row gutter={16}>
-                                <Col span={24}>
-                                    <Text strong>Total de Créditos:</Text>
-                                    <div>{titleMemory.totalCredits}</div>
-                                </Col>
-                            </Row>
-                            <Divider />
-                            <Row gutter={16}>
-                                {Object.entries(titleMemory.distributedCredits).map(([key, value]) => (
-                                    <Col span={6} key={key}>
-                                        <Text strong>{key}:</Text>
-                                        <div>{value}</div>
-                                    </Col>
-                                ))}
-                            </Row>
-                        </Card>
+                        <GeneralInfoCard titleMemory={titleMemory} loading={loading} />
+                        <CreditsDistributionCard titleMemory={titleMemory} loading={loading} />
                     </>
                 );
             case 'skills':
-                return (
-                    <Card title="Competencias" loading={loading}>
-                        <Table
-                            columns={[
-                                {
-                                    title: 'Código',
-                                    dataIndex: 'code',
-                                    key: 'code',
-                                    width: 120,
-                                },
-                                {
-                                    title: 'Descripción',
-                                    dataIndex: 'description',
-                                    key: 'description',
-                                },
-                                {
-                                    title: 'Tipo',
-                                    dataIndex: 'type',
-                                    key: 'type',
-                                    width: 150,
-                                },
-                            ]}
-                            dataSource={titleMemory.skills}
-                            rowKey="_id"
-                            pagination={{ pageSize: 10 }}
-                        />
-                    </Card>
-                );
+                return <SkillsTable skills={titleMemory.skills} loading={loading} />;
             case 'outcomes':
-                return (
-                    <Card title="Resultados de Aprendizaje" loading={loading}>
-                        <Table
-                            columns={[
-                                {
-                                    title: 'Descripción',
-                                    dataIndex: 'description',
-                                    key: 'description',
-                                },
-                                {
-                                    title: 'Competencias Asociadas',
-                                    key: 'associatedSkills',
-                                    render: (_, record) => (
-                                        <div>
-                                            {record.associatedSkills.map(skillId => {
-                                                const skill = titleMemory.skills.find(s => s._id === skillId);
-                                                return skill ? (
-                                                    <Tag key={skill._id}>{skill.code}</Tag>
-                                                ) : null;
-                                            })}
-                                        </div>
-                                    ),
-                                },
-                            ]}
-                            dataSource={titleMemory.learningOutcomes}
-                            rowKey="_id"
-                            pagination={{ pageSize: 10 }}
-                        />
-                    </Card>
-                );
+                return <OutcomesTable outcomes={titleMemory.learningOutcomes} skills={titleMemory.skills} loading={loading} />;
             default:
                 return null;
         }
@@ -264,21 +96,9 @@ const TitleMemoryDetails: React.FC = () => {
 
     return (
         <Layout style={{ minHeight: '100vh' }}>
-            <Sider width={250} theme="light">
-                <div style={{ padding: '24px 16px' }}>
-                    <Title level={4} style={{ marginBottom: 0 }}>
-                        <BookOutlined /> Memoria de Título
-                    </Title>
-                </div>
-                <Menu
-                    mode="inline"
-                    selectedKeys={[selectedMenuKey]}
-                    onSelect={({ key }) => setSelectedMenuKey(key)}
-                    items={menuItems}
-                />
-            </Sider>
+            <TitleSidebar selectedKey={selectedMenuKey} onSelect={setSelectedMenuKey} />
             <Layout>
-                <Content style={{ padding: '24px' }}>
+                <Content style={{ padding: 24 }}>
                     {titleMemory && (
                         <>
                             <Title level={2}>{titleMemory.name}</Title>

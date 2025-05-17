@@ -8,7 +8,6 @@ import { useDispatch } from 'react-redux';
 function App() {
     const dispatch = useDispatch<AppDispatch>();
 
-
     useEffect(() => {
         dispatch(fetchUniversities());
     }, [dispatch]);
