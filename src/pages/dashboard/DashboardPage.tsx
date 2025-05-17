@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Layout, Card, Pagination, Row, Col, Spin, message, Button, Drawer, Dropdown, Menu, MenuProps } from 'antd';
+import { Layout, Card, Pagination, Row, Col, Spin, message, Button, Drawer, Dropdown, MenuProps } from 'antd';
 import { MenuOutlined, CloseOutlined } from '@ant-design/icons';
 import GeneralFilters from '../../components/filters/GeneralFilters';
 import NoData from '../../components/NoData';
@@ -8,6 +8,7 @@ import { YEAR_RANGE } from '../../components/filters/consts/cosnts';
 import useIsMobileOrTablet from '../../hooks/useIsMobileOrTablet';
 import { useTitleMemoriesSearch } from '../../hooks/useTitleMemories';
 import useConfirmation from '../../hooks/useConfirmation';
+import { Link, useNavigate } from 'react-router-dom';
 
 const { Content } = Layout;
 
@@ -90,7 +91,7 @@ const TitleMemoriesView: React.FC<TitleMemoriesViewProps> = ({ fromUser = false 
         {
             key: 'edit',
             label: (
-                <div onClick={(e) => {
+                <div onClick={(_) => {
                     console.log('Editando memoria:', item._id);
                 }}>
                     Editar
@@ -126,13 +127,13 @@ const TitleMemoriesView: React.FC<TitleMemoriesViewProps> = ({ fromUser = false 
         {
             key: 'add-subject',
             label: (
-                <div onClick={(e) => {
-                    e.stopPropagation();
-                    // Lógica para añadir asignatura
-                    message.info(`Añadiendo asignatura a: ${item.name}`);
-                }}>
+                <Link
+                    to={`/add-subject/${item._id}`}
+                    onClick={(e) => e.stopPropagation()}
+                    style={{ display: 'block', width: '100%' }}
+                >
                     Añadir asignatura
-                </div>
+                </Link>
             ),
         },
     ];

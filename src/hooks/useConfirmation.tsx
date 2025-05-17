@@ -1,6 +1,34 @@
-// src/hooks/useConfirmation.ts
 import { useState } from 'react';
 import { Modal } from 'antd';
+
+interface ConfirmationModalProps {
+    visible: boolean;
+    message: string;
+    onConfirm: () => void;
+    onCancel: () => void;
+}
+
+const ConfirmationModalComponent = ({
+    visible,
+    message,
+    onConfirm,
+    onCancel
+}: ConfirmationModalProps) => (
+    <Modal
+        title="Confirmación"
+        open={visible}
+        onOk={onConfirm}
+        onCancel={onCancel}
+        okText="Confirmar"
+        cancelText="Cancelar"
+        styles={{
+            mask: { zIndex: 10000 },
+            wrapper: { zIndex: 10001 }
+        }}
+    >
+        <p>{message} </p>
+    </Modal>
+);
 
 const useConfirmation = () => {
     const [isModalVisible, setIsModalVisible] = useState(false);
@@ -24,24 +52,13 @@ const useConfirmation = () => {
     };
 
     const ConfirmationModal = () => (
-        <Modal
-            title="Confirmación"
-            open={isModalVisible}
-            onOk={handleConfirm}
+        <ConfirmationModalComponent
+            visible={isModalVisible}
+            message={modalConfig?.message || ''
+            }
+            onConfirm={handleConfirm}
             onCancel={handleCancel}
-            okText="Confirmar"
-            cancelText="Cancelar"
-            styles={{
-                mask: {
-                    zIndex: 10000,
-                },
-                wrapper: {
-                    zIndex: 10001,
-                }
-            }}
-        >
-            <p>{modalConfig?.message}</p>
-        </Modal>
+        />
     );
 
     return { showConfirmation, ConfirmationModal };
