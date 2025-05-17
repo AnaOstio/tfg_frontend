@@ -12,6 +12,7 @@ const SignUpPage = React.lazy(() => import("../pages/users/SignUpPage"));
 const Dashboard = React.lazy(() => import("../pages/dashboard/DashboardPage"));
 const AddSubjectPage = React.lazy(() => import("../pages/subjects/SubjectForm"));
 const TitleMemoryDetails = React.lazy(() => import("../pages/titleMemory/TitleMemoryDetails"));
+const SubjectDetails = React.lazy(() => import("../pages/subjects/SubjectDetails"));
 
 const router = createBrowserRouter([
     {
@@ -73,6 +74,14 @@ const router = createBrowserRouter([
                 element: (
                     <ProtectedRoute>
                         <TitleMemoryDetails />
+                    </ProtectedRoute>
+                )
+            },
+            {
+                path: "/title-memory/details/:id/subjects/:subjectId",
+                element: (
+                    <ProtectedRoute>
+                        <SubjectDetails />
                     </ProtectedRoute>
                 )
             },
