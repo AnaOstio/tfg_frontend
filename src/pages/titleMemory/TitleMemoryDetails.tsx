@@ -7,6 +7,7 @@ import CreditsDistributionCard from './details/CreditsDistributionCard';
 import SkillsTable from './details/SkillsTables';
 import OutcomesTable from './details/OutcomesTable';
 import TitleSidebar from './details/TitleSidebar';
+import SubjectsGrid from './details/SubjectsGrid';
 
 const { Content } = Layout;
 const { Title } = Typography;
@@ -89,6 +90,8 @@ const TitleMemoryDetails: React.FC = () => {
                 return <SkillsTable skills={titleMemory.skills} loading={loading} />;
             case 'outcomes':
                 return <OutcomesTable outcomes={titleMemory.learningOutcomes} skills={titleMemory.skills} loading={loading} />;
+            case 'subjects':
+                return <SubjectsGrid />;
             default:
                 return null;
         }

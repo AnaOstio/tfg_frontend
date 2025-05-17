@@ -15,6 +15,7 @@ const TitleSidebar: React.FC<Props> = ({ selectedKey, onSelect }) => {
         { key: 'general', icon: <AppstoreOutlined />, label: 'Datos Generales' },
         { key: 'skills', icon: <CheckCircleOutlined />, label: 'Competencias' },
         { key: 'outcomes', icon: <BarsOutlined />, label: 'Resultados de Aprendizaje' },
+        { key: 'subjects', icon: <BookOutlined />, label: 'Asignaturas' },
     ];
 
     return (
