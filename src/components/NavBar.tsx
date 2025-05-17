@@ -1,6 +1,6 @@
 import { Layout, Menu, Button, Space, Avatar } from 'antd';
 import { Link } from 'react-router-dom';
-import { LogoutOutlined, UserOutlined } from '@ant-design/icons';
+import { LogoutOutlined } from '@ant-design/icons';
 import { useLogout } from '../hooks/useUsers';
 import { selectIsAuthenticated } from '../redux/slices/authSlice';
 import { useSelector } from 'react-redux';
@@ -44,9 +44,17 @@ const NavBar = () => {
                 selectedKeys={[]}
             >
                 {isAuthenticated && (
-                    <Menu.Item key="dashboard">
-                        <Link to="/dashboard" style={{ color: 'white' }}>Dashboard</Link>
-                    </Menu.Item>
+                    <>
+                        <Menu.Item key="dashboard">
+                            <Link to="/dashboard" style={{ color: 'white' }}>Dashboard</Link>
+                        </Menu.Item>
+                        <Menu.Item key="my-title-memory">
+                            <Link to="/my-title-memory" style={{ color: 'white' }}>Mis memorias de título</Link>
+                        </Menu.Item>
+                        <Menu.Item key="create-title-memory">
+                            <Link to="/title-memory" style={{ color: 'white' }}>Crear memoria de título</Link>
+                        </Menu.Item>
+                    </>
                 )}
             </Menu>
 
