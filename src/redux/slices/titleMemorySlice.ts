@@ -104,7 +104,7 @@ const titleMemorySlice = createSlice({
             state,
             action: PayloadAction<{
                 id: string;
-                field: 'code' | 'description';
+                field: 'name' | 'description';
                 value: string;
             }>
         ) {

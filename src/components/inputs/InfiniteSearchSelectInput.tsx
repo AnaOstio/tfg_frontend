@@ -1,5 +1,6 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Input, Dropdown, List, Spin } from 'antd';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
+import { Input, Dropdown, List, Spin, Button } from 'antd';
+import { PlusOutlined } from '@ant-design/icons';
 import debounce from 'lodash/debounce';
 
 interface InfiniteSearchSelectInputProps<T> {
@@ -8,7 +9,10 @@ interface InfiniteSearchSelectInputProps<T> {
     renderItem: (item: T) => React.ReactNode;
     onSelect: (item: T) => void;
     value?: string;
+    onChange?: (value: string) => void;
     pageSize?: number;
+    selectedItem?: T | null;
+    onAddItem?: () => void;
 }
 
 export function InfiniteSearchSelectInput<T>({
@@ -17,51 +21,78 @@ export function InfiniteSearchSelectInput<T>({
     renderItem,
     onSelect,
     value = '',
+    onChange,
     pageSize = 10,
+    selectedItem,
+    onAddItem,
 }: InfiniteSearchSelectInputProps<T>) {
-    const [search, setSearch] = useState('');
-    const [inputValue, setInputValue] = useState(value);
     const [data, setData] = useState<T[]>([]);
     const [page, setPage] = useState(1);
     const [hasMore, setHasMore] = useState(true);
     const [loading, setLoading] = useState(false);
     const [dropdownVisible, setDropdownVisible] = useState(false);
+    const [searchValue, setSearchValue] = useState(value);
 
     const listRef = useRef<HTMLDivElement>(null);
+    const searchTriggered = useRef(false);
 
-    const load = async (reset = false) => {
-        if (loading) return;
+    const load = useCallback(async (reset = false, search = searchValue) => {
+        if (loading || !searchTriggered.current) return;
+
         setLoading(true);
-        const currentPage = reset ? 1 : page;
-        const res = await fetchData(search, currentPage);
-        setData(prev => (reset ? res.data : [...prev, ...res.data]));
-        setHasMore(res.hasMore);
-        setPage(currentPage + 1);
-        setLoading(false);
-    };
+        try {
+            const currentPage = reset ? 1 : page;
+            const res = await fetchData(search, currentPage);
 
-    const debouncedSearch = debounce((value: string) => {
-        setSearch(value);
-        setPage(1);
-        setHasMore(true);
-        load(true);
-    }, 300);
-
-    useEffect(() => {
-        setInputValue(value);
-    }, [value]);
-
-    useEffect(() => {
-        if (dropdownVisible) {
-            load(true);
+            setData(prev => reset ? res.data : [...prev, ...res.data]);
+            setHasMore(res.hasMore);
+            setPage(currentPage + 1);
+        } finally {
+            setLoading(false);
         }
-    }, [dropdownVisible]);
+    }, [loading, page, searchValue, fetchData]);
+
+    const debouncedSearch = useRef(
+        debounce((search: string) => {
+            if (search.trim()) {
+                searchTriggered.current = true;
+                setPage(1);
+                setHasMore(true);
+                load(true, search);
+            } else {
+                searchTriggered.current = false;
+                setData([]);
+            }
+        }, 500)
+    ).current;
+
+    useEffect(() => {
+        return () => debouncedSearch.cancel();
+    }, [debouncedSearch]);
+
+    useEffect(() => {
+        if (dropdownVisible && searchValue.trim() && !searchTriggered.current) {
+            debouncedSearch(searchValue);
+        }
+    }, [dropdownVisible, searchValue, debouncedSearch]);
 
     const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
         const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
         if (scrollTop + clientHeight >= scrollHeight - 20 && hasMore && !loading) {
             load();
         }
+    };
+
+    const handleSelect = (item: T) => {
+        onSelect(item);
+        setDropdownVisible(false);
+    };
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const newValue = e.target.value;
+        setSearchValue(newValue);
+        onChange?.(newValue);
+        debouncedSearch(newValue);
     };
 
     const dropdownRender = () => (
@@ -72,8 +103,6 @@ export function InfiniteSearchSelectInput<T>({
                 overflowY: 'auto',
                 padding: 8,
                 backgroundColor: '#fff',
-                zIndex: 1050,
-                position: 'relative',
                 boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
                 borderRadius: 4,
             }}
@@ -84,37 +113,50 @@ export function InfiniteSearchSelectInput<T>({
                 renderItem={(item, idx) => (
                     <List.Item
                         key={idx}
-                        style={{ cursor: 'pointer' }}
-                        onClick={() => {
-                            onSelect(item);
-                            setDropdownVisible(false);
-                        }}
+                        style={{ cursor: 'pointer', padding: '8px 12px' }}
+                        onClick={() => handleSelect(item)}
                     >
                         {renderItem(item)}
                     </List.Item>
                 )}
             />
-            {loading && <Spin style={{ display: 'block', textAlign: 'center', margin: '10px auto' }} />}
-            {!loading && data.length === 0 && <div style={{ textAlign: 'center' }}>Sin resultados</div>}
+            {loading && <Spin style={{ display: 'block', margin: '10px auto' }} />}
+            {!loading && data.length === 0 && searchTriggered.current && (
+                <div style={{ textAlign: 'center', padding: 8 }}>
+                    No se encontraron resultados
+                </div>
+            )}
         </div>
     );
 
     return (
-        <Dropdown
-            open={dropdownVisible}
-            dropdownRender={dropdownRender}
-            trigger={['click']}
-        >
-            <Input
-                placeholder={placeholder}
-                value={inputValue}
-                onChange={e => {
-                    setInputValue(e.target.value);
-                    debouncedSearch(e.target.value);
-                }}
-                onFocus={() => setDropdownVisible(true)}
-                onBlur={() => setTimeout(() => setDropdownVisible(false), 200)}
-            />
-        </Dropdown>
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+            <Dropdown
+                open={dropdownVisible}
+                dropdownRender={dropdownRender}
+                trigger={['click']}
+                onOpenChange={(visible) => setDropdownVisible(visible)}
+            >
+                <Input
+                    placeholder={placeholder}
+                    value={value}
+                    onChange={handleInputChange}
+                    onClick={() => setDropdownVisible(true)}
+                    allowClear
+                    style={{ flex: 1 }}
+                />
+            </Dropdown>
+
+            {selectedItem && (
+                <Button
+                    type="primary"
+                    icon={<PlusOutlined />}
+                    onClick={onAddItem}
+                    disabled={!selectedItem}
+                >
+                    Añadir
+                </Button>
+            )}
+        </div>
     );
 }

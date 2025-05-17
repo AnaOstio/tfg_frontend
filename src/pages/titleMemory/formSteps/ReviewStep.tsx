@@ -34,21 +34,21 @@ export const ReviewStep: React.FC<ReviewStepProps> = ({
         <h4>Básicas</h4>
         <ul>
             {titleMemory.competencies.basic.map((comp: any) => (
-                <li key={comp.id}><strong>{comp.code}:</strong> {comp.description}</li>
+                <li key={comp.id}><strong>{comp.name}:</strong> {comp.description}</li>
             ))}
         </ul>
 
         <h4>Generales</h4>
         <ul>
             {titleMemory.competencies.general.map((comp: any) => (
-                <li key={comp.id}><strong>{comp.code}:</strong> {comp.description}</li>
+                <li key={comp.id}><strong>{comp.name}:</strong> {comp.description}</li>
             ))}
         </ul>
 
         <h4>Transversales</h4>
         <ul>
             {titleMemory.competencies.transversal.map((comp: any) => (
-                <li key={comp.id}><strong>{comp.code}:</strong> {comp.description}</li>
+                <li key={comp.id}><strong>{comp.name}:</strong> {comp.description}</li>
             ))}
         </ul>
 

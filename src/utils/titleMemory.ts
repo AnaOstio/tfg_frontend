@@ -12,7 +12,7 @@ export type AcademicReign = 'Artes' | 'Ciencias' | 'Ingeniería' | 'Humanidades'
 // Estructura de un Resultado de Aprendizaje
 export interface LearningOutcome {
     id: string;
-    code: string;
+    name: string;
     description: string;
     associatedCompetencies: string[];
 }

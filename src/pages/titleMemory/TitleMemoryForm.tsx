@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Steps, Form, notification } from 'antd';
+import { Steps, Form, notification, Button } from 'antd';
 import { AppDispatch, RootState } from '../../redux/store';
 import {
     addSkill, removeSkill, saveTitleMemory,
@@ -16,186 +16,253 @@ import { SkillsStep } from './formSteps/SkillsStep';
 import { ReviewStep } from './formSteps/ReviewStep';
 import { Skill } from '../../utils/skill';
 
+type SkillType = 'basic' | 'general' | 'transversal' | 'specific';
+type SkillState = Record<SkillType, Skill | null>;
+type SearchTextState = Record<SkillType, string>;
+type NewSkillState = Record<SkillType, { name: string; description: string }>;
+
 const { Step } = Steps;
 
 export const TitleMemoryForm: React.FC = () => {
+    const [api, _] = notification.useNotification();
     const [form] = Form.useForm();
     const [currentStep, setCurrentStep] = useState(0);
-
     const dispatch = useDispatch<AppDispatch>();
+
+    // Redux selectors
     const titleMemory = useSelector((state: RootState) => state.titleMemory);
     const universitiesData = useSelector(selectUniversitiesData);
     const univLoading = useSelector(selectUniversitiesLoading);
     const univError = useSelector(selectUniversitiesError);
 
-    // Estados para universidades y centros
+    // State management
     const [selectedUniversities, setSelectedUniversities] = useState<string[]>([]);
     const [univSearchText, setUnivSearchText] = useState('');
     const [selectedCenters, setSelectedCenters] = useState<string[]>([]);
     const [centerSearchText, setCenterSearchText] = useState('');
-
-    // Estados para competencias
-    const [selectedSkill, setSelectedSkill] = useState<{
-        basic: Skill | null;
-        general: Skill | null;
-        transversal: Skill | null;
-        specific: Skill | null;
-    }>({
-        basic: null,
-        general: null,
-        transversal: null,
-        specific: null,
+    const [selectedSkill, setSelectedSkill] = useState<SkillState>({
+        basic: null, general: null, transversal: null, specific: null
     });
-    const [newSkill, setNewSkill] = useState({
-        basic: { code: '', description: '', type: '' },
-        general: { code: '', description: '', type: '' },
-        transversal: { code: '', description: '', type: '' },
-        specific: { code: '', description: '', type: '' }
+    const [searchText, setSearchText] = useState<SearchTextState>({
+        basic: '', general: '', transversal: '', specific: ''
+    });
+    const [newSkill, setNewSkill] = useState<NewSkillState>({
+        basic: { name: '', description: '' },
+        general: { name: '', description: '' },
+        transversal: { name: '', description: '' },
+        specific: { name: '', description: '' }
     });
 
-    // Manejar errores de carga
+    // Initialize skills structure if not exists
+    useEffect(() => {
+        if (!titleMemory.skills) {
+            dispatch(updateGeneralInfo({
+                skills: {
+                    basic: [],
+                    general: [],
+                    transversal: [],
+                    specific: []
+                }
+            }));
+        }
+    }, [dispatch, titleMemory.skills]);
+
+    // Memoized derived data
+    const availableUniversities = useMemo(() => (
+        universitiesData
+            ?.map(u => u.universidad)
+            ?.filter(u => !selectedUniversities.includes(u))
+            ?.filter(u => u.toLowerCase().includes(univSearchText.toLowerCase())) || []
+    ), [universitiesData, selectedUniversities, univSearchText]);
+
+    const availableCenters = useMemo(() => (
+        universitiesData
+            ?.filter(u => selectedUniversities.includes(u.universidad))
+            ?.flatMap(u => u.centros)
+            ?.filter(c => !selectedCenters.includes(c))
+            ?.filter(c => c.toLowerCase().includes(centerSearchText.toLowerCase())) || []
+    ), [universitiesData, selectedUniversities, selectedCenters, centerSearchText]);
+
+    // Effect hooks
     useEffect(() => {
         if (univError) {
-            notification.error({
+            api.error({
                 message: 'Error cargando universidades',
-                description: univError
+                description: univError,
+                duration: 3
             });
         }
     }, [univError]);
 
-    // Inicializar valores del formulario
     useEffect(() => {
-        if (titleMemory.generalInfo.university) {
+        if (titleMemory.generalInfo?.university) {
             setSelectedUniversities(titleMemory.generalInfo.university.split(' / ').filter(Boolean));
         }
-        if (titleMemory.generalInfo.centers) {
+        if (titleMemory.generalInfo?.centers) {
             setSelectedCenters(titleMemory.generalInfo.centers.split(' / ').filter(Boolean));
         }
-    }, [titleMemory.generalInfo.university, titleMemory.generalInfo.centers]);
+    }, [titleMemory.generalInfo?.university, titleMemory.generalInfo?.centers]);
 
-    // Filtrar universidades disponibles
-    const availableUniversities = universitiesData
-        .map(u => u.universidad)
-        .filter(u => !selectedUniversities.includes(u))
-        .filter(u => u.toLowerCase().includes(univSearchText.toLowerCase()));
+    // Handlers
+    const updateUniversityField = useCallback((universities: string[]) => {
+        const value = universities.join(' / ');
+        form.setFieldsValue({
+            generalInfo: { ...titleMemory.generalInfo, university: value }
+        });
+        dispatch(updateGeneralInfo({ university: value }));
+    }, [dispatch, form, titleMemory.generalInfo]);
 
-    // Obtener centros disponibles según universidades seleccionadas
-    const availableCenters = universitiesData
-        .filter(u => selectedUniversities.includes(u.universidad))
-        .flatMap(u => u.centros)
-        .filter(c => !selectedCenters.includes(c))
-        .filter(c => c.toLowerCase().includes(centerSearchText.toLowerCase()));
+    const updateCentersField = useCallback((centers: string[]) => {
+        const value = centers.join(' / ');
+        form.setFieldsValue({
+            generalInfo: { ...titleMemory.generalInfo, centers: value }
+        });
+        dispatch(updateGeneralInfo({ centers: value }));
+    }, [dispatch, form, titleMemory.generalInfo]);
 
-    // Manejar selección de universidades
-    const handleUniversitySelect = (value: string) => {
+    const handleUniversitySelect = useCallback((value: string) => {
         if (!selectedUniversities.includes(value)) {
             const updated = [...selectedUniversities, value];
             setSelectedUniversities(updated);
             updateUniversityField(updated);
         }
         setUnivSearchText('');
-    };
+    }, [selectedUniversities, updateUniversityField]);
 
-    const removeUniversity = (university: string) => {
+    const removeUniversity = useCallback((university: string) => {
         const updated = selectedUniversities.filter(u => u !== university);
         setSelectedUniversities(updated);
         updateUniversityField(updated);
 
-        // Eliminar centros asociados a la universidad eliminada
         const centersToRemove = universitiesData
-            .find(u => u.universidad === university)?.centros || [];
+            ?.find(u => u.universidad === university)?.centros || [];
         const updatedCenters = selectedCenters.filter(c => !centersToRemove.includes(c));
         setSelectedCenters(updatedCenters);
         updateCentersField(updatedCenters);
-    };
+    }, [selectedUniversities, selectedCenters, universitiesData, updateUniversityField, updateCentersField]);
 
-    const updateUniversityField = (universities: string[]) => {
-        const value = universities.join(' / ');
-        form.setFieldsValue({
-            generalInfo: { ...titleMemory.generalInfo, university: value }
-        });
-        dispatch(updateGeneralInfo({ university: value }));
-    };
-
-    // Manejar selección de centros
-    const handleCenterSelect = (value: string) => {
+    const handleCenterSelect = useCallback((value: string) => {
         if (!selectedCenters.includes(value)) {
             const updated = [...selectedCenters, value];
             setSelectedCenters(updated);
             updateCentersField(updated);
         }
         setCenterSearchText('');
-    };
+    }, [selectedCenters, updateCentersField]);
 
-    const removeCenter = (center: string) => {
+    const removeCenter = useCallback((center: string) => {
         const updated = selectedCenters.filter(c => c !== center);
         setSelectedCenters(updated);
         updateCentersField(updated);
-    };
+    }, [selectedCenters, updateCentersField]);
 
-    const updateCentersField = (centers: string[]) => {
-        const value = centers.join(' / ');
-        form.setFieldsValue({
-            generalInfo: { ...titleMemory.generalInfo, centers: value }
-        });
-        dispatch(updateGeneralInfo({ centers: value }));
-    };
+    const handleAddSkill = useCallback((type: SkillType) => {
+        const { name, description } = newSkill[type];
 
-    // Handlers de competencias
-    const handleAddSkill = (type: 'basic' | 'general' | 'transversal' | 'specific') => {
-        const { code, description } = newSkill[type];
-        if (code.trim() && description.trim()) {
-            dispatch(addSkill({
-                type,
-                skill: { id: Date.now().toString(), code, description, type: type }
-            }));
-            setNewSkill(prev => ({
-                ...prev,
-                [type]: { code: '', description: '' }
-            }));
+        // Validar campos no vacíos
+        if (!name.trim() || !description.trim()) {
+            api.warning({
+                message: 'Campos incompletos',
+                description: 'Por favor complete tanto el código como la descripción'
+            });
+            return;
         }
-    };
 
-    const handleRemoveSkill = (type: 'basic' | 'general' | 'transversal' | 'specific', id: string) => {
+        // Verificar si la skill ya existe (comparando código y descripción)
+        const skillExists = titleMemory.skills?.[type]?.some(skill =>
+            skill.name.toLowerCase() === name.toLowerCase() ||
+            skill.description.toLowerCase() === description.toLowerCase()
+        );
+
+        if (skillExists) {
+            api.error({
+                message: 'Competencia duplicada',
+                description: 'Esta competencia ya está añadida en la lista'
+            });
+            return;
+        }
+
+        // Añadir la nueva skill si no existe
+        dispatch(addSkill({
+            type,
+            skill: {
+                id: `${type}-${Date.now()}`,
+                name,
+                description,
+                type
+            }
+        }));
+
+        // Resetear formulario
+        setNewSkill(prev => ({
+            ...prev,
+            [type]: { name: '', description: '' }
+        }));
+        setSelectedSkill(prev => ({
+            ...prev,
+            [type]: null
+        }));
+        setSearchText(prev => ({
+            ...prev,
+            [type]: ''
+        }));
+
+    }, [dispatch, newSkill, titleMemory.skills]);
+
+    const handleRemoveSkill = useCallback((type: SkillType, id: string) => {
         dispatch(removeSkill({ type, id }));
-    };
+    }, [dispatch]);
 
-    const handleSearchChange = (type: 'basic' | 'general' | 'transversal' | 'specific', value: Skill) => {
-        setSelectedSkill(prev => ({ ...prev, [type]: value }));
-    };
+    const handleSearchChange = useCallback((type: SkillType, skill: Skill) => {
+        setSelectedSkill(prev => ({ ...prev, [type]: skill }));
+        setNewSkill(prev => ({
+            ...prev,
+            [type]: { name: skill.name, description: skill.description }
+        }));
+        setSearchText(prev => ({
+            ...prev,
+            [type]: `${skill.name} - ${skill.description}`
+        }));
+    }, []);
 
-    const handleNewSkillChange = (
-        type: 'basic' | 'general' | 'transversal' | 'specific',
-        field: 'code' | 'description' | 'type',
+    const handleSearchTextChange = useCallback((type: SkillType, value: string) => {
+        setSearchText(prev => ({ ...prev, [type]: value }));
+    }, []);
+
+    const handleNewSkillChange = useCallback((
+        type: SkillType,
+        field: 'name' | 'description',
         value: string
     ) => {
         setNewSkill(prev => ({
             ...prev,
             [type]: { ...prev[type], [field]: value }
         }));
-    };
+    }, []);
 
-    // Navegación
-    const handleNext = () => {
+    const handleNext = useCallback(() => {
         form.validateFields()
-            .then(() => setCurrentStep(currentStep + 1))
-            .catch(() => notification.error({
+            .then(() => setCurrentStep(prev => prev + 1))
+            .catch(() => api.error({
                 message: 'Error de validación',
                 description: 'Complete todos los campos requeridos.'
             }));
-    };
+    }, [form]);
 
-    const handlePrev = () => setCurrentStep(currentStep - 1);
+    const handlePrev = useCallback(() => {
+        setCurrentStep(prev => prev - 1);
+    }, []);
 
-    const handleSubmit = () => {
+    const handleSubmit = useCallback(() => {
         dispatch(saveTitleMemory(titleMemory));
-        notification.success({
+        api.success({
             message: 'Memoria guardada',
             description: 'Se ha guardado correctamente.'
         });
-    };
+    }, [dispatch, titleMemory]);
 
-    const steps = [
+    // Steps configuration
+    const steps = useMemo(() => [
         {
             title: 'Información General',
             content: (
@@ -217,10 +284,17 @@ export const TitleMemoryForm: React.FC = () => {
             title: 'Competencias',
             content: (
                 <SkillsStep
-                    skills={titleMemory.skills}
+                    skills={titleMemory.skills || {
+                        basic: [],
+                        general: [],
+                        transversal: [],
+                        specific: []
+                    }}
                     selectedSkill={selectedSkill}
-                    newSkill={newSkill}
+                    searchTexts={searchText}
+                    newSkills={newSkill}
                     onSelectSkill={handleSearchChange}
+                    onSearchTextChange={handleSearchTextChange}
                     onAddSkill={handleAddSkill}
                     onRemoveSkill={handleRemoveSkill}
                     onNewSkillChange={handleNewSkillChange}
@@ -239,7 +313,15 @@ export const TitleMemoryForm: React.FC = () => {
                 />
             )
         }
-    ];
+    ], [
+        availableUniversities, availableCenters, univLoading,
+        selectedUniversities, selectedCenters, titleMemory,
+        selectedSkill, searchText, newSkill,
+        handleUniversitySelect, removeUniversity, handleCenterSelect,
+        removeCenter, handleSearchChange, handleSearchTextChange,
+        handleAddSkill, handleRemoveSkill, handleNewSkillChange,
+        handlePrev, handleNext, handleSubmit
+    ]);
 
     return (
         <div style={{ width: '80%', margin: '0 auto', padding: '24px 0' }}>

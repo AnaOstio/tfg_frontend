@@ -1,7 +1,7 @@
 
 export interface Skill {
     id: string;
-    code: string;
+    name: string;
     description: string;
     type: string;
 }

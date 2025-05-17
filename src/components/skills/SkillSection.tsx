@@ -1,100 +1,76 @@
-import React, { useState } from 'react';
-import { Row, Col, Input, Button, List } from 'antd';
-import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
+import React from 'react';
+import { Row, Col, List, Button, Input } from 'antd';
+import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
 import { Skill } from '../../utils/skill';
 import { InfiniteSearchSelectInput } from '../inputs/InfiniteSearchSelectInput';
+import { useSkillSearch } from '../../hooks/useSkills';
 
 interface SkillSectionProps {
-    skills: Skill[];
-    selectedSkill: Skill | null;
-    newSkill: { code: string; description: string; type: string };
-    onSelectSkill: (skill: Skill) => void;
+    skillType: string;
+    skills?: Skill[];
+    selectedSkill?: Skill | null;
+    newSkill?: { name: string; description: string };
+    searchText?: string;
+    onSearchTextChange: (value: string) => void;
+    onSelectSkill: (item: Skill) => void;
     onAddSkill: () => void;
     onRemoveSkill: (id: string) => void;
-    onNewSkillChange: (field: 'code' | 'description', value: string) => void;
+    onNewSkillChange: (field: 'name' | 'description', value: string) => void;
 }
 
 export const SkillSection: React.FC<SkillSectionProps> = ({
-    skills,
-    selectedSkill,
-    newSkill,
+    skillType,
+    skills = [],
+    selectedSkill = null,
+    newSkill = { name: '', description: '' },
+    searchText = '',
+    onSearchTextChange,
     onSelectSkill,
     onAddSkill,
     onRemoveSkill,
     onNewSkillChange,
 }) => {
-    // Simulación de una búsqueda paginada (puedes reemplazar esto por tu API)
+    const { mutateAsync: searchSkillMutate } = useSkillSearch();
+
     const fetchSkills = async (search: string, page: number) => {
-        const pageSize = 10;
-        const allSkills: Skill[] = Array.from({ length: 100 }, (_, i) => ({
-            id: String(i),
-            code: `S${i}`,
-            description: `Competencia ${i}`,
-            type: 'technical',
-        }));
-
-        const filtered = allSkills.filter(
-            (s) =>
-                s.description.toLowerCase().includes(search.toLowerCase()) ||
-                s.code.toLowerCase().includes(search.toLowerCase())
-        );
-
-        const paginated = filtered.slice((page - 1) * pageSize, page * pageSize);
-
+        const res = await searchSkillMutate({ search, page, type: skillType });
         return {
-            data: paginated,
-            hasMore: page * pageSize < filtered.length,
+            data: res.data,
+            hasMore: res.hasMore,
         };
     };
 
     return (
         <>
-            {/* 🔍 Buscador + botón “Añadir” */}
             <Row gutter={8} style={{ marginBottom: 16 }}>
-                <Col span={18}>
+                <Col span={24}>
                     <InfiniteSearchSelectInput<Skill>
-                        placeholder="Buscar competencia…"
+                        placeholder={`Buscar competencia ${skillType}...`}
                         fetchData={fetchSkills}
                         renderItem={(item) => (
-                            <div style={{ display: 'flex', flexDirection: 'column' }}>
-                                <strong>{item.code}</strong>
-                                <span>{item.description}</span>
+                            <div>
+                                <strong>{item.name}</strong> - {item.description}
                             </div>
                         )}
-                        value={selectedSkill?.description || ''}
                         onSelect={onSelectSkill}
+                        value={searchText}
+                        onChange={onSearchTextChange}
+                        selectedItem={selectedSkill}
+                        onAddItem={onAddSkill}
                     />
-                </Col>
-                <Col span={6}>
-                    <Button
-                        type="primary"
-                        icon={<PlusOutlined />}
-                        onClick={onAddSkill}
-                        block
-                    >
-                        Añadir
-                    </Button>
                 </Col>
             </Row>
 
-            {/* ➕ Formulario rápido para nueva competencia */}
-            <div
-                style={{
-                    marginBottom: 16,
-                    padding: 16,
-                    border: '1px dashed #d9d9d9',
-                    borderRadius: 4,
-                }}
-            >
+            <div style={{ marginBottom: 16, padding: 16, border: '1px dashed #d9d9d9', borderRadius: 4 }}>
                 <Row gutter={8} align="middle">
-                    <Col span={4}>
+                    <Col span={8}>
                         <Input
                             placeholder="Código"
-                            value={newSkill.code}
-                            onChange={(e) => onNewSkillChange('code', e.target.value)}
+                            value={newSkill.name}
+                            onChange={(e) => onNewSkillChange('name', e.target.value)}
                         />
                     </Col>
-                    <Col span={18}>
+                    <Col span={14}>
                         <Input
                             placeholder="Descripción"
                             value={newSkill.description}
@@ -106,16 +82,15 @@ export const SkillSection: React.FC<SkillSectionProps> = ({
                             type="primary"
                             icon={<PlusOutlined />}
                             onClick={onAddSkill}
-                            disabled={!newSkill.code.trim() || !newSkill.description.trim()}
+                            disabled={!newSkill.name || !newSkill.description}
                         />
                     </Col>
                 </Row>
             </div>
 
-            {/* 📋 Listado de competencias */}
             <List
                 dataSource={skills}
-                locale={{ emptyText: 'Sin competencias añadidas' }}
+                locale={{ emptyText: 'No hay competencias añadidas' }}
                 renderItem={(skill) => (
                     <List.Item
                         key={skill.id}
@@ -129,16 +104,9 @@ export const SkillSection: React.FC<SkillSectionProps> = ({
                     >
                         <List.Item.Meta
                             description={
-                                <div
-                                    style={{
-                                        display: 'flex',
-                                        gap: '1rem',
-                                        alignItems: 'center',
-                                    }}
-                                >
-                                    <strong>{skill.code}</strong>
-                                    <span>{skill.description}</span>
-                                </div>
+                                <>
+                                    <strong>{skill.name}</strong> - {skill.description}
+                                </>
                             }
                         />
                     </List.Item>
