@@ -297,6 +297,7 @@ export const TitleMemoryForm: React.FC = () => {
     const onOutcomeSelected = useCallback((item: { id: string; name: string; description: string }) => {
         setSelectedOutcomeItem(item);
         setNewOutcomeText(item.name);
+        setNewOutcomeDescription(item.description);
     }, []);
 
     const onOutcomeInputChange = useCallback((val: string) => {
@@ -322,7 +323,7 @@ export const TitleMemoryForm: React.FC = () => {
 
         if (selectedOutcomeItem) {
             newItem = {
-                id: selectedOutcomeItem.id,
+                id: selectedOutcomeItem._id,
                 name: selectedOutcomeItem.name,
                 description: selectedOutcomeItem.description || '',
                 associatedSkills: []
