@@ -15,7 +15,7 @@ const TitleMemoryDetails = React.lazy(() => import("../pages/titleMemory/TitleMe
 const SubjectDetails = React.lazy(() => import("../pages/subjects/SubjectDetails"));
 const UploadSubjectsScreen = React.lazy(() => import("../pages/subjects/upload/UploadSubjectsScreen"));
 
-const router = createBrowserRouter([
+export const router = createBrowserRouter([
     {
         path: "/",
         element: <RootLayout />,
@@ -101,5 +101,3 @@ const router = createBrowserRouter([
         ],
     },
 ]);
-
-export default router;
