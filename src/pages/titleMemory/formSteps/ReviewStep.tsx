@@ -1,5 +1,6 @@
 import React from 'react';
 import { Card, Button } from 'antd';
+import { Skill } from '../../../utils/skill';
 
 interface ReviewStepProps {
     titleMemory: any;
@@ -31,26 +32,50 @@ export const ReviewStep: React.FC<ReviewStepProps> = ({
         <p><strong>Trabajo Fin:</strong> {titleMemory.credits.finalWork}</p>
 
         <h3>Competencias</h3>
-        <h4>Básicas</h4>
-        <ul>
-            {titleMemory.competencies.basic.map((comp: any) => (
-                <li key={comp.id}><strong>{comp.name}:</strong> {comp.description}</li>
-            ))}
-        </ul>
 
-        <h4>Generales</h4>
-        <ul>
-            {titleMemory.competencies.general.map((comp: any) => (
-                <li key={comp.id}><strong>{comp.name}:</strong> {comp.description}</li>
-            ))}
-        </ul>
+        {(['basic', 'general', 'transversal', 'specific'] as const).map(type => (
+            <div key={type}>
+                <h4>{type.charAt(0).toUpperCase() + type.slice(1)}</h4>
+                <ul>
+                    {titleMemory.skills?.[type]?.map((comp: Skill) => (
+                        <li key={comp.id}>
+                            <strong>{comp.name}:</strong> {comp.description}
+                        </li>
+                    ))}
+                </ul>
+            </div>
+        ))}
 
-        <h4>Transversales</h4>
-        <ul>
-            {titleMemory.competencies.transversal.map((comp: any) => (
-                <li key={comp.id}><strong>{comp.name}:</strong> {comp.description}</li>
-            ))}
-        </ul>
+        {titleMemory.learningOutcomes?.length > 0 && (
+            <>
+                <h3>Resultados de Aprendizaje</h3>
+                <ul>
+                    {titleMemory.learningOutcomes.map(outcome => (
+                        <li key={outcome.id}>
+                            <strong>{outcome.name}</strong>
+                            {outcome.description && ` – ${outcome.description}`}
+                            {outcome.associatedSkills?.length > 0 && (
+                                <div style={{ marginLeft: 16 }}>
+                                    <em>Competencias asociadas:</em>
+                                    <ul>
+                                        {outcome.associatedSkills.map(skillId => {
+                                            const skill = Object.values(titleMemory.skills)
+                                                .flat()
+                                                .find(s => s.id === skillId);
+                                            return (
+                                                <li key={skillId}>
+                                                    {skill ? `${skill.name}: ${skill.description}` : skillId}
+                                                </li>
+                                            );
+                                        })}
+                                    </ul>
+                                </div>
+                            )}
+                        </li>
+                    ))}
+                </ul>
+            </>
+        )}
 
         <div style={{ marginTop: 24 }}>
             <Button onClick={onPrev} style={{ marginRight: 8 }}>Atrás</Button>

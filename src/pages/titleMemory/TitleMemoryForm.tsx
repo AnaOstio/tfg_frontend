@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Steps, Form, notification, Button, Input, Table, Select } from 'antd';
+import { Steps, Form, notification } from 'antd';
 import { AppDispatch, RootState } from '../../redux/store';
 import {
     addLearningOutcome,
@@ -20,6 +20,7 @@ import { Skill } from '../../utils/skill';
 import { LearningOutcomesStep } from './formSteps/LearningOutcomesStep';
 import { LearningOutcome } from './types';
 import { useLearningOutcomesSearch } from '../../hooks/useLearningOucomes';
+import { useTitleMemoriesCreate } from '../../hooks/useTitleMemories';
 
 type SkillType = 'basic' | 'general' | 'transversal' | 'specific';
 type SkillState = Record<SkillType, Skill | null>;
@@ -57,6 +58,8 @@ export const TitleMemoryForm: React.FC = () => {
         transversal: { name: '', description: '' },
         specific: { name: '', description: '' }
     });
+
+    const [newOutcomeDescription, setNewOutcomeDescription] = useState('');
 
     // Initialize skills structure if not exists
     useEffect(() => {
@@ -261,17 +264,20 @@ export const TitleMemoryForm: React.FC = () => {
         setCurrentStep(prev => prev - 1);
     }, []);
 
+    const { mutateAsync: saveTitleMemoryMutate } = useTitleMemoriesCreate();
+
     const handleSubmit = useCallback(() => {
         dispatch(saveTitleMemory(titleMemory));
         api.success({
             message: 'Memoria guardada',
             description: 'Se ha guardado correctamente.'
         });
+        saveTitleMemoryMutate(titleMemory);
     }, [dispatch, titleMemory]);
 
     const learningOutcomes = useSelector((state: RootState) => state.titleMemory.learningOutcomes);
     const [newOutcomeText, setNewOutcomeText] = useState('');
-    const [selectedOutcomeItem, setSelectedOutcomeItem] = useState<{ id: string; name: string } | null>(null);
+    const [selectedOutcomeItem, setSelectedOutcomeItem] = useState<{ id: string; name: string; description: string } | null>(null);
 
     const handleOutcomeChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
         setNewOutcomeText(e.target.value);
@@ -288,27 +294,19 @@ export const TitleMemoryForm: React.FC = () => {
         };
     };
 
-    // const fetchOutcomes = async (search: string, page: number) => {
-    //     const filtered = [
-    //         { id: '1', name: 'Comprende los fundamentos de física' },
-    //         { id: '2', name: 'Analiza sistemas complejos' },
-    //         { id: '3', name: 'Aplica metodologías ágiles' },
-    //     ].filter(o => o.name.toLowerCase().includes(search.toLowerCase()));
-
-    //     return {
-    //         data: filtered,
-    //         hasMore: false
-    //     };
-    // };
-
-    const onOutcomeSelected = useCallback((item: { id: string; name: string }) => {
+    const onOutcomeSelected = useCallback((item: { id: string; name: string; description: string }) => {
         setSelectedOutcomeItem(item);
         setNewOutcomeText(item.name);
     }, []);
 
     const onOutcomeInputChange = useCallback((val: string) => {
         setNewOutcomeText(val);
+        setNewOutcomeDescription(''); // limpiar si se escribe algo nuevo
         setSelectedOutcomeItem(null);
+    }, []);
+
+    const onDescriptionChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+        setNewOutcomeDescription(e.target.value);
     }, []);
 
     const handleAddOutcome = useCallback(() => {
@@ -320,17 +318,31 @@ export const TitleMemoryForm: React.FC = () => {
             return;
         }
 
-        const newItem: LearningOutcome = {
-            id: `lo-${Date.now()}`,
-            name: newOutcomeText,
-            description: '',
-            associatedSkills: []
-        };
+        let newItem: LearningOutcome;
+
+        if (selectedOutcomeItem) {
+            newItem = {
+                id: selectedOutcomeItem.id,
+                name: selectedOutcomeItem.name,
+                description: selectedOutcomeItem.description || '',
+                associatedSkills: []
+            };
+        } else {
+            newItem = {
+                id: `lo-${Date.now()}`,
+                name: newOutcomeText,
+                description: newOutcomeDescription,
+                associatedSkills: []
+            };
+        }
 
         dispatch(addLearningOutcome({ outcome: newItem }));
         setNewOutcomeText('');
+        setNewOutcomeDescription('');
         setSelectedOutcomeItem(null);
-    }, [newOutcomeText, dispatch]);
+    }, [newOutcomeText, newOutcomeDescription, selectedOutcomeItem, dispatch]);
+
+
 
     const handleRemoveOutcome = useCallback((id: string) => {
         dispatch(removeLearningOutcome({ id }));
@@ -414,7 +426,9 @@ export const TitleMemoryForm: React.FC = () => {
                     fetchOutcomes={fetchOutcomes}
                     selectedItem={selectedOutcomeItem}
                     newOutcomeText={newOutcomeText}
+                    newOutcomeDescription={newOutcomeDescription}
                     onOutcomeChange={handleOutcomeChange}
+                    onDescriptionChange={onDescriptionChange}
                 />
             )
         },

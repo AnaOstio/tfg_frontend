@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Table, Select } from 'antd';
+import { Button, Table, Select, Row, Input, Col } from 'antd';
 import { Skill } from '../../../utils/skill';
 import { InfiniteSearchSelectInput } from '../../../components/inputs/InfiniteSearchSelectInput';
 
@@ -13,19 +13,21 @@ type Props = {
     learningOutcomes: LearningOutcome[]; // ya no un objeto, solo el array
     newOutcomeText: string; // nuevo prop
     skills: Record<string, Skill[]>;
+    newOutcomeDescription: string;
+    onDescriptionChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
     onAddOutcome: () => void;
     onRemoveOutcome: (id: string) => void;
     onOutcomeChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
     onOutcomeInputChange: (val: string) => void;
-    onOutcomeSelected: (item: { id: string; name: string }) => void;
+    onOutcomeSelected: (item: { id: string; name: string; description: string }) => void;
     onSkillRelationChange: (outcomeId: string, skillIds: string[]) => void;
     onPrev: () => void;
     onNext: () => void;
     fetchOutcomes: (
         search: string,
         page: number
-    ) => Promise<{ data: { id: string; name: string }[]; hasMore: boolean }>;
-    selectedItem: { id: string; name: string } | null;
+    ) => Promise<{ data: { id: string; name: string; description: string }[]; hasMore: boolean }>;
+    selectedItem: { id: string; name: string; description: string } | null;
 };
 
 export const LearningOutcomesStep: React.FC<Props> = ({
@@ -40,7 +42,9 @@ export const LearningOutcomesStep: React.FC<Props> = ({
     onPrev,
     onNext,
     fetchOutcomes,
-    selectedItem
+    selectedItem,
+    newOutcomeDescription,
+    onDescriptionChange,
 }) => {
     const skillOptions = [
         ...(skills.basic || []).map(skill => ({
@@ -74,6 +78,35 @@ export const LearningOutcomesStep: React.FC<Props> = ({
                     selectedItem={selectedItem}
                     onAddItem={onAddOutcome}
                 />
+            </div>
+            <div style={{ marginBottom: 16, padding: 16, border: '1px dashed #d9d9d9', borderRadius: 4 }}>
+                <Row gutter={8} align="middle">
+                    <Col span={8}>
+                        <Input
+                            placeholder="Código"
+                            value={selectedItem?.name || newOutcomeText}
+                            disabled={!!selectedItem}
+                            onChange={(e) => onOutcomeInputChange(e.target.value)}
+                        />
+                    </Col>
+                    <Col span={14}>
+                        <Input
+                            placeholder="Descripción"
+                            value={selectedItem?.description || newOutcomeDescription}
+                            disabled={!!selectedItem}
+                            onChange={onDescriptionChange}
+                        />
+                    </Col>
+                    <Col span={2}>
+                        <Button
+                            type="primary"
+                            onClick={onAddOutcome}
+                            disabled={!newOutcomeText.trim()}
+                        >
+                            Añadir
+                        </Button>
+                    </Col>
+                </Row>
             </div>
 
             <Table
