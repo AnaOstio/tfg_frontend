@@ -42,7 +42,7 @@ export const useTitleMemoriesCreate = () => {
             return titleMemoriesCreate(transformed);
         },
         onSuccess: (data) => {
-            navigate('/title-memories');
+            navigate('/title-memory/details/123');
             console.log('Memoria de título creada:', data);
             message.success('Memoria de título creada con éxito');
         },
