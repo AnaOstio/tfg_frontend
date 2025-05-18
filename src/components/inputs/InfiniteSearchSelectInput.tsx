@@ -130,29 +130,32 @@ export function InfiniteSearchSelectInput<T>({
     );
 
     return (
-        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-            <Dropdown
-                open={dropdownVisible}
-                dropdownRender={dropdownRender}
-                trigger={['click']}
-                onOpenChange={(visible) => setDropdownVisible(visible)}
-            >
-                <Input
-                    placeholder={placeholder}
-                    value={value}
-                    onChange={handleInputChange}
-                    onClick={() => setDropdownVisible(true)}
-                    allowClear
-                    style={{ flex: 1 }}
-                />
-            </Dropdown>
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center', width: '100%' }}>
+            <div style={{ flex: 1 }}>
+                <Dropdown
+                    open={dropdownVisible}
+                    dropdownRender={dropdownRender}
+                    trigger={['click']}
+                    onOpenChange={(visible) => setDropdownVisible(visible)}
+                >
+                    <div style={{ width: '100%' }}>
+                        <Input
+                            placeholder={placeholder}
+                            value={value}
+                            onChange={handleInputChange}
+                            onClick={() => setDropdownVisible(true)}
+                            allowClear
+                            style={{ width: '100%' }}
+                        />
+                    </div>
+                </Dropdown>
+            </div>
 
             {selectedItem && (
                 <Button
                     type="primary"
                     icon={<PlusOutlined />}
                     onClick={onAddItem}
-                    disabled={!selectedItem}
                 >
                     Añadir
                 </Button>

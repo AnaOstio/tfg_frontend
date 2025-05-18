@@ -14,7 +14,7 @@ export interface LearningOutcome {
     id: string;
     name: string;
     description: string;
-    associatedCompetencies: string[];
+    associatedSkills: string[];
 }
 
 // Información general del Título

@@ -6,7 +6,8 @@ export interface Skill {
 }
 
 export interface LearningOutcome {
-    _id: string;
+    id: string;
+    name: string;
     description: string;
     associatedSkills: string[];
 }
