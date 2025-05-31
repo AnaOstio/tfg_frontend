@@ -19,8 +19,8 @@ export const useLogin = () => {
         },
         onSuccess: (data) => {
             dispatch(setCredentials(data)); // Guarda en Redux
-            localStorage.setItem('authToken', data.token);
-            message.success(`Bienvenido ${data.user.email}`);
+            localStorage.setItem('authToken', data.data.token);
+            message.success(`Bienvenido ${data.data.user.email}`);
             navigate('/dashboard');
         },
         onError: (error) => {
@@ -47,8 +47,8 @@ export const useSignup = () => {
         },
         onSuccess: (data) => {
             dispatch(setCredentials(data)); // Guarda en Redux
-            localStorage.setItem('authToken', data.token);
-            message.success(`Cuenta creada para ${data.user.email}`);
+            localStorage.setItem('authToken', data.data.token);
+            message.success(`Cuenta creada para ${data.data.user.email}`);
             navigate('/dashboard');
         },
         onError: (error) => {
