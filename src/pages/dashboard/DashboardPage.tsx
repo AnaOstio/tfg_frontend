@@ -9,6 +9,8 @@ import useIsMobileOrTablet from '../../hooks/useIsMobileOrTablet';
 import { useTitleMemoriesSearch } from '../../hooks/useTitleMemories';
 import useConfirmation from '../../hooks/useConfirmation';
 import { Link, useNavigate } from 'react-router-dom';
+import Title from 'antd/es/skeleton/Title';
+import TitleMemoryCard from '../../components/titlesMemories/TitleMemoryCard';
 
 const { Content } = Layout;
 
@@ -212,35 +214,11 @@ const TitleMemoriesView: React.FC<TitleMemoriesViewProps> = ({ fromUser = false 
                                 <Row gutter={[16, 16]}>
                                     {data.map((item) => (
                                         <Col xs={24} sm={12} md={8} lg={6} key={item._id}>
-                                            <Card
-                                                title={
-                                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                                        <span>{item.name}</span>
-                                                        {fromUser && (
-                                                            <Dropdown
-                                                                menu={{ items: getActionItems(item) }}
-                                                                trigger={['click']}
-                                                            >
-                                                                <Button
-                                                                    type="primary"
-                                                                    size="small"
-                                                                    onClick={(e) => e.stopPropagation()}
-                                                                >
-                                                                    Acciones
-                                                                </Button>
-                                                            </Dropdown>
-                                                        )}
-                                                    </div>
-                                                }
-                                                hoverable
-                                                style={{ height: '100%' }}
-                                            >
-                                                <p><strong>Universidad:</strong> {item.universities.join(', ')}</p>
-                                                <p><strong>Centro:</strong> {item.centers.join(', ')}</p>
-                                                <p><strong>Créditos:</strong> {item.totalCredits}</p>
-                                                <p><strong>Nivel:</strong> {item.academicLevel}</p>
-                                                <p><strong>Ámbito:</strong> {item.academicField}</p>
-                                            </Card>
+                                            <TitleMemoryCard
+                                                item={item}
+                                                fromUser={fromUser}
+                                                getActionItems={getActionItems}
+                                            />
                                         </Col>
                                     ))}
                                 </Row>
