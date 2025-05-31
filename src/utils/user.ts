@@ -10,12 +10,14 @@ export type SignUpUserParams = {
 };
 
 export type AuthResponse = {
-    token: string;
-    user: {
-        id: string;
-        email: string;
-        role: string;
-        status: string;
+    data: {
+        token: string;
+        user: {
+            _id: string;
+            email: string;
+            role: string;
+            accountStatus: string;
+        }
     };
 };
 

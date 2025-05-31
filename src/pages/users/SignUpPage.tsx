@@ -1,14 +1,17 @@
 import { Button, Form, Input, Typography, Space, message } from 'antd';
 import { MailOutlined, LockOutlined } from '@ant-design/icons';
-import { Link } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 import { useSignup } from '../../hooks/useUsers';
 import { SignUpUserParams } from '../../utils/user';
+import { useSelector } from 'react-redux';
+import { selectIsAuthenticated } from '../../redux/slices/authSlice';
 
 const { Title, Text } = Typography;
 
 const SignUpPage = () => {
 
     const { mutate: signup } = useSignup();
+    const isAuthenticated = useSelector(selectIsAuthenticated);
 
     const onFinish = (values: SignUpUserParams) => {
         if (values.password !== values.confirmPassword) {
@@ -17,6 +20,10 @@ const SignUpPage = () => {
         }
         signup(values);
     };
+
+    if (isAuthenticated) {
+        return <Navigate to="/dashboard" />;
+    }
 
     return (
         <div style={{

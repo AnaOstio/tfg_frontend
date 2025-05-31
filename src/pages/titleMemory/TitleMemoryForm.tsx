@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Steps, Form, notification, Button } from 'antd';
+import { Steps, Form, notification } from 'antd';
 import { AppDispatch, RootState } from '../../redux/store';
 import {
-    addSkill, removeSkill, saveTitleMemory,
+    addLearningOutcome,
+    addOutcomeSkill,
+    addSkill, removeLearningOutcome, removeOutcomeSkill, removeSkill, saveTitleMemory,
     updateCredits, updateGeneralInfo
 } from '../../redux/slices/titleMemorySlice';
 import {
@@ -15,6 +17,10 @@ import { GeneralInfoStep } from './formSteps/GeneralInfoStep';
 import { SkillsStep } from './formSteps/SkillsStep';
 import { ReviewStep } from './formSteps/ReviewStep';
 import { Skill } from '../../utils/skill';
+import { LearningOutcomesStep } from './formSteps/LearningOutcomesStep';
+import { LearningOutcome } from './types';
+import { useLearningOutcomesSearch } from '../../hooks/useLearningOucomes';
+import { useTitleMemoriesCreate } from '../../hooks/useTitleMemories';
 
 type SkillType = 'basic' | 'general' | 'transversal' | 'specific';
 type SkillState = Record<SkillType, Skill | null>;
@@ -52,6 +58,8 @@ export const TitleMemoryForm: React.FC = () => {
         transversal: { name: '', description: '' },
         specific: { name: '', description: '' }
     });
+
+    const [newOutcomeDescription, setNewOutcomeDescription] = useState('');
 
     // Initialize skills structure if not exists
     useEffect(() => {
@@ -183,10 +191,13 @@ export const TitleMemoryForm: React.FC = () => {
         }
 
         // Añadir la nueva skill si no existe
+        const selected = selectedSkill[type];
+        const skillId = selected?._id || `${type}-${Date.now()}`;
+
         dispatch(addSkill({
             type,
             skill: {
-                id: `${type}-${Date.now()}`,
+                id: skillId,
                 name,
                 description,
                 type
@@ -253,15 +264,107 @@ export const TitleMemoryForm: React.FC = () => {
         setCurrentStep(prev => prev - 1);
     }, []);
 
+    const { mutateAsync: saveTitleMemoryMutate } = useTitleMemoriesCreate();
+
     const handleSubmit = useCallback(() => {
         dispatch(saveTitleMemory(titleMemory));
         api.success({
             message: 'Memoria guardada',
             description: 'Se ha guardado correctamente.'
         });
+        saveTitleMemoryMutate(titleMemory);
     }, [dispatch, titleMemory]);
 
-    // Steps configuration
+    const learningOutcomes = useSelector((state: RootState) => state.titleMemory.learningOutcomes);
+    const [newOutcomeText, setNewOutcomeText] = useState('');
+    const [selectedOutcomeItem, setSelectedOutcomeItem] = useState<{ id: string; name: string; description: string } | null>(null);
+
+    const handleOutcomeChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+        setNewOutcomeText(e.target.value);
+    }, []);
+
+
+    const { mutateAsync: searchOucomesMutate } = useLearningOutcomesSearch();
+
+    const fetchOutcomes = async (search: string, page: number) => {
+        const res = await searchOucomesMutate({ search, page });
+        return {
+            data: res.data,
+            hasMore: res.hasMore,
+        };
+    };
+
+    const onOutcomeSelected = useCallback((item: { id: string; name: string; description: string }) => {
+        setSelectedOutcomeItem(item);
+        setNewOutcomeText(item.name);
+        setNewOutcomeDescription(item.description);
+    }, []);
+
+    const onOutcomeInputChange = useCallback((val: string) => {
+        setNewOutcomeText(val);
+        setNewOutcomeDescription(''); // limpiar si se escribe algo nuevo
+        setSelectedOutcomeItem(null);
+    }, []);
+
+    const onDescriptionChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+        setNewOutcomeDescription(e.target.value);
+    }, []);
+
+    const handleAddOutcome = useCallback(() => {
+        if (!newOutcomeText.trim()) {
+            api.warning({
+                message: 'Campo vacío',
+                description: 'Por favor ingrese un learning outcome'
+            });
+            return;
+        }
+
+        let newItem: LearningOutcome;
+
+        if (selectedOutcomeItem) {
+            newItem = {
+                id: selectedOutcomeItem._id,
+                name: selectedOutcomeItem.name,
+                description: selectedOutcomeItem.description || '',
+                associatedSkills: []
+            };
+        } else {
+            newItem = {
+                id: `lo-${Date.now()}`,
+                name: newOutcomeText,
+                description: newOutcomeDescription,
+                associatedSkills: []
+            };
+        }
+
+        dispatch(addLearningOutcome({ outcome: newItem }));
+        setNewOutcomeText('');
+        setNewOutcomeDescription('');
+        setSelectedOutcomeItem(null);
+    }, [newOutcomeText, newOutcomeDescription, selectedOutcomeItem, dispatch]);
+
+
+
+    const handleRemoveOutcome = useCallback((id: string) => {
+        dispatch(removeLearningOutcome({ id }));
+    }, [dispatch]);
+
+    const handleSkillRelationChange = useCallback(
+        (outcomeId: string, skillIds: string[]) => {
+            const currentOutcome = learningOutcomes.find(o => o.id === outcomeId);
+            if (currentOutcome) {
+                currentOutcome.associatedSkills?.forEach(skillCode => {
+                    dispatch(removeOutcomeSkill({ outcomeId, skillCode }));
+                });
+            }
+
+            skillIds.forEach(skillCode => {
+                dispatch(addOutcomeSkill({ outcomeId, skillCode }));
+            });
+        },
+        [dispatch, learningOutcomes]
+    );
+
     const steps = useMemo(() => [
         {
             title: 'Información General',
@@ -304,6 +407,33 @@ export const TitleMemoryForm: React.FC = () => {
             )
         },
         {
+            title: 'Resultados de Aprendizaje',
+            content: (
+                <LearningOutcomesStep
+                    learningOutcomes={learningOutcomes}
+                    skills={titleMemory.skills || {
+                        basic: [],
+                        general: [],
+                        transversal: [],
+                        specific: []
+                    }}
+                    onAddOutcome={handleAddOutcome}
+                    onRemoveOutcome={handleRemoveOutcome}
+                    onOutcomeInputChange={onOutcomeInputChange}
+                    onOutcomeSelected={onOutcomeSelected}
+                    onSkillRelationChange={handleSkillRelationChange}
+                    onPrev={handlePrev}
+                    onNext={handleNext}
+                    fetchOutcomes={fetchOutcomes}
+                    selectedItem={selectedOutcomeItem}
+                    newOutcomeText={newOutcomeText}
+                    newOutcomeDescription={newOutcomeDescription}
+                    onOutcomeChange={handleOutcomeChange}
+                    onDescriptionChange={onDescriptionChange}
+                />
+            )
+        },
+        {
             title: 'Revisión',
             content: (
                 <ReviewStep
@@ -316,11 +446,14 @@ export const TitleMemoryForm: React.FC = () => {
     ], [
         availableUniversities, availableCenters, univLoading,
         selectedUniversities, selectedCenters, titleMemory,
-        selectedSkill, searchText, newSkill,
+        selectedSkill, searchText, newSkill, learningOutcomes,
         handleUniversitySelect, removeUniversity, handleCenterSelect,
         removeCenter, handleSearchChange, handleSearchTextChange,
         handleAddSkill, handleRemoveSkill, handleNewSkillChange,
-        handlePrev, handleNext, handleSubmit
+        handlePrev, handleNext, handleSubmit, handleAddOutcome,
+        handleRemoveOutcome, handleSkillRelationChange,
+        onOutcomeInputChange, onOutcomeSelected,
+        newOutcomeText, selectedOutcomeItem
     ]);
 
     return (

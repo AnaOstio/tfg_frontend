@@ -24,12 +24,12 @@ const authSlice = createSlice({
     reducers: {
         setCredentials: (state, action: PayloadAction<AuthResponse>) => {
             state.user = {
-                id: action.payload.user.id,
-                email: action.payload.user.email,
-                role: action.payload.user.role,
-                status: action.payload.user.status
+                id: action.payload.data.user._id,
+                email: action.payload.data.user.email,
+                role: action.payload.data.user.role,
+                status: action.payload.data.user.accountStatus,
             };
-            state.token = action.payload.token;
+            state.token = action.payload.data.token;
             state.status = 'succeeded';
         },
         clearCredentials: (state) => {

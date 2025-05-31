@@ -123,9 +123,9 @@ const titleMemorySlice = createSlice({
             const outcome = state.learningOutcomes.find((o) => o.id === outcomeId);
             if (
                 outcome &&
-                !outcome.associatedCompetencies.includes(skillCode)
+                !outcome.associatedSkills.includes(skillCode)
             ) {
-                outcome.associatedCompetencies.push(skillCode);
+                outcome.associatedSkills.push(skillCode);
             }
         },
         removeOutcomeSkill(
@@ -138,7 +138,7 @@ const titleMemorySlice = createSlice({
             const { outcomeId, skillCode } = action.payload;
             const outcome = state.learningOutcomes.find((o) => o.id === outcomeId);
             if (outcome) {
-                outcome.associatedCompetencies = outcome.associatedCompetencies.filter(
+                outcome.associatedSkills = outcome.associatedSkills.filter(
                     (c) => c !== skillCode
                 );
             }

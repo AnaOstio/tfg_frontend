@@ -1,7 +1,9 @@
 import { useMutation } from "@tanstack/react-query";
 import { TitleMemoriesSearchParams } from "../utils/titleMemory";
-import { titleMemoriesSearch } from "../api/titleMemories";
+import { titleMemoriesCreate, titleMemoriesSearch } from "../api/titleMemories";
 import { message } from "antd"; // Asegúrate de importar message si usas antd
+import { transformData } from "../helper/transformData";
+import { useNavigate } from "react-router-dom";
 
 interface UseTitleMemoriesSearchOptions {
     onSuccess?: (data: any) => void;
@@ -31,3 +33,22 @@ export const useTitleMemoriesSearch = ({
         },
     });
 };
+
+export const useTitleMemoriesCreate = () => {
+    const navigate = useNavigate();
+    return useMutation<any, Error, any>({
+        mutationFn: (data) => {
+            const transformed = transformData(data);
+            return titleMemoriesCreate(transformed);
+        },
+        onSuccess: (data) => {
+            navigate('/title-memory/details/123');
+            console.log('Memoria de título creada:', data);
+            message.success('Memoria de título creada con éxito');
+        },
+        onError: (error) => {
+            message.error('Error al crear la memoria de título');
+            console.error('Error:', error);
+        },
+    });
+}

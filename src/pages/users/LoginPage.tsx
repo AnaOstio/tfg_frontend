@@ -1,17 +1,24 @@
 import { Button, Form, Input, Typography, Space } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
-import { Link } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 import { LoginUserParams } from '../../utils/user';
 import { useLogin } from '../../hooks/useUsers';
+import { useSelector } from 'react-redux';
+import { selectIsAuthenticated } from '../../redux/slices/authSlice';
 
 const { Title, Text } = Typography;
 
 const LoginPage = () => {
     const { mutate: login } = useLogin();
+    const isAuthenticated = useSelector(selectIsAuthenticated);
 
     const onFinish = (values: LoginUserParams) => {
         login(values);
     };
+
+    if (isAuthenticated) {
+        return <Navigate to="/dashboard" />;
+    }
 
     return (
         <div style={{

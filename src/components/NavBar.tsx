@@ -57,7 +57,7 @@ const NavBar = () => {
                             <Link to="/upload-subjects" style={{ color: 'white' }}>Subir asignaturas</Link>
                         </Menu.Item>
                         <Menu.Item key="upload-title-memories">
-                            <Link to="/upload-title-memories" style={{ color: 'white' }}>Subir asignaturas</Link>
+                            <Link to="/upload-title-memories" style={{ color: 'white' }}>Subir Memorias de Título</Link>
                         </Menu.Item>
                     </>
                 )}

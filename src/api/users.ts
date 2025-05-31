@@ -12,7 +12,7 @@ export const signup = async (data: SignUpUserParams): Promise<AuthResponse> => {
     const response = await axios.post(`${API_BASE_URL}/auth/register`, {
         email: data.email,
         password: data.password,
-        passwordConfirmation: data.confirmPassword
+        confirmPassword: data.confirmPassword
     });
     return response.data;
 };
