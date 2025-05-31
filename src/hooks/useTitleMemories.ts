@@ -42,7 +42,7 @@ export const useTitleMemoriesCreate = () => {
             return titleMemoriesCreate(transformed);
         },
         onSuccess: (data) => {
-            navigate('/title-memory/details/123');
+            navigate('/title-memory/details/' + data._id);
             console.log('Memoria de título creada:', data);
             message.success('Memoria de título creada con éxito');
         },
@@ -55,15 +55,14 @@ export const useTitleMemoriesCreate = () => {
 
 
 export const useGetTileMemoryById = () => {
+    const navigate = useNavigate();
     return useMutation<any, Error, string>({
         mutationFn: async (id) => {
             return titleMemoriesGetById(id);
         },
-        onSuccess: (data) => {
-            console.log('Memoria de título obtenida:', data);
-        },
         onError: (error) => {
             console.error('Error al obtener la memoria de título:', error);
+            navigate('/error');
         },
     });
 }
