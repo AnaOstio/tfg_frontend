@@ -44,20 +44,18 @@ const TitleMemoryCard: React.FC<TitleMemoryCardProps> = ({ item, fromUser, getAc
             title={
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <span>{item.name}</span>
-                    {fromUser && (
-                        <Dropdown
-                            menu={{ items: getActionItems(item) }}
-                            trigger={['click']}
+                    <Dropdown
+                        menu={{ items: getActionItems(item) }}
+                        trigger={['click']}
+                    >
+                        <Button
+                            type="primary"
+                            size="small"
+                            onClick={(e) => e.stopPropagation()}
                         >
-                            <Button
-                                type="primary"
-                                size="small"
-                                onClick={(e) => e.stopPropagation()}
-                            >
-                                Acciones
-                            </Button>
-                        </Dropdown>
-                    )}
+                            Acciones
+                        </Button>
+                    </Dropdown>
                 </div>
             }
         >

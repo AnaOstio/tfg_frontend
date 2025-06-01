@@ -30,6 +30,7 @@ interface TitleMemoriesViewProps {
 }
 
 const TitleMemoriesView: React.FC<TitleMemoriesViewProps> = ({ fromUser = false }) => {
+    const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
     const [data, setData] = useState<TitleMemory[]>([]);
     const [pagination, setPagination] = useState({
@@ -94,9 +95,12 @@ const TitleMemoriesView: React.FC<TitleMemoriesViewProps> = ({ fromUser = false 
         {
             key: 'edit',
             label: (
-                <div onClick={(_) => {
-                    console.log('Editando memoria:', item._id);
-                }}>
+                <div
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        navigate(`/edit-title-memory/${item._id}`);
+                    }}
+                >
                     Editar
                 </div>
             ),
@@ -104,13 +108,15 @@ const TitleMemoriesView: React.FC<TitleMemoriesViewProps> = ({ fromUser = false 
         {
             key: 'delete',
             label: (
-                <div onClick={(e) => {
-                    e.stopPropagation();
-                    showConfirmation(
-                        '¿Desea eliminar esta memoria de título?',
-                        () => handleDelete(item._id)
-                    );
-                }}>
+                <div
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        showConfirmation(
+                            '¿Desea eliminar esta memoria de título?',
+                            () => handleDelete(item._id)
+                        );
+                    }}
+                >
                     Eliminar
                 </div>
             ),
@@ -118,11 +124,12 @@ const TitleMemoriesView: React.FC<TitleMemoriesViewProps> = ({ fromUser = false 
         {
             key: 'clone',
             label: (
-                <div onClick={(e) => {
-                    e.stopPropagation();
-                    // Lógica para clonar
-                    message.info(`Clonando memoria: ${item.name}`);
-                }}>
+                <div
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        navigate(`/clone-title-memory/${item._id}`);
+                    }}
+                >
                     Clonar
                 </div>
             ),

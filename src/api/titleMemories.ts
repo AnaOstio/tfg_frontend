@@ -28,3 +28,12 @@ export const titleMemoriesGetById = async (id: string): Promise<any> => {
     });
     return response.data;
 }
+
+export const titleMemoriesUpdate = async (id: string, data: any): Promise<any> => {
+    const response = await axios.put(`${API_BASE_URL}/title-memories/${id}`, data, {
+        headers: {
+            Authorization: `Bearer ${localStorage.getItem('authToken')}`
+        }
+    });
+    return response.data;
+};

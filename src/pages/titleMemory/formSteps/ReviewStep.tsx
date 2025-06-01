@@ -4,11 +4,13 @@ import { Skill } from '../../../utils/skill';
 
 interface ReviewStepProps {
     titleMemory: any;
+    mode: string;
     onPrev: () => void;
     onSubmit: () => void;
 }
 
 export const ReviewStep: React.FC<ReviewStepProps> = ({
+    mode,
     titleMemory,
     onPrev,
     onSubmit
@@ -79,7 +81,21 @@ export const ReviewStep: React.FC<ReviewStepProps> = ({
 
         <div style={{ marginTop: 24 }}>
             <Button onClick={onPrev} style={{ marginRight: 8 }}>Atrás</Button>
-            <Button type="primary" onClick={onSubmit}>Guardar Memoria</Button>
+            {mode === 'edit' && (
+                <Button type="primary" onClick={onSubmit} style={{ marginRight: 8 }}>
+                    Actualizar Memoria
+                </Button>
+            )}
+            {mode === 'create' && (
+                <Button type="primary" onClick={onSubmit} style={{ marginRight: 8 }}>
+                    Crear Memoria
+                </Button>
+            )}
+            {mode === 'clone' && (
+                <Button type="primary" onClick={onSubmit} style={{ marginRight: 8 }}>
+                    Clonar Memoria
+                </Button>
+            )}
         </div>
     </Card>
 );

@@ -26,6 +26,7 @@ export interface GeneralInfo {
     academicReign: AcademicReign;
     year: number;
     academicScope: string;
+    memoryName: string;
 }
 
 // Distribución de créditos
@@ -39,6 +40,7 @@ export interface Credits {
 
 // Estado completo de la memoria de título
 export interface TitleMemoryState {
+    id?: string;
     generalInfo: GeneralInfo;
     credits: Credits;
     skills: {

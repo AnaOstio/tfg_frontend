@@ -24,9 +24,10 @@ const TitleMemoryDetails: React.FC = () => {
         setLoading(true);
 
         try {
-            const data = await getById(id);
-
-            setTitleMemory(data);
+            if (id) {
+                const data = await getById(id);
+                setTitleMemory(data);
+            }
         } catch (error) {
             console.error("Error fetching title memory:", error);
         } finally {

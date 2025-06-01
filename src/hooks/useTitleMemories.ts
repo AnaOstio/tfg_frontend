@@ -1,6 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
 import { TitleMemoriesSearchParams } from "../utils/titleMemory";
-import { titleMemoriesCreate, titleMemoriesGetById, titleMemoriesSearch } from "../api/titleMemories";
+import { titleMemoriesCreate, titleMemoriesGetById, titleMemoriesSearch, titleMemoriesUpdate } from "../api/titleMemories";
 import { message } from "antd"; // Asegúrate de importar message si usas antd
 import { transformData } from "../helper/transformData";
 import { useNavigate } from "react-router-dom";
@@ -53,6 +53,24 @@ export const useTitleMemoriesCreate = () => {
     });
 }
 
+export const useTitleMemoriesUpdate = () => {
+    const navigate = useNavigate();
+    return useMutation<any, Error, any>({
+        mutationFn: ({ id, ...rest }) => {
+            const transformed = transformData(rest);
+            return titleMemoriesUpdate(id, transformed);
+        },
+        onSuccess: (data) => {
+            navigate('/title-memory/details/' + data._id);
+            console.log('Memoria de título actualizada:', data);
+            message.success('Memoria de título actualizada con éxito');
+        },
+        onError: (error) => {
+            message.error('Error al actualizar la memoria de título');
+            console.error('Error:', error);
+        },
+    });
+}
 
 export const useGetTileMemoryById = () => {
     const navigate = useNavigate();
