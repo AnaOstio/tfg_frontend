@@ -4,9 +4,8 @@ import { titleMemoriesCreate, titleMemoriesGetById, titleMemoriesSearch, titleMe
 import { message } from "antd"; // Asegúrate de importar message si usas antd
 import { transformData } from "../helper/transformData";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
-import { set } from "lodash";
 import { assignPermissions } from "../api/permissions";
+import { set } from "lodash";
 
 interface UseTitleMemoriesSearchOptions {
     onSuccess?: (data: any) => void;
@@ -25,7 +24,12 @@ export const useTitleMemoriesSearch = ({
         mutationFn: titleMemoriesSearch,
         onSuccess: (result) => {
             setData(result.data);
-            setPagination((prev: any) => ({ ...prev, total: result.total }));
+
+            setPagination({
+                current: result.pagination.page,
+                pageSize: result.pagination.limit,
+                total: result.pagination.total,
+            });
             setLoading(false);
             console.log('Datos obtenidos:', result);
         },

@@ -63,7 +63,7 @@ const TitleMemoriesView: React.FC<TitleMemoriesViewProps> = ({ fromUser = false 
             limit: pagination.pageSize,
             fromUser: fromUser,
         });
-
+        setLoading(false);
     };
 
     useEffect(() => {
