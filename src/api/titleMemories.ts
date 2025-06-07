@@ -11,13 +11,13 @@ export const titleMemoriesSearch = async (params: any): Promise<any> => {
     return response.data;
 };
 
-export const titleMemoriesCreate = async (data: any): Promise<any> => {
+export const titleMemoriesCreate = async (data: any, users: any): Promise<any> => {
     const response = await axios.post(`${API_BASE_URL}/title-memories`, data, {
         headers: {
             Authorization: `Bearer ${localStorage.getItem('authToken')}`
         }
     });
-    return response.data;
+    return [response.data, users];
 };
 
 export const titleMemoriesGetById = async (id: string): Promise<any> => {

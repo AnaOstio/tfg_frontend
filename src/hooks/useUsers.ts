@@ -1,10 +1,11 @@
 import { useMutation } from '@tanstack/react-query';
-import { login, signup, verifyToken } from '../api/users';
+import { login, searchUsers, signup, verifyToken } from '../api/users';
 import { useNavigate } from 'react-router-dom';
 import { LoginUserParams, SignUpUserParams, AuthResponse } from '../utils/user';
 import { message } from 'antd';
 import { useAppDispatch } from '../redux/hooks';
 import { clearCredentials, setCredentials } from '../redux/slices/authSlice';
+import { AxiosError } from 'axios';
 
 export const useLogin = () => {
     const dispatch = useAppDispatch();
@@ -82,3 +83,30 @@ export const useVerifyToken = () => {
         }
     });
 };
+
+
+// 1) Define el tipo de las variables que vas a recibir al llamar al mutate
+interface SearchUsersVariables {
+    search: string
+    page: number
+}
+
+// 2) El hook
+export const useSearchUsers = () => {
+    return useMutation<
+        { data: { email: string }[]; hasMore: boolean; total: number },
+        Error,
+        SearchUsersVariables
+    >({
+        mutationFn: ({ search, page }) => searchUsers(search, page),
+
+        // opcional: callbacks
+        onError: (error) => {
+            console.error('Error buscando usuarios:', error)
+        },
+        onSuccess: (data) => {
+            console.log('Usuarios recibidos:', data)
+
+        }
+    })
+}

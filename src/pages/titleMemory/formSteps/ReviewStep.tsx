@@ -86,7 +86,7 @@ export const ReviewStep: React.FC<ReviewStepProps> = ({
                     Actualizar Memoria
                 </Button>
             )}
-            {mode === 'create' && (
+            {mode === 'add' && (
                 <Button type="primary" onClick={onSubmit} style={{ marginRight: 8 }}>
                     Crear Memoria
                 </Button>

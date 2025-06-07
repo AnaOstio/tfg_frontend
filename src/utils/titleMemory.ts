@@ -52,6 +52,11 @@ export interface TitleMemoryState {
     learningOutcomes: LearningOutcome[];
 }
 
+export interface UsersRoles {
+    email: string;
+    roles: string[];
+}
+
 export interface TitleMemoriesSearchParams {
     filters: Filters;
     page: number;

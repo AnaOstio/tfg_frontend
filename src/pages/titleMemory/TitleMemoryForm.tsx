@@ -23,6 +23,7 @@ import { useLearningOutcomesSearch } from '../../hooks/useLearningOucomes';
 import { useGetTileMemoryById, useTitleMemoriesCreate, useTitleMemoriesUpdate } from '../../hooks/useTitleMemories';
 import { useParams } from 'react-router-dom';
 import { TitleMemoryState } from '../../utils/titleMemory';
+import { UsersStep, UserItem } from './formSteps/UsersStep';
 
 type SkillType = 'basic' | 'general' | 'transversal' | 'specific';
 type SkillState = Record<SkillType, Skill | null>;
@@ -38,7 +39,7 @@ type TitleMemoryFormProps = {
 export const TitleMemoryForm: React.FC<TitleMemoryFormProps> = ({ mode = 'add' }) => {
     const isEditMode = mode === 'edit';
     const isCloneMode = mode === 'clone';
-    const isAddMode = mode === 'add';
+    const [users, setUsers] = useState<UserItem[]>([]);
     const { id } = useParams<{ id: string }>();
     const { mutateAsync: getById } = useGetTileMemoryById();
 
@@ -366,8 +367,9 @@ export const TitleMemoryForm: React.FC<TitleMemoryFormProps> = ({ mode = 'add' }
             message: 'Memoria guardada',
             description: 'Se ha guardado correctamente.'
         });
-        saveTitleMemoryMutate(titleMemory);
-    }, [dispatch, titleMemory]);
+        saveTitleMemoryMutate({ data: titleMemory, users: users });
+
+    }, [dispatch, titleMemory, users]);
 
     const learningOutcomes = useSelector((state: RootState) => state.titleMemory.learningOutcomes);
     const [newOutcomeText, setNewOutcomeText] = useState('');
@@ -459,6 +461,11 @@ export const TitleMemoryForm: React.FC<TitleMemoryFormProps> = ({ mode = 'add' }
         [dispatch, learningOutcomes]
     );
 
+    /*** Aquí incluimos el nuevo paso “Usuarios” ***/
+    const handleUsersChange = useCallback((newList: UserItem[]) => {
+        setUsers(newList);
+    }, []);
+
     const steps = useMemo(() => [
         {
             title: 'Información General',
@@ -528,6 +535,17 @@ export const TitleMemoryForm: React.FC<TitleMemoryFormProps> = ({ mode = 'add' }
             )
         },
         {
+            title: 'Usuarios',
+            content: (
+                <UsersStep
+                    users={users}
+                    onUsersChange={handleUsersChange}
+                    onPrev={handlePrev}
+                    onNext={handleNext}
+                />
+            )
+        },
+        {
             title: 'Revisión',
             content: (
                 <ReviewStep
@@ -548,7 +566,7 @@ export const TitleMemoryForm: React.FC<TitleMemoryFormProps> = ({ mode = 'add' }
         handlePrev, handleNext, handleSubmit, handleAddOutcome,
         handleRemoveOutcome, handleSkillRelationChange,
         onOutcomeInputChange, onOutcomeSelected,
-        newOutcomeText, selectedOutcomeItem
+        newOutcomeText, selectedOutcomeItem, users, handleUsersChange
     ]);
 
     return (

@@ -4,6 +4,9 @@ import { titleMemoriesCreate, titleMemoriesGetById, titleMemoriesSearch, titleMe
 import { message } from "antd"; // Asegúrate de importar message si usas antd
 import { transformData } from "../helper/transformData";
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { set } from "lodash";
+import { assignPermissions } from "../api/permissions";
 
 interface UseTitleMemoriesSearchOptions {
     onSuccess?: (data: any) => void;
@@ -37,11 +40,17 @@ export const useTitleMemoriesSearch = ({
 export const useTitleMemoriesCreate = () => {
     const navigate = useNavigate();
     return useMutation<any, Error, any>({
-        mutationFn: (data) => {
+        mutationFn: ({ data, users }) => {
             const transformed = transformData(data);
-            return titleMemoriesCreate(transformed);
+            return titleMemoriesCreate(transformed, users);
         },
-        onSuccess: (data) => {
+        onSuccess: ([data, users]) => {
+            if (users.length > 0) {
+                users.forEach((user: any) => {
+                    assignPermissions(user, data._id);
+                });
+                console.log('Usuarios asociados guardados:', users);
+            }
             navigate('/title-memory/details/' + data._id);
             console.log('Memoria de título creada:', data);
             message.success('Memoria de título creada con éxito');

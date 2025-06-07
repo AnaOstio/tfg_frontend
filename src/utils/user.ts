@@ -28,3 +28,10 @@ export interface VerifyTokenResponse {
         id: string;
     };
 }
+
+export interface SearchUserResponse {
+    data: { email: string }[];
+    page: number;
+    pageSize: number;
+    total: number;
+}
