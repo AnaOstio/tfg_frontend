@@ -5,7 +5,8 @@ import { message } from "antd"; // Asegúrate de importar message si usas antd
 import { transformData } from "../helper/transformData";
 import { useNavigate } from "react-router-dom";
 import { assignPermissions } from "../api/permissions";
-import { set } from "lodash";
+import { useSelector } from "react-redux";
+import { selectCurrentUser } from "../redux/slices/authSlice";
 
 interface UseTitleMemoriesSearchOptions {
     onSuccess?: (data: any) => void;
@@ -48,13 +49,21 @@ export const useTitleMemoriesCreate = () => {
             const transformed = transformData(data);
             return titleMemoriesCreate(transformed, users);
         },
-        onSuccess: ([data, users]) => {
+        onSuccess: ([data, users], { currentUser }) => {
             if (users.length > 0) {
                 users.forEach((user: any) => {
                     assignPermissions(user, data._id);
                 });
                 console.log('Usuarios asociados guardados:', users);
             }
+
+            const owner = {
+                email: currentUser?.email || '',
+                roles: ['OWNER'],
+            };
+            // Asignar permisos al propietario
+            assignPermissions(owner, data._id);
+
             navigate('/title-memory/details/' + data._id);
             console.log('Memoria de título creada:', data);
             message.success('Memoria de título creada con éxito');

@@ -214,7 +214,7 @@ export const UsersStep: React.FC<UsersStepProps> = ({ users, onUsersChange, onPr
 
             <Space>
                 <Button onClick={onPrev}>Anterior</Button>
-                <Button type="primary" onClick={onNext} disabled={users.length === 0}>
+                <Button type="primary" onClick={onNext}>
                     Siguiente
                 </Button>
             </Space>

@@ -24,6 +24,7 @@ import { useGetTileMemoryById, useTitleMemoriesCreate, useTitleMemoriesUpdate } 
 import { useParams } from 'react-router-dom';
 import { TitleMemoryState } from '../../utils/titleMemory';
 import { UsersStep, UserItem } from './formSteps/UsersStep';
+import { selectCurrentUser } from '../../redux/slices/authSlice';
 
 type SkillType = 'basic' | 'general' | 'transversal' | 'specific';
 type SkillState = Record<SkillType, Skill | null>;
@@ -53,6 +54,8 @@ export const TitleMemoryForm: React.FC<TitleMemoryFormProps> = ({ mode = 'add' }
     const universitiesData = useSelector(selectUniversitiesData);
     const univLoading = useSelector(selectUniversitiesLoading);
     const univError = useSelector(selectUniversitiesError);
+
+    const currentUser = useSelector(selectCurrentUser);
 
     // State management
     const [selectedUniversities, setSelectedUniversities] = useState<string[]>([]);
@@ -367,7 +370,7 @@ export const TitleMemoryForm: React.FC<TitleMemoryFormProps> = ({ mode = 'add' }
             message: 'Memoria guardada',
             description: 'Se ha guardado correctamente.'
         });
-        saveTitleMemoryMutate({ data: titleMemory, users: users });
+        saveTitleMemoryMutate({ data: titleMemory, users: users, currentUser: currentUser });
 
     }, [dispatch, titleMemory, users]);
 
