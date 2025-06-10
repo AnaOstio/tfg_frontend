@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import {
     Layout,
     Pagination,
@@ -170,10 +170,15 @@ const TitleMemoriesView: React.FC<TitleMemoriesViewProps> = ({ fromUser = false 
         });
     };
 
+    const didMountRef = useRef(false);
     useEffect(() => {
-        fetchData();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+        if (didMountRef.current) {
+            fetchData();
+        } else {
+            didMountRef.current = true;
+        }
     }, [pagination.current, filters, fromUser]);
+
 
     const handlePageChange = (page: number) => {
         setPagination(prev => ({ ...prev, current: page }));
