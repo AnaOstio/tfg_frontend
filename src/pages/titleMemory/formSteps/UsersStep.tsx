@@ -212,12 +212,10 @@ export const UsersStep: React.FC<UsersStepProps> = ({ users, onUsersChange, onPr
                 style={{ marginTop: 16, marginBottom: 24 }}
             />
 
-            <Space>
-                <Button onClick={onPrev}>Anterior</Button>
-                <Button type="primary" onClick={onNext}>
-                    Siguiente
-                </Button>
-            </Space>
+            <div style={{ marginTop: 24, textAlign: 'right' }}>
+                <Button onClick={onPrev} style={{ marginRight: 8 }}>Atrás</Button>
+                <Button type="primary" onClick={onNext}>Siguiente</Button>
+            </div>
         </div>
     );
 };
