@@ -28,3 +28,23 @@ export const assignPermissions = async (user: UsersRoles, memoryId: string): Pro
         throw error;
     }
 }
+
+export const getPermissionsByMemoriesIds = async (memoryIds: string[]): Promise<any> => {
+    const API_BASE_URL = 'http://localhost:3000/api/permissions/getByMemoryIds';
+
+    try {
+        const response = await axios.post(`${API_BASE_URL}`,
+            memoryIds,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${localStorage.getItem('authToken')}`
+                }
+            });
+        console.log('Permissions fetched successfully:', response.data);
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching permissions:', error);
+        throw error;
+    }
+}

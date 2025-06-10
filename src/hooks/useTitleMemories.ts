@@ -4,7 +4,7 @@ import { titleMemoriesCreate, titleMemoriesGetById, titleMemoriesSearch, titleMe
 import { message } from "antd"; // Asegúrate de importar message si usas antd
 import { transformData } from "../helper/transformData";
 import { useNavigate } from "react-router-dom";
-import { assignPermissions } from "../api/permissions";
+import { assignPermissions, getPermissionsByMemoriesIds } from "../api/permissions";
 import { useSelector } from "react-redux";
 import { selectCurrentUser } from "../redux/slices/authSlice";
 
@@ -14,16 +14,18 @@ interface UseTitleMemoriesSearchOptions {
     setData: (data: any[]) => void;
     setPagination: (pagination: any) => void;
     setLoading: (loading: boolean) => void;
+    setPermissions: (permissions: any[]) => void;
 }
 
 export const useTitleMemoriesSearch = ({
     setData,
     setPagination,
     setLoading,
+    setPermissions
 }: UseTitleMemoriesSearchOptions) => {
     return useMutation<any, Error, TitleMemoriesSearchParams>({
         mutationFn: titleMemoriesSearch,
-        onSuccess: (result) => {
+        onSuccess: async (result) => {
             setData(result.data);
 
             setPagination({
@@ -33,6 +35,17 @@ export const useTitleMemoriesSearch = ({
             });
             setLoading(false);
             console.log('Datos obtenidos:', result);
+            const toGet = result.data.map(item => item._id);
+            try {
+                const permissionsData = await getPermissionsByMemoriesIds(toGet);
+                setPermissions(permissionsData.data);
+                console.log('Permisos obtenidos:', permissionsData);
+            } catch (permError) {
+                console.error('Error al obtener permisos:', permError);
+                // aquí podrías notificar de error si quieres
+            } finally {
+                setLoading(false);
+            }
         },
         onError: (error) => {
             message.error('Error al cargar las memorias de título');
