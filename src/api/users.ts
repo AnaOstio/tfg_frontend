@@ -25,3 +25,25 @@ export const verifyToken = async (): Promise<VerifyTokenResponse> => {
     });
     return response.data;
 };
+
+export const searchUsers = async (search: string, page: number): Promise<{ data: { email: string }[]; hasMore: boolean; total: number }> => {
+    const pageSize = 10;
+    const response = await axios.get(`${API_BASE_URL}/users/search`, {
+        params: {
+            email: search,
+            page,
+            pageSize
+        },
+        headers: {
+            Authorization: `Bearer ${localStorage.getItem('authToken')}`
+        }
+    });
+
+    const { data, total } = response.data;
+
+    return {
+        data,
+        hasMore: page * pageSize < total,
+        total
+    };
+}

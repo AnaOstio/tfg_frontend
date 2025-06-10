@@ -134,15 +134,12 @@ export const GeneralInfoStep: React.FC<GeneralInfoStepProps> = ({
                 <Form.Item label="Obligatorios" name={['credits', 'mandatory']}>
                     <Input type="number" min={0} />
                 </Form.Item>
+            </Col>
+            <Col span={12}>
                 <Form.Item label="Optativos" name={['credits', 'optional']}>
                     <Input type="number" min={0} />
                 </Form.Item>
-            </Col>
-            <Col span={12}>
-                <Form.Item label="Prácticas" name={['credits', 'practices']}>
-                    <Input type="number" min={0} />
-                </Form.Item>
-                <Form.Item label="Trabajo Fin" name={['credits', 'finalWork']}>
+                <Form.Item label="Trabajo Final Garado" name={['credits', 'finalWork']}>
                     <Input type="number" min={0} />
                 </Form.Item>
             </Col>

@@ -1,16 +1,27 @@
-import React, { useState, useEffect } from 'react';
-import { Layout, Card, Pagination, Row, Col, Spin, message, Button, Drawer, Dropdown, MenuProps } from 'antd';
+import React, { useState, useEffect, useMemo } from 'react';
+import {
+    Layout,
+    Pagination,
+    Row,
+    Col,
+    Spin,
+    message,
+    Button,
+    Drawer,
+    Dropdown,
+    MenuProps
+} from 'antd';
 import { MenuOutlined, CloseOutlined } from '@ant-design/icons';
+import { Link, useNavigate } from 'react-router-dom';
+
 import GeneralFilters from '../../components/filters/GeneralFilters';
 import NoData from '../../components/NoData';
+import TitleMemoryCard from '../../components/titlesMemories/TitleMemoryCard';
+import useIsMobileOrTablet from '../../hooks/useIsMobileOrTablet';
+import useConfirmation from '../../hooks/useConfirmation';
+import { useTitleMemoriesSearch } from '../../hooks/useTitleMemories';
 import { Filters } from '../../components/filters/types/types';
 import { YEAR_RANGE } from '../../components/filters/consts/cosnts';
-import useIsMobileOrTablet from '../../hooks/useIsMobileOrTablet';
-import { useTitleMemoriesSearch } from '../../hooks/useTitleMemories';
-import useConfirmation from '../../hooks/useConfirmation';
-import { Link, useNavigate } from 'react-router-dom';
-import Title from 'antd/es/skeleton/Title';
-import TitleMemoryCard from '../../components/titlesMemories/TitleMemoryCard';
 
 const { Content } = Layout;
 
@@ -29,14 +40,19 @@ interface TitleMemoriesViewProps {
     fromUser?: boolean;
 }
 
+type ActionKey = 'edit' | 'delete' | 'clone' | 'add-subject';
+const REQUIRED_PERMISSIONS: Record<ActionKey, string[]> = {
+    edit: ['Propietario', 'Edición'],
+    delete: ['Propietario', 'Eliminar'],
+    clone: [],               // siempre permitido
+    'add-subject': ['Propietario', 'Asignaturas'],
+};
+
 const TitleMemoriesView: React.FC<TitleMemoriesViewProps> = ({ fromUser = false }) => {
+    const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
     const [data, setData] = useState<TitleMemory[]>([]);
-    const [pagination, setPagination] = useState({
-        current: 1,
-        pageSize: 12,
-        total: 0,
-    });
+    const [pagination, setPagination] = useState({ current: 1, pageSize: 12, total: 0 });
     const [filters, setFilters] = useState<Filters>({
         academicLevel: [],
         academicFields: [],
@@ -48,102 +64,135 @@ const TitleMemoriesView: React.FC<TitleMemoriesViewProps> = ({ fromUser = false 
     });
     const [filtersVisible, setFiltersVisible] = useState(false);
     const isMobileOrTablet = useIsMobileOrTablet();
+    const { showConfirmation, ConfirmationModal } = useConfirmation();
+
+    // Estado de permisos: lo poblamos desde el hook de búsqueda
+    const [permissions, setPermissions] = useState<any>([]);
+
     const { mutate: searchTitleMemories } = useTitleMemoriesSearch({
         setData,
         setPagination,
-        setLoading
+        setLoading,
+        // setPermissions recibe PermissionItem[]
+        setPermissions,
     });
 
-    const fetchData = async () => {
-        setLoading(true);
+    // Construimos un mapa de memoryId → permisos[]
+    const permissionsHash = useMemo<Record<string, string[]>>(() => {
+        if (!Array.isArray(permissions)) return {};
+
+        return permissions.reduce((acc, p) => {
+            acc[p.memoryId] = p.permissions;
+            return acc;
+        }, {} as Record<string, string[]>);
+    }, [permissions]);
+
+    const hasAny = (userPerms: string[], needed: string[]) =>
+        needed.length === 0 || needed.some(p => userPerms.includes(p));
+
+    const getActionItems = (item: TitleMemory): MenuProps['items'] => {
+        const userPerms = permissionsHash[item._id] ?? [];
+        return [
+            {
+                key: 'edit',
+                disabled: !hasAny(userPerms, REQUIRED_PERMISSIONS.edit),
+                label: (
+                    <div
+                        onClick={e => {
+                            e.stopPropagation();
+                            if (hasAny(userPerms, REQUIRED_PERMISSIONS.edit)) {
+                                navigate(`/edit-title-memory/${item._id}`);
+                            }
+                        }}
+                    >
+                        Editar
+                    </div>
+                ),
+            },
+            {
+                key: 'delete',
+                disabled: !hasAny(userPerms, REQUIRED_PERMISSIONS.delete),
+                label: (
+                    <div
+                        onClick={e => {
+                            e.stopPropagation();
+                            if (hasAny(userPerms, REQUIRED_PERMISSIONS.delete)) {
+                                showConfirmation(
+                                    '¿Desea eliminar esta memoria de título?',
+                                    () => console.log('Eliminando memoria:', item._id)
+                                );
+                            }
+                        }}
+                    >
+                        Eliminar
+                    </div>
+                ),
+            },
+            {
+                key: 'clone',
+                disabled: !hasAny(userPerms, REQUIRED_PERMISSIONS.clone),
+                label: (
+                    <div
+                        onClick={e => {
+                            e.stopPropagation();
+                            navigate(`/clone-title-memory/${item._id}`);
+                        }}
+                    >
+                        Clonar
+                    </div>
+                ),
+            },
+            {
+                key: 'add-subject',
+                disabled: !hasAny(userPerms, REQUIRED_PERMISSIONS['add-subject']),
+                label: (
+                    <Link
+                        to={`/add-subject/${item._id}`}
+                        onClick={e => {
+                            e.stopPropagation();
+                            // la navegación no ocurrirá si está disabled
+                        }}
+                        style={{ display: 'block', width: '100%' }}
+                    >
+                        Añadir asignatura
+                    </Link>
+                ),
+            },
+        ];
+    };
+
+    const fetchData = () => {
         searchTitleMemories({
             filters,
             page: pagination.current,
             limit: pagination.pageSize,
-            fromUser: fromUser,
+            fromUser,
         });
-
     };
 
     useEffect(() => {
         fetchData();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [pagination.current, filters, fromUser]);
 
     const handlePageChange = (page: number) => {
-        setPagination({ ...pagination, current: page });
+        setPagination(prev => ({ ...prev, current: page }));
     };
 
-    const handleFilterChange = (filterType: keyof Filters, values: string[] | [number, number]) => {
-        setFilters({ ...filters, [filterType]: values });
-        setPagination({ ...pagination, current: 1 });
+    const handleFilterChange = (
+        filterType: keyof Filters,
+        values: string[] | [number, number]
+    ) => {
+        setFilters(prev => ({ ...prev, [filterType]: values }));
+        setPagination(prev => ({ ...prev, current: 1 }));
     };
 
     const toggleFilters = () => {
-        setFiltersVisible(!filtersVisible);
+        setFiltersVisible(v => !v);
     };
-
-    const { showConfirmation, ConfirmationModal } = useConfirmation();
-
-    const handleDelete = (itemId: string) => {
-        // Aquí va tu lógica real para eliminar
-        console.log('Eliminando memoria:', itemId);
-    };
-
-
-    const getActionItems = (item: TitleMemory): MenuProps['items'] => [
-        {
-            key: 'edit',
-            label: (
-                <div onClick={(_) => {
-                    console.log('Editando memoria:', item._id);
-                }}>
-                    Editar
-                </div>
-            ),
-        },
-        {
-            key: 'delete',
-            label: (
-                <div onClick={(e) => {
-                    e.stopPropagation();
-                    showConfirmation(
-                        '¿Desea eliminar esta memoria de título?',
-                        () => handleDelete(item._id)
-                    );
-                }}>
-                    Eliminar
-                </div>
-            ),
-        },
-        {
-            key: 'clone',
-            label: (
-                <div onClick={(e) => {
-                    e.stopPropagation();
-                    // Lógica para clonar
-                    message.info(`Clonando memoria: ${item.name}`);
-                }}>
-                    Clonar
-                </div>
-            ),
-        },
-        {
-            key: 'add-subject',
-            label: (
-                <Link
-                    to={`/add-subject/${item._id}`}
-                    onClick={(e) => e.stopPropagation()}
-                    style={{ display: 'block', width: '100%' }}
-                >
-                    Añadir asignatura
-                </Link>
-            ),
-        },
-    ];
 
     return (
         <Layout style={{ minHeight: '100vh', background: 'transparent' }}>
-            {/* Botón de hamburguesa solo en móvil/tablet */}
             {isMobileOrTablet && !filtersVisible && (
                 <Button
                     type="primary"
@@ -153,36 +202,27 @@ const TitleMemoriesView: React.FC<TitleMemoriesViewProps> = ({ fromUser = false 
                         position: 'fixed',
                         top: '8%',
                         left: '16px',
-                        zIndex: 1001
+                        zIndex: 1001,
                     }}
                 >
                     {filtersVisible ? 'Cerrar filtros' : 'Abrir filtros'}
                 </Button>
             )}
 
-            {/* Sidebar de filtros - Versión escritorio */}
             {!isMobileOrTablet && (
                 <Layout.Sider
-                    width={"20%"}
-                    style={{
-                        background: 'transparent',
-                        padding: '24px 16px',
-                        marginRight: '24px'
-                    }}
+                    width="20%"
+                    style={{ background: 'transparent', padding: '24px 16px', marginRight: '24px' }}
                 >
-                    <GeneralFilters
-                        filters={filters}
-                        onFilterChange={handleFilterChange}
-                    />
+                    <GeneralFilters filters={filters} onFilterChange={handleFilterChange} />
                 </Layout.Sider>
             )}
 
-            {/* Drawer para móvil/tablet */}
             {isMobileOrTablet && (
                 <Drawer
                     title="Filtros"
                     placement="left"
-                    closable={true}
+                    closable
                     onClose={toggleFilters}
                     visible={filtersVisible}
                     width="100%"
@@ -190,41 +230,36 @@ const TitleMemoriesView: React.FC<TitleMemoriesViewProps> = ({ fromUser = false 
                 >
                     <GeneralFilters
                         filters={filters}
-                        onFilterChange={(type, values) => {
-                            handleFilterChange(type, values);
-                            setFiltersVisible(false); // Cierra el drawer al aplicar filtros
+                        onFilterChange={(t, v) => {
+                            handleFilterChange(t, v);
+                            setFiltersVisible(false);
                         }}
                     />
                 </Drawer>
             )}
 
-            {/* Contenido principal */}
             <Layout>
-                <Content style={{
-                    padding: '24px',
-                    marginLeft: isMobileOrTablet ? 0 : '24px' // Ajuste de margen para móvil
-                }}>
-                    {data.length === 0 ? <NoData onRefresh={fetchData} /> : (
+                <Content style={{ padding: '24px', marginLeft: isMobileOrTablet ? 0 : '24px' }}>
+                    {data.length === 0 ? (
+                        <NoData onRefresh={fetchData} />
+                    ) : (
                         <>
                             <h1 style={{ fontSize: '24px', marginBottom: '24px' }}>
                                 {fromUser ? 'Mis memorias de título' : 'Memorias de título'}
                             </h1>
-
                             <Spin spinning={loading}>
                                 <Row gutter={[16, 16]}>
-                                    {data.map((item) => (
+                                    {data.map(item => (
                                         <Col xs={24} sm={12} md={8} lg={6} key={item._id}>
                                             <TitleMemoryCard
                                                 item={item}
                                                 fromUser={fromUser}
-                                                getActionItems={getActionItems}
+                                                getActionItems={() => getActionItems(item)}
                                             />
                                         </Col>
                                     ))}
                                 </Row>
                             </Spin>
-
-                            {/* Paginación */}
                             <div style={{ marginTop: '24px', textAlign: 'center' }}>
                                 <Pagination
                                     current={pagination.current}
@@ -238,6 +273,7 @@ const TitleMemoriesView: React.FC<TitleMemoriesViewProps> = ({ fromUser = false 
                     )}
                 </Content>
             </Layout>
+
             <ConfirmationModal />
         </Layout>
     );

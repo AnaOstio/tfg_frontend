@@ -1,6 +1,11 @@
 // features/titleMemory/titleMemorySlice.ts
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { AcademicLevel, AcademicReign, LearningOutcome, TitleMemoryState } from '../../utils/titleMemory';
+import {
+    AcademicLevel,
+    AcademicReign,
+    LearningOutcome,
+    TitleMemoryState,
+} from '../../utils/titleMemory';
 import { Skill } from '../../utils/skill';
 
 const initialState: TitleMemoryState = {
@@ -12,6 +17,7 @@ const initialState: TitleMemoryState = {
         academicReign: '' as AcademicReign,
         year: 2026,
         academicScope: '',
+        memoryName: '',
     },
     credits: {
         basic: 0,
@@ -33,7 +39,6 @@ const titleMemorySlice = createSlice({
     name: 'titleMemory',
     initialState,
     reducers: {
-        // --- Reducers existentes ---
         updateGeneralInfo(
             state,
             action: PayloadAction<Partial<TitleMemoryState['generalInfo']>>
@@ -84,7 +89,6 @@ const titleMemorySlice = createSlice({
         saveTitleMemory(_, action: PayloadAction<TitleMemoryState>) {
             return action.payload;
         },
-
         // --- Nuevos reducers para Resultados de Aprendizaje ---
         addLearningOutcome(
             state,
@@ -120,11 +124,10 @@ const titleMemorySlice = createSlice({
             }>
         ) {
             const { outcomeId, skillCode } = action.payload;
-            const outcome = state.learningOutcomes.find((o) => o.id === outcomeId);
-            if (
-                outcome &&
-                !outcome.associatedSkills.includes(skillCode)
-            ) {
+            const outcome = state.learningOutcomes.find(
+                (o) => o.id === outcomeId
+            );
+            if (outcome && !outcome.associatedSkills.includes(skillCode)) {
                 outcome.associatedSkills.push(skillCode);
             }
         },
@@ -136,13 +139,22 @@ const titleMemorySlice = createSlice({
             }>
         ) {
             const { outcomeId, skillCode } = action.payload;
-            const outcome = state.learningOutcomes.find((o) => o.id === outcomeId);
+            const outcome = state.learningOutcomes.find(
+                (o) => o.id === outcomeId
+            );
             if (outcome) {
                 outcome.associatedSkills = outcome.associatedSkills.filter(
                     (c) => c !== skillCode
                 );
             }
         },
+        // --- NUEVO: Cargar toda la memoria de título directamente ---
+        loadFullTitleMemory(
+            _,
+            action: PayloadAction<any> // El tipo real que devuelve el backend
+        ) {
+            return action.payload;
+        }
     },
 });
 
@@ -158,6 +170,7 @@ export const {
     updateLearningOutcome,
     addOutcomeSkill,
     removeOutcomeSkill,
+    loadFullTitleMemory, // <- ¡Nuevo export!
 } = titleMemorySlice.actions;
 
 export default titleMemorySlice.reducer;
