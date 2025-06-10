@@ -30,7 +30,15 @@ const router = createBrowserRouter([
             },
             {
                 path: '/title-memory',
-                element: <TitleMemoryForm />,
+                element: <TitleMemoryForm mode="add" />,
+            },
+            {
+                path: '/edit-title-memory/:id',
+                element: <TitleMemoryForm mode="edit" />,
+            },
+            {
+                path: '/clone-title-memory/:id',
+                element: <TitleMemoryForm mode="clone" />,
             },
             {
                 path: "/success",

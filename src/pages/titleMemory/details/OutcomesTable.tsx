@@ -12,6 +12,7 @@ const OutcomesTable: React.FC<Props> = ({ outcomes, skills, loading }) => (
     <Card title="Resultados de Aprendizaje" loading={loading}>
         <Table
             columns={[
+                { title: 'Código', dataIndex: 'name', key: 'name' },
                 { title: 'Descripción', dataIndex: 'description', key: 'description' },
                 {
                     title: 'Competencias Asociadas',

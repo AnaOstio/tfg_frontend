@@ -5,7 +5,7 @@ import { AppDispatch, RootState } from '../../redux/store';
 import {
     addLearningOutcome,
     addOutcomeSkill,
-    addSkill, removeLearningOutcome, removeOutcomeSkill, removeSkill, saveTitleMemory,
+    addSkill, loadFullTitleMemory, removeLearningOutcome, removeOutcomeSkill, removeSkill, saveTitleMemory,
     updateCredits, updateGeneralInfo
 } from '../../redux/slices/titleMemorySlice';
 import {
@@ -20,7 +20,11 @@ import { Skill } from '../../utils/skill';
 import { LearningOutcomesStep } from './formSteps/LearningOutcomesStep';
 import { LearningOutcome } from './types';
 import { useLearningOutcomesSearch } from '../../hooks/useLearningOucomes';
-import { useTitleMemoriesCreate } from '../../hooks/useTitleMemories';
+import { useGetTileMemoryById, useTitleMemoriesCreate, useTitleMemoriesUpdate } from '../../hooks/useTitleMemories';
+import { useParams } from 'react-router-dom';
+import { TitleMemoryState } from '../../utils/titleMemory';
+import { UsersStep, UserItem } from './formSteps/UsersStep';
+import { selectCurrentUser } from '../../redux/slices/authSlice';
 
 type SkillType = 'basic' | 'general' | 'transversal' | 'specific';
 type SkillState = Record<SkillType, Skill | null>;
@@ -29,7 +33,17 @@ type NewSkillState = Record<SkillType, { name: string; description: string }>;
 
 const { Step } = Steps;
 
-export const TitleMemoryForm: React.FC = () => {
+type TitleMemoryFormProps = {
+    mode: 'add' | 'edit' | 'clone';
+};
+
+export const TitleMemoryForm: React.FC<TitleMemoryFormProps> = ({ mode = 'add' }) => {
+    const isEditMode = mode === 'edit';
+    const isCloneMode = mode === 'clone';
+    const [users, setUsers] = useState<UserItem[]>([]);
+    const { id } = useParams<{ id: string }>();
+    const { mutateAsync: getById } = useGetTileMemoryById();
+
     const [api, _] = notification.useNotification();
     const [form] = Form.useForm();
     const [currentStep, setCurrentStep] = useState(0);
@@ -40,6 +54,8 @@ export const TitleMemoryForm: React.FC = () => {
     const universitiesData = useSelector(selectUniversitiesData);
     const univLoading = useSelector(selectUniversitiesLoading);
     const univError = useSelector(selectUniversitiesError);
+
+    const currentUser = useSelector(selectCurrentUser);
 
     // State management
     const [selectedUniversities, setSelectedUniversities] = useState<string[]>([]);
@@ -75,6 +91,84 @@ export const TitleMemoryForm: React.FC = () => {
         }
     }, [dispatch, titleMemory.skills]);
 
+    const fetchData = async (id: string) => {
+        try {
+            const data = await getById(id);
+            const transformedData: TitleMemoryState = {
+                generalInfo: {
+                    titleCode: isCloneMode ? '' : data.titleCode,
+                    memoryName: data.name,
+                    academicLevel: data.academicLevel,
+                    academicReign: data.branch,
+                    year: data.yearDelivery,
+                    academicScope: data.academicField,
+                    university: data.universities,
+                    centers: data.centers,
+                },
+                credits: {
+                    basic: data.distributedCredits['Básicos'] || 0,
+                    mandatory: data.distributedCredits['Obligatoria'] || 0,
+                    optional: data.distributedCredits['Optativa'] || 0,
+                    finalWork: data.distributedCredits['Trabajo Fin de Carrera'] || 0,
+                    practices: 0 // si existe
+                },
+                skills: {
+                    basic: data.skills.filter((item: any) => item.type === 'basic').map((item: any) => ({
+                        id: item._id,
+                        name: item.code,
+                        description: item.description,
+                        type: item.type
+                    })),
+                    general: data.skills.filter((item: any) => item.type === 'general').map((item: any) => ({
+                        id: item._id,
+                        name: item.code,
+                        description: item.description,
+                        type: item.type
+                    })),
+                    transversal: data.skills.filter((item: any) => item.type === 'transversal').map((item: any) => ({
+                        id: item._id,
+                        name: item.code,
+                        description: item.description,
+                        type: item.type
+                    })),
+                    specific: data.skills.filter((item: any) => item.type === 'specific').map((item: any) => ({
+                        id: item._id,
+                        name: item.code,
+                        description: item.description,
+                        type: item.type
+                    }))
+                },
+                learningOutcomes: data.learningOutcomes.map((item: any) => ({
+                    id: item._id,
+                    name: item.name,
+                    description: item.description || '',
+                    associatedSkills: item.associatedSkills || []
+                }))
+            };
+            dispatch(loadFullTitleMemory(transformedData));
+
+            // Y también setear el form
+            form.setFieldsValue(transformedData);
+
+            setSelectedUniversities(data.universities);
+            setSelectedCenters(data.centers);
+            setCurrentStep(0); // Reset step to 0 when loading new data
+        } catch (error) {
+            console.error('Error fetching title memory:', error);
+            api.error({
+                message: 'Error al cargar la memoria de título',
+                description: 'No se pudo obtener la información de la memoria de título.',
+                duration: 3
+            });
+        }
+    }
+
+    useEffect(() => {
+        if (id && (isEditMode || isCloneMode)) {
+            fetchData(id);
+        }
+    }, [id, isEditMode, isCloneMode]);
+
     // Memoized derived data
     const availableUniversities = useMemo(() => (
         universitiesData
@@ -103,10 +197,10 @@ export const TitleMemoryForm: React.FC = () => {
     }, [univError]);
 
     useEffect(() => {
-        if (titleMemory.generalInfo?.university) {
+        if (titleMemory.generalInfo?.university && !isEditMode && !isCloneMode) {
             setSelectedUniversities(titleMemory.generalInfo.university.split(' / ').filter(Boolean));
         }
-        if (titleMemory.generalInfo?.centers) {
+        if (titleMemory.generalInfo?.centers && !isEditMode && !isCloneMode) {
             setSelectedCenters(titleMemory.generalInfo.centers.split(' / ').filter(Boolean));
         }
     }, [titleMemory.generalInfo?.university, titleMemory.generalInfo?.centers]);
@@ -265,15 +359,20 @@ export const TitleMemoryForm: React.FC = () => {
     }, []);
 
     const { mutateAsync: saveTitleMemoryMutate } = useTitleMemoriesCreate();
+    const { mutateAsync: updateMemoryMutate } = useTitleMemoriesUpdate();
 
     const handleSubmit = useCallback(() => {
+        if (mode === 'edit') {
+            updateMemoryMutate({ id: id, ...titleMemory })
+        }
         dispatch(saveTitleMemory(titleMemory));
         api.success({
             message: 'Memoria guardada',
             description: 'Se ha guardado correctamente.'
         });
-        saveTitleMemoryMutate(titleMemory);
-    }, [dispatch, titleMemory]);
+        saveTitleMemoryMutate({ data: titleMemory, users: users, currentUser: currentUser });
+
+    }, [dispatch, titleMemory, users]);
 
     const learningOutcomes = useSelector((state: RootState) => state.titleMemory.learningOutcomes);
     const [newOutcomeText, setNewOutcomeText] = useState('');
@@ -365,6 +464,11 @@ export const TitleMemoryForm: React.FC = () => {
         [dispatch, learningOutcomes]
     );
 
+    /*** Aquí incluimos el nuevo paso “Usuarios” ***/
+    const handleUsersChange = useCallback((newList: UserItem[]) => {
+        setUsers(newList);
+    }, []);
+
     const steps = useMemo(() => [
         {
             title: 'Información General',
@@ -434,12 +538,24 @@ export const TitleMemoryForm: React.FC = () => {
             )
         },
         {
+            title: 'Usuarios',
+            content: (
+                <UsersStep
+                    users={users}
+                    onUsersChange={handleUsersChange}
+                    onPrev={handlePrev}
+                    onNext={handleNext}
+                />
+            )
+        },
+        {
             title: 'Revisión',
             content: (
                 <ReviewStep
                     titleMemory={titleMemory}
                     onPrev={handlePrev}
                     onSubmit={handleSubmit}
+                    mode={mode} // 'add', 'edit' or 'clone'
                 />
             )
         }
@@ -453,12 +569,16 @@ export const TitleMemoryForm: React.FC = () => {
         handlePrev, handleNext, handleSubmit, handleAddOutcome,
         handleRemoveOutcome, handleSkillRelationChange,
         onOutcomeInputChange, onOutcomeSelected,
-        newOutcomeText, selectedOutcomeItem
+        newOutcomeText, selectedOutcomeItem, users, handleUsersChange
     ]);
 
     return (
         <div style={{ width: '80%', margin: '0 auto', padding: '24px 0' }}>
-            <h1>Añadir nueva memoria de título</h1>
+            <h1>{isEditMode
+                ? 'Editar memoria de título'
+                : isCloneMode
+                    ? 'Clonar memoria de título'
+                    : 'Añadir nueva memoria de título'}</h1>
 
             <Steps current={currentStep} style={{ marginBottom: 24 }}>
                 {steps.map(item => <Step key={item.title} title={item.title} />)}

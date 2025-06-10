@@ -113,8 +113,8 @@ export function transformData(input: InputData): OutputData {
 
     return {
         titleCode: generalInfo.titleCode,
-        universities: [generalInfo.university],
-        centers: [generalInfo.centers],
+        universities: Array.isArray(generalInfo.university) ? generalInfo.university : [generalInfo.university],
+        centers: Array.isArray(generalInfo.centers) ? generalInfo.centers : [generalInfo.centers],
         name: generalInfo.memoryName,
         academicLevel: generalInfo.academicLevel,
         branch: generalInfo.academicReign,
