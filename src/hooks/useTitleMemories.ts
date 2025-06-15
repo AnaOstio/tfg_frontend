@@ -1,6 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
 import { TitleMemoriesSearchParams } from "../utils/titleMemory";
-import { titleMemoriesCreate, titleMemoriesGetById, titleMemoriesSearch, titleMemoriesUpdate } from "../api/titleMemories";
+import { titleMemoriesCreate, titleMemoriesDelete, titleMemoriesGetById, titleMemoriesSearch, titleMemoriesUpdate } from "../api/titleMemories";
 import { message } from "antd"; // Asegúrate de importar message si usas antd
 import { transformData } from "../helper/transformData";
 import { useNavigate } from "react-router-dom";
@@ -116,6 +116,21 @@ export const useGetTileMemoryById = () => {
         onError: (error) => {
             console.error('Error al obtener la memoria de título:', error);
             navigate('/error');
+        },
+    });
+}
+
+export const useDeleteTitleMemory = () => {
+    return useMutation<any, Error, string>({
+        mutationFn: async (id) => {
+            return titleMemoriesDelete(id);
+        },
+        onSuccess: () => {
+            message.success('Memoria de título eliminada con éxito');
+        },
+        onError: (error) => {
+            message.error('Error al eliminar la memoria de título');
+            console.error('Error:', error);
         },
     });
 }

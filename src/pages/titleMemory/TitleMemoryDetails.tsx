@@ -8,8 +8,9 @@ import SkillsTable from './details/SkillsTables';
 import OutcomesTable from './details/OutcomesTable';
 import TitleSidebar from './details/TitleSidebar';
 import SubjectsGrid from './details/SubjectsGrid';
-import { useGetTileMemoryById } from '../../hooks/useTitleMemories';
+import { useDeleteTitleMemory, useGetTileMemoryById } from '../../hooks/useTitleMemories';
 import useConfirmation from '../../hooks/useConfirmation';
+import { useGetPermissionsByMemoriesIds } from '../../hooks/usePermissions';
 
 const { Content } = Layout;
 const { Title } = Typography;
@@ -20,6 +21,9 @@ const TitleMemoryDetails: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const [selectedMenuKey, setSelectedMenuKey] = useState('general');
     const { mutateAsync: getById } = useGetTileMemoryById();
+    const [permissions, setPermissions] = useState<any[]>([]);
+
+    const { mutateAsync: getPermissionsByMemoriesIds } = useGetPermissionsByMemoriesIds();
 
     const fetchTitleMemory = async () => {
         setLoading(true);
@@ -28,6 +32,9 @@ const TitleMemoryDetails: React.FC = () => {
             if (id) {
                 const data = await getById(id);
                 setTitleMemory(data);
+                const response = await getPermissionsByMemoriesIds([id]);
+                console.log('Permisos obtenidos:', response);
+                setPermissions(response.data[0]?.permissions || []);
             }
         } catch (error) {
             console.error("Error fetching title memory:", error);
@@ -41,11 +48,39 @@ const TitleMemoryDetails: React.FC = () => {
     }, [id]);
 
     const navigate = useNavigate();
+    const { mutateAsync: deleteTitleMemory } = useDeleteTitleMemory();
+
+    const handleDelete = async (id: string) => {
+        setLoading(true);
+        try {
+            console.log('Eliminando memoria:', id);
+            await deleteTitleMemory(id);
+
+            navigate('/dashboard');
+        } catch (error) {
+            console.error("Error deleting title memory:", error);
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    type ActionKey = 'edit' | 'delete' | 'clone' | 'add-subject';
+    const REQUIRED_PERMISSIONS: Record<ActionKey, string[]> = {
+        edit: ['Propietario', 'Edición'],
+        delete: ['Propietario', 'Eliminar'],
+        clone: [],               // siempre permitido
+        'add-subject': ['Propietario', 'Asignaturas'],
+    };
+
+    const hasAny = (userPerms: string[], needed: string[]) =>
+        needed.length === 0 || needed.some(p => userPerms.includes(p));
+
     const { showConfirmation, ConfirmationModal } = useConfirmation();
 
     const getActionItems = (id: string): MenuProps['items'] => [
         {
             key: 'edit',
+            disabled: !hasAny(permissions, REQUIRED_PERMISSIONS.edit),
             label: (
                 <div
                     onClick={(e) => {
@@ -59,13 +94,14 @@ const TitleMemoryDetails: React.FC = () => {
         },
         {
             key: 'delete',
+            disabled: !hasAny(permissions, REQUIRED_PERMISSIONS.delete),
             label: (
                 <div
                     onClick={(e) => {
                         e.stopPropagation();
                         showConfirmation(
                             '¿Desea eliminar esta memoria de título?',
-                            () => console.log('Eliminando memoria:', id)
+                            () => handleDelete(id),
                         );
                     }}
                 >
@@ -75,6 +111,7 @@ const TitleMemoryDetails: React.FC = () => {
         },
         {
             key: 'clone',
+            disabled: !hasAny(permissions, REQUIRED_PERMISSIONS.clone),
             label: (
                 <div
                     onClick={(e) => {
@@ -88,6 +125,7 @@ const TitleMemoryDetails: React.FC = () => {
         },
         {
             key: 'add-subject',
+            disabled: !hasAny(permissions, REQUIRED_PERMISSIONS['add-subject']),
             label: (
                 <Link
                     to={`/add-subject/${id}`}
