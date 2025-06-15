@@ -105,7 +105,7 @@ const UniversityFilter: React.FC<{
                     <Button
                         type="link"
                         onClick={() => setShowAllUniversities(!showAllUniversities)}
-                        style={{ padding: 0 }}
+                        style={{ padding: 0, color: '#52c41a' }}
                     >
                         {showAllUniversities ? 'Ver menos universidades' : 'Ver más universidades...'}
                     </Button>

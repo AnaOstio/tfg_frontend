@@ -37,3 +37,11 @@ export const titleMemoriesUpdate = async (id: string, data: any): Promise<any> =
     });
     return response.data;
 };
+
+export const titleMemoriesDelete = async (id: string): Promise<void> => {
+    await axios.delete(`${API_BASE_URL}/title-memories/${id}`, {
+        headers: {
+            Authorization: `Bearer ${localStorage.getItem('authToken')}`
+        }
+    });
+}

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import {
     Layout,
     Pagination,
@@ -19,7 +19,7 @@ import NoData from '../../components/NoData';
 import TitleMemoryCard from '../../components/titlesMemories/TitleMemoryCard';
 import useIsMobileOrTablet from '../../hooks/useIsMobileOrTablet';
 import useConfirmation from '../../hooks/useConfirmation';
-import { useTitleMemoriesSearch } from '../../hooks/useTitleMemories';
+import { useDeleteTitleMemory, useTitleMemoriesSearch } from '../../hooks/useTitleMemories';
 import { Filters } from '../../components/filters/types/types';
 import { YEAR_RANGE } from '../../components/filters/consts/cosnts';
 
@@ -73,7 +73,6 @@ const TitleMemoriesView: React.FC<TitleMemoriesViewProps> = ({ fromUser = false 
         setData,
         setPagination,
         setLoading,
-        // setPermissions recibe PermissionItem[]
         setPermissions,
     });
 
@@ -89,6 +88,8 @@ const TitleMemoriesView: React.FC<TitleMemoriesViewProps> = ({ fromUser = false 
 
     const hasAny = (userPerms: string[], needed: string[]) =>
         needed.length === 0 || needed.some(p => userPerms.includes(p));
+
+    const { mutateAsync: deleteTitleMemory } = useDeleteTitleMemory();
 
     const getActionItems = (item: TitleMemory): MenuProps['items'] => {
         const userPerms = permissionsHash[item._id] ?? [];
@@ -119,7 +120,7 @@ const TitleMemoriesView: React.FC<TitleMemoriesViewProps> = ({ fromUser = false 
                             if (hasAny(userPerms, REQUIRED_PERMISSIONS.delete)) {
                                 showConfirmation(
                                     '¿Desea eliminar esta memoria de título?',
-                                    () => console.log('Eliminando memoria:', item._id)
+                                    () => handleDelete(item._id)
                                 );
                             }
                         }}
@@ -170,10 +171,15 @@ const TitleMemoriesView: React.FC<TitleMemoriesViewProps> = ({ fromUser = false 
         });
     };
 
+    const didMountRef = useRef(false);
     useEffect(() => {
-        fetchData();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+        if (didMountRef.current) {
+            fetchData();
+        } else {
+            didMountRef.current = true;
+        }
     }, [pagination.current, filters, fromUser]);
+
 
     const handlePageChange = (page: number) => {
         setPagination(prev => ({ ...prev, current: page }));
@@ -190,6 +196,20 @@ const TitleMemoriesView: React.FC<TitleMemoriesViewProps> = ({ fromUser = false 
     const toggleFilters = () => {
         setFiltersVisible(v => !v);
     };
+
+    const handleDelete = async (id: string) => {
+        setLoading(true);
+        try {
+            await deleteTitleMemory(id);
+            message.success('Memoria de título eliminada correctamente');
+            fetchData();
+        } catch (error) {
+            console.error('Error al eliminar la memoria de título:', error);
+            message.error('Error al eliminar la memoria de título');
+        } finally {
+            setLoading(false);
+        }
+    }
 
     return (
         <Layout style={{ minHeight: '100vh', background: 'transparent' }}>

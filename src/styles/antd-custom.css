@@ -47,3 +47,7 @@
 .ant-menu-item-selected {
     color: var(--green-6) !important;
 }
+
+.ant-btn-link {
+    color: var(--green-7) !important;
+}
