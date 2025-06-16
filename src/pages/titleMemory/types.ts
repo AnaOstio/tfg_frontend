@@ -3,13 +3,15 @@ export interface Skill {
     code: string;
     description: string;
     type: string;
+    name?: string; // Optional for compatibility with other parts of the app
 }
 
 export interface LearningOutcome {
     id: string;
     name: string;
     description: string;
-    associatedSkills: string[];
+    associatedSkills?: string[];
+    skills_id?: string[];
 }
 
 export interface TitleMemory {

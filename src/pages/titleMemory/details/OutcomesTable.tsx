@@ -16,12 +16,12 @@ const OutcomesTable: React.FC<Props> = ({ outcomes, skills, loading }) => (
                 { title: 'Descripción', dataIndex: 'description', key: 'description' },
                 {
                     title: 'Competencias Asociadas',
-                    key: 'associatedSkills',
+                    key: 'skills_id',
                     render: (_, record) => (
                         <>
-                            {record.associatedSkills.map((id: string) => {
+                            {record.skills_id?.map((id: string) => {
                                 const skill = skills.find(s => s._id === id);
-                                return skill ? <Tag key={id}>{skill.code}</Tag> : null;
+                                return skill ? <Tag key={id}>{skill.name}</Tag> : null;
                             })}
                         </>
                     ),

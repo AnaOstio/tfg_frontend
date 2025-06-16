@@ -64,6 +64,16 @@ const AddSubjectToMemory: React.FC = () => {
         setLearningOutcomes(newOutcomes);
     };
 
+    const getSkillsFromMemoryId = async (memoryId: string) => {
+        // Simulación de llamada a la API para obtener habilidades
+        const mockSkills: Skill[] = [
+            { id: 'SKL001', name: 'Habilidad técnica en desarrollo frontend', type: 'Técnica' },
+            { id: 'SKL002', name: 'Gestión de proyectos ágiles', type: 'Gestión' },
+            { id: 'SKL003', name: 'Comunicación efectiva en equipo', type: 'Blanda' },
+        ];
+        setAvailableSkills(mockSkills);
+    }
+
     const steps = [
         {
             title: 'Información General',
@@ -99,6 +109,8 @@ const AddSubjectToMemory: React.FC = () => {
     const prev = () => setCurrentStep(prev => prev - 1);
 
     const onFinish = (values: any) => {
+
+
         console.log('Memory ID:', id);
         console.log('Form:', values);
         console.log('Skills:', skills);
@@ -106,7 +118,7 @@ const AddSubjectToMemory: React.FC = () => {
     };
 
     return (
-        <div style={{ padding: 24 }}>
+        <div style={{ width: '80%', margin: '0 auto', padding: '24px 0' }}>
             <Title level={2}>Añadir nueva asignatura a Memoria de Título</Title>
             <Steps current={currentStep} style={{ marginBottom: 24 }}>
                 {steps.map(s => <Step key={s.title} title={s.title} />)}

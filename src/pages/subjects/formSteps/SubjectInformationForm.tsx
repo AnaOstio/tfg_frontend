@@ -4,32 +4,41 @@ import { Card, Row, Col, Form, Input, Select, Checkbox, Typography } from 'antd'
 const { Option } = Select;
 const { Title } = Typography;
 
+const COURSES: { [key: number]: string } = {
+    1: 'Primero',
+    2: 'Segundo',
+    3: 'Tercero',
+    4: 'Cuarto',
+    5: 'Quinto',
+    6: 'Sexto'
+}
+
 const SubjectInformationForm: React.FC = () => (
     <Card title="Información de la Asignatura" style={{ marginTop: 16 }}>
         <Row gutter={16}>
             <Col span={8}>
-                <Form.Item label="Código de la Asignatura" name="subjectCode" rules={[{ required: true }]}>
+                <Form.Item label="Código de la Asignatura" name="subjectCode" rules={[{ required: true, message: 'introduzca el código de la asignatura' }]}>
                     <Input />
                 </Form.Item>
             </Col>
             <Col span={16}>
-                <Form.Item label="Nombre de la Asignatura" name="subjectName" rules={[{ required: true }]}>
+                <Form.Item label="Nombre de la Asignatura" name="subjectName" rules={[{ required: true, message: 'introduzca el nombre de la asignatura' }]}>
                     <Input />
                 </Form.Item>
             </Col>
         </Row>
         <Row gutter={16}>
             <Col span={8}>
-                <Form.Item label="Curso Académico" name="academicYear" rules={[{ required: true }]}>
+                <Form.Item label="Curso Académico" name="academicYear" rules={[{ required: true, message: 'introduzca el curso académico' }]}>
                     <Select>
-                        <Option value="2023">2023</Option>
-                        <Option value="2024">2024</Option>
-                        <Option value="2025">2025</Option>
+                        {[...Array(6)].map((_, index) => {
+                            return <Option key={index + 1} value={`${index + 1}`}>{COURSES[index + 1]}</Option>;
+                        })}
                     </Select>
                 </Form.Item>
             </Col>
             <Col span={8}>
-                <Form.Item label="Temporalidad" name="temporality" rules={[{ required: true }]}>
+                <Form.Item label="Temporalidad" name="temporality" rules={[{ required: true, message: 'seleccione una temporalidad' }]}>
                     <Select>
                         <Option value="semestral">Semestral</Option>
                         <Option value="anual">Anual</Option>
@@ -37,30 +46,41 @@ const SubjectInformationForm: React.FC = () => (
                 </Form.Item>
             </Col>
             <Col span={8}>
-                <Form.Item label="Créditos" name="credits" rules={[{ required: true }]}>
-                    <Input type="number" />
+                <Form.Item
+                    label="Créditos"
+                    name="credits"
+                    rules={[
+                        { required: true, message: 'introduzca los créditos' },
+                        {
+                            type: 'number',
+                            min: 0,
+                            message: 'los créditos deben ser un número positivo',
+                            transform: (value) => {
+                                // Si viene "" o undefined, devuelvo NaN para que el required lo detecte
+                                return value !== undefined && value !== '' ? Number(value) : NaN;
+                            },
+                        },
+                    ]}
+                >
+                    <Input type="number" min={0} />
                 </Form.Item>
             </Col>
         </Row>
         <Row gutter={16}>
             <Col span={12}>
-                <Form.Item label="Carácter de la Asignatura" name="subjectType" rules={[{ required: true }]}>
+                <Form.Item label="Carácter de la Asignatura" name="subjectType" rules={[{ required: true, message: 'seleccione un tipo de asignatura' }]}>
                     <Select>
-                        <Option value="obligatoria">Obligatoria</Option>
-                        <Option value="optativa">Optativa</Option>
-                        <Option value="basica">Básica</Option>
-                        <Option value="practicas">Prácticas</Option>
-                        <Option value="trabajo-final-carrera">Trabajo final de carrera</Option>
+                        <Option value="Obligatoria">Obligatoria</Option>
+                        <Option value="Optativa">Optativa</Option>
+                        <Option value="Básica">Básica</Option>
+                        <Option value="Prácticas">Prácticas</Option>
+                        <Option value="Trabajo Final de Carrera">Trabajo final de carrera</Option>
                     </Select>
                 </Form.Item>
             </Col>
             <Col span={12}>
-                <Form.Item label="Materia" name="subjectMatter" rules={[{ required: true }]}>
-                    <Select>
-                        <Option value="matematicas">Matemáticas</Option>
-                        <Option value="ciencias">Ciencias</Option>
-                        <Option value="humanidades">Humanidades</Option>
-                    </Select>
+                <Form.Item label="Materia" name="subjectMatter" rules={[{ required: true, message: 'Introduzca una materia' }]}>
+                    <Input />
                 </Form.Item>
             </Col>
         </Row>
@@ -68,24 +88,24 @@ const SubjectInformationForm: React.FC = () => (
         <Title level={5}>Distribución de Horas</Title>
         <Row gutter={16}>
             <Col span={12}>
-                <Form.Item label="Clases Expositivas" name="lectureHours" rules={[{ required: true }]}>
+                <Form.Item label="Clases Expositivas" name="lectureHours" rules={[{ required: true, message: 'introduzca las horas de clases expositivas' }]}>
                     <Input type="number" />
                 </Form.Item>
             </Col>
             <Col span={12}>
-                <Form.Item label="Prácticas de Aula/Seminario" name="seminarHours" rules={[{ required: true }]}>
+                <Form.Item label="Prácticas de Aula/Seminario" name="seminarHours" rules={[{ required: true, message: 'introduzca las horas de prácticas de aula/seminario' }]}>
                     <Input type="number" />
                 </Form.Item>
             </Col>
         </Row>
         <Row gutter={16}>
             <Col span={12}>
-                <Form.Item label="Prácticas de Laboratorio" name="labHours" rules={[{ required: true }]}>
+                <Form.Item label="Prácticas de Laboratorio" name="labHours" rules={[{ required: true, message: 'introduzca las horas de prácticas de laboratorio' }]}>
                     <Input type="number" />
                 </Form.Item>
             </Col>
             <Col span={12}>
-                <Form.Item label="Tutorías Grupales" name="tutoringHours" rules={[{ required: true }]}>
+                <Form.Item label="Tutorías Grupales" name="tutoringHours" rules={[{ required: true, message: 'introduzca las horas de tutorías grupales' }]}>
                     <Input type="number" />
                 </Form.Item>
             </Col>
