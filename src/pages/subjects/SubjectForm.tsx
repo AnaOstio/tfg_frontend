@@ -4,6 +4,7 @@ import { useParams } from 'react-router-dom';
 import SkillSelectorTable from './formSteps/SkillSelectorTable';
 import SubjectInformationForm from './formSteps/SubjectInformationForm';
 import LearningOutcomesTable from './formSteps/LearningOutcomesTable';
+import { useGetTileMemoryById } from '../../hooks/useTitleMemories';
 
 const { Step } = Steps;
 const { Title } = Typography;
@@ -26,18 +27,19 @@ const AddSubjectToMemory: React.FC = () => {
     const [skills, setSkills] = useState<Skill[]>([]);
     const [availableSkills, setAvailableSkills] = useState<Skill[]>([]);
     const [learningOutcomes, setLearningOutcomes] = useState<LearningOutcome[]>([]);
+    const [_, setTitleMemory] = useState<any>(null);
+    const { mutateAsync: getBtId } = useGetTileMemoryById();
+
+    const getTitleMemory = async (memoryId: string) => {
+        const data = await getBtId(memoryId);
+        setTitleMemory(data);
+        setAvailableSkills(data.skills || []);
+    }
 
     useEffect(() => {
-        const fetchSkills = async () => {
-            // Simulación
-            const mock: Skill[] = [
-                { id: 'SKL001', name: 'Habilidad técnica en desarrollo frontend', type: 'Técnica' },
-                { id: 'SKL002', name: 'Gestión de proyectos ágiles', type: 'Gestión' },
-                { id: 'SKL003', name: 'Comunicación efectiva en equipo', type: 'Blanda' },
-            ];
-            setAvailableSkills(mock);
-        };
-        fetchSkills();
+        if (id) {
+            getTitleMemory(id);
+        }
     }, []);
 
     const handleAddSkill = (id: string) => {
