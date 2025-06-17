@@ -53,12 +53,6 @@ const AddSubjectToMemory: React.FC = () => {
             return;
         }
         setSkills([...skills, skill]);
-
-        if (skill._id) {
-            setSkillsHours({ ...skillsHours, [skill._id.toString()]: 0 }); // Inicializar horas para la nueva habilidad
-        } else if (skill.id) {
-            setSkillsHours({ ...skillsHours, [skill.id]: 0 }); // Fallback si _id no está definido
-        }
     };
 
     const handleRemoveSkill = (id: string) => {
@@ -75,15 +69,14 @@ const AddSubjectToMemory: React.FC = () => {
         setLearningOutcomes(newOutcomes);
     };
 
-    const getSkillsFromMemoryId = async (memoryId: string) => {
-        // Simulación de llamada a la API para obtener habilidades
-        const mockSkills: Skill[] = [
-            { id: 'SKL001', name: 'Habilidad técnica en desarrollo frontend', type: 'Técnica' },
-            { id: 'SKL002', name: 'Gestión de proyectos ágiles', type: 'Gestión' },
-            { id: 'SKL003', name: 'Comunicación efectiva en equipo', type: 'Blanda' },
-        ];
-        setAvailableSkills(mockSkills);
+    const handleHourSkillChange = (skillId: string, hours: number) => {
+
+        setSkillsHours({
+            ...skillsHours,
+            [skillId]: hours
+        });
     }
+
 
     const steps = [
         {
@@ -96,8 +89,10 @@ const AddSubjectToMemory: React.FC = () => {
                 <SkillSelectorTable
                     skills={skills}
                     availableSkills={availableSkills}
+                    onSkillsHoursChange={handleHourSkillChange}
                     onAddSkill={handleAddSkill}
                     onRemoveSkill={handleRemoveSkill}
+                    skillsHours={skillsHours}
                 />
             )
         },
@@ -126,6 +121,7 @@ const AddSubjectToMemory: React.FC = () => {
         console.log('Form:', values);
         console.log('Skills:', skills);
         console.log('Outcomes:', learningOutcomes);
+        console.log('Skills Hours:', skillsHours);
     };
 
     return (

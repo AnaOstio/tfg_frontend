@@ -10,9 +10,11 @@ interface Props {
     availableSkills: Skill[];
     onAddSkill: (id: string) => void;
     onRemoveSkill: (id: string) => void;
+    onSkillsHoursChange?: (id: string, hours: number) => void;
+    skillsHours: { [key: string]: number };
 }
 
-const SkillSelectorTable: React.FC<Props> = ({ skills, availableSkills, onAddSkill, onRemoveSkill }) => {
+const SkillSelectorTable: React.FC<Props> = ({ skills, availableSkills, onAddSkill, onRemoveSkill, onSkillsHoursChange, skillsHours }) => {
     const [search, setSearch] = useState('');
     const [selected, setSelected] = useState<string | null>(null);
 
@@ -64,13 +66,21 @@ const SkillSelectorTable: React.FC<Props> = ({ skills, availableSkills, onAddSki
                         title: 'Horas',
                         dataIndex: 'hours',
                         key: 'hours',
-                        render: () => (
+                        render: (_, record) => (
                             <Input
                                 type="number"
                                 min={0}
                                 style={{ width: '100%' }}
                                 placeholder="Horas"
-                                disabled
+                                value={skillsHours[record._id] || 0}
+                                onChange={(e) => {
+                                    const value = e.target.value ? Number(e.target.value) : 0;
+                                    if (onSkillsHoursChange && value >= 0) {
+                                        if (record._id) {
+                                            onSkillsHoursChange?.(record._id, value);
+                                        }
+                                    }
+                                }}
                             />
                         )
                     },
@@ -81,7 +91,7 @@ const SkillSelectorTable: React.FC<Props> = ({ skills, availableSkills, onAddSki
                             <Button
                                 danger
                                 icon={<DeleteOutlined />}
-                                onClick={() => onRemoveSkill(record.id)}
+                                onClick={() => onRemoveSkill(record._id)}
                             />
                         )
                     }
