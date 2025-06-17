@@ -13,6 +13,8 @@ export interface Skill {
     id: string;
     name: string;
     type: string;
+    _id?: string; // Optional for compatibility with existing data
+    description?: string; // Optional for compatibility with existing data
 }
 
 export interface LearningOutcome {
@@ -28,6 +30,7 @@ const AddSubjectToMemory: React.FC = () => {
     const [availableSkills, setAvailableSkills] = useState<Skill[]>([]);
     const [learningOutcomes, setLearningOutcomes] = useState<LearningOutcome[]>([]);
     const [_, setTitleMemory] = useState<any>(null);
+    const [skillsHours, setSkillsHours] = useState<{ [key: string]: number }>({});
     const { mutateAsync: getBtId } = useGetTileMemoryById();
 
     const getTitleMemory = async (memoryId: string) => {
@@ -43,13 +46,19 @@ const AddSubjectToMemory: React.FC = () => {
     }, []);
 
     const handleAddSkill = (id: string) => {
-        const skill = availableSkills.find(s => s.id === id);
+        const skill = availableSkills.find(s => s._id === id);
         if (!skill) return;
-        if (skills.some(s => s.id === skill.id)) {
+        if (skills.some(s => s.id === skill._id)) {
             message.warning('Esta habilidad ya está añadida');
             return;
         }
         setSkills([...skills, skill]);
+
+        if (skill._id) {
+            setSkillsHours({ ...skillsHours, [skill._id.toString()]: 0 }); // Inicializar horas para la nueva habilidad
+        } else if (skill.id) {
+            setSkillsHours({ ...skillsHours, [skill.id]: 0 }); // Fallback si _id no está definido
+        }
     };
 
     const handleRemoveSkill = (id: string) => {

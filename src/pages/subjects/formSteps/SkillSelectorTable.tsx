@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Card, Table, Button, Select, Space } from 'antd';
+import { Card, Table, Button, Select, Space, Input } from 'antd';
 import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 import { Skill } from '../SubjectForm';
 
@@ -33,8 +33,8 @@ const SkillSelectorTable: React.FC<Props> = ({ skills, availableSkills, onAddSki
                     filterOption={false}
                 >
                     {filtered.map(skill => (
-                        <Option key={skill.id} value={skill.id}>
-                            {skill.id} - {skill.name}
+                        <Option key={skill.id} value={skill._id}>
+                            {skill.name} - {skill.description}
                         </Option>
                     ))}
                 </Select>
@@ -57,9 +57,23 @@ const SkillSelectorTable: React.FC<Props> = ({ skills, availableSkills, onAddSki
                 rowKey="id"
                 pagination={false}
                 columns={[
-                    { title: 'ID-Comp.', dataIndex: 'id', key: 'id' },
-                    { title: 'Competencia', dataIndex: 'name', key: 'name' },
+                    { title: 'ID-Comp.', dataIndex: 'name', key: 'name' },
+                    { title: 'Competencia', dataIndex: 'description', key: 'description' },
                     { title: 'Tipo', dataIndex: 'type', key: 'type' },
+                    {
+                        title: 'Horas',
+                        dataIndex: 'hours',
+                        key: 'hours',
+                        render: () => (
+                            <Input
+                                type="number"
+                                min={0}
+                                style={{ width: '100%' }}
+                                placeholder="Horas"
+                                disabled
+                            />
+                        )
+                    },
                     {
                         title: 'Acciones',
                         key: 'actions',
