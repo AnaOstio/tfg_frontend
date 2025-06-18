@@ -33,6 +33,21 @@ const AddSubjectToMemory: React.FC = () => {
     const [skillsHours, setSkillsHours] = useState<{ [key: string]: number }>({});
     const { mutateAsync: getBtId } = useGetTileMemoryById();
 
+    const [generalInfo, setGeneralInfo] = useState({
+        subjectCode: '',
+        subjectName: '',
+        academicYear: '',
+        temporality: '',
+        credits: 0,
+        type: '',
+        materia: '',
+        isKey: false,
+        theoryHours: 0,
+        practiceHours: 0,
+        labHours: 0,
+        tutorialHours: 0
+    });
+
     const getTitleMemory = async (memoryId: string) => {
         const data = await getBtId(memoryId);
         setTitleMemory(data);
@@ -81,7 +96,7 @@ const AddSubjectToMemory: React.FC = () => {
     const steps = [
         {
             title: 'Información General',
-            content: <SubjectInformationForm />
+            content: <SubjectInformationForm generalInfo={generalInfo} setGeneralInfo={setGeneralInfo} />
         },
         {
             title: 'Competencias y Resultados',
@@ -116,7 +131,15 @@ const AddSubjectToMemory: React.FC = () => {
 
     const onFinish = (values: any) => {
 
+        for (const key in values) {
+            if (values[key] === undefined || values[key] === null) {
+                values[key] = '';
+            }
+        }
 
+        console.log('General Info:', generalInfo);
+
+        console.log('Form values:', values);
         console.log('Memory ID:', id);
         console.log('Form:', values);
         console.log('Skills:', skills);
@@ -140,7 +163,7 @@ const AddSubjectToMemory: React.FC = () => {
                     {currentStep < steps.length - 1 ? (
                         <Button type="primary" onClick={next}>Siguiente</Button>
                     ) : (
-                        <Button type="primary" htmlType="submit">Guardar Asignatura</Button>
+                        <Button type="primary" htmlType="submit" onClick={onFinish}>Guardar Asignatura</Button>
                     )}
                 </div>
             </Form>

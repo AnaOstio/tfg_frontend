@@ -4,42 +4,75 @@ import { Card, Row, Col, Form, Input, Select, Checkbox, Typography } from 'antd'
 const { Option } = Select;
 const { Title } = Typography;
 
+interface SubjectInformationFormProps {
+    generalInfo: {
+        subjectCode: string;
+        subjectName: string;
+        academicYear: string;
+        temporality: string;
+        credits: number;
+        materia: string;
+        type: string;
+        isKey: boolean;
+        theoryHours: number;
+        practiceHours: number;
+        labHours: number;
+        tutorialHours: number;
+    };
+    setGeneralInfo: (info: any) => void;
+}
+
 const COURSES: { [key: number]: string } = {
     1: 'Primero',
     2: 'Segundo',
     3: 'Tercero',
     4: 'Cuarto',
     5: 'Quinto',
-    6: 'Sexto'
-}
+    6: 'Sexto',
+};
 
-const SubjectInformationForm: React.FC = () => (
+const SubjectInformationForm: React.FC<SubjectInformationFormProps> = ({ generalInfo, setGeneralInfo }) => (
     <Card title="Información de la Asignatura" style={{ marginTop: 16 }}>
         <Row gutter={16}>
             <Col span={8}>
-                <Form.Item label="Código de la Asignatura" name="subjectCode" rules={[{ required: true, message: 'introduzca el código de la asignatura' }]}>
-                    <Input />
+                <Form.Item label="Código de la Asignatura" rules={[{ required: true, message: 'Introduzca el código de la asignatura' }]}>
+                    <Input
+                        value={generalInfo.subjectCode}
+                        onChange={e => setGeneralInfo({ ...generalInfo, subjectCode: e.target.value })}
+                    />
                 </Form.Item>
             </Col>
             <Col span={16}>
-                <Form.Item label="Nombre de la Asignatura" name="subjectName" rules={[{ required: true, message: 'introduzca el nombre de la asignatura' }]}>
-                    <Input />
+                <Form.Item label="Nombre de la Asignatura" rules={[{ required: true, message: 'Introduzca el nombre de la asignatura' }]}>
+                    <Input
+                        value={generalInfo.subjectName}
+                        onChange={e => setGeneralInfo({ ...generalInfo, subjectName: e.target.value })}
+                    />
                 </Form.Item>
             </Col>
         </Row>
+
         <Row gutter={16}>
             <Col span={8}>
-                <Form.Item label="Curso Académico" name="academicYear" rules={[{ required: true, message: 'introduzca el curso académico' }]}>
-                    <Select>
-                        {[...Array(6)].map((_, index) => {
-                            return <Option key={index + 1} value={`${index + 1}`}>{COURSES[index + 1]}</Option>;
-                        })}
+                <Form.Item label="Curso Académico" rules={[{ required: true, message: 'Introduzca el curso académico' }]}>
+                    <Select
+                        value={generalInfo.academicYear}
+                        onChange={value => setGeneralInfo({ ...generalInfo, academicYear: value })}
+                    >
+                        {[...Array(6)].map((_, index) => (
+                            <Option key={index + 1} value={`${index + 1}`}>
+                                {COURSES[index + 1]}
+                            </Option>
+                        ))}
                     </Select>
                 </Form.Item>
             </Col>
             <Col span={8}>
-                <Form.Item label="Temporalidad" name="temporality" rules={[{ required: true, message: 'seleccione una temporalidad' }]}>
-                    <Select>
+                <Form.Item label="Temporalidad" rules={[{ required: true, message: 'Seleccione una temporalidad' }]}>
+                    <Select
+                        value={generalInfo.temporality}
+                        onChange={value => setGeneralInfo({ ...generalInfo, temporality: value })}
+                    >
                         <Option value="semestral">Semestral</Option>
                         <Option value="anual">Anual</Option>
                     </Select>
@@ -48,39 +81,46 @@ const SubjectInformationForm: React.FC = () => (
             <Col span={8}>
                 <Form.Item
                     label="Créditos"
-                    name="credits"
                     rules={[
-                        { required: true, message: 'introduzca los créditos' },
+                        { required: true, message: 'Introduzca los créditos' },
                         {
                             type: 'number',
                             min: 0,
-                            message: 'los créditos deben ser un número positivo',
-                            transform: (value) => {
-                                // Si viene "" o undefined, devuelvo NaN para que el required lo detecte
-                                return value !== undefined && value !== '' ? Number(value) : NaN;
-                            },
+                            message: 'Los créditos deben ser un número positivo',
                         },
                     ]}
                 >
-                    <Input type="number" min={0} />
+                    <Input
+                        type="number"
+                        min={0}
+                        value={generalInfo.credits}
+                        onChange={e => setGeneralInfo({ ...generalInfo, credits: Number(e.target.value) || 0 })}
+                    />
                 </Form.Item>
             </Col>
         </Row>
+
         <Row gutter={16}>
             <Col span={12}>
-                <Form.Item label="Carácter de la Asignatura" name="subjectType" rules={[{ required: true, message: 'seleccione un tipo de asignatura' }]}>
-                    <Select>
+                <Form.Item label="Carácter de la Asignatura" rules={[{ required: true, message: 'Seleccione un tipo de asignatura' }]}>
+                    <Select
+                        value={generalInfo.type}
+                        onChange={value => setGeneralInfo({ ...generalInfo, type: value })}
+                    >
                         <Option value="Obligatoria">Obligatoria</Option>
                         <Option value="Optativa">Optativa</Option>
                         <Option value="Básica">Básica</Option>
                         <Option value="Prácticas">Prácticas</Option>
-                        <Option value="Trabajo Final de Carrera">Trabajo final de carrera</Option>
+                        <Option value="Trabajo Final de Carrera">Trabajo Final de Carrera</Option>
                     </Select>
                 </Form.Item>
             </Col>
             <Col span={12}>
-                <Form.Item label="Materia" name="subjectMatter" rules={[{ required: true, message: 'Introduzca una materia' }]}>
-                    <Input />
+                <Form.Item label="Materia" rules={[{ required: true, message: 'Introduzca una materia' }]}>
+                    <Input
+                        value={generalInfo.subjectMatter}
+                        onChange={e => setGeneralInfo({ ...generalInfo, materia: e.target.value })}
+                    />
                 </Form.Item>
             </Col>
         </Row>
@@ -88,31 +128,52 @@ const SubjectInformationForm: React.FC = () => (
         <Title level={5}>Distribución de Horas</Title>
         <Row gutter={16}>
             <Col span={12}>
-                <Form.Item label="Clases Expositivas" name="lectureHours" rules={[{ required: true, message: 'introduzca las horas de clases expositivas' }]}>
-                    <Input type="number" />
+                <Form.Item label="Clases Expositivas" rules={[{ required: true, message: 'Introduzca las horas de clases expositivas' }]}>
+                    <Input
+                        type="number"
+                        value={generalInfo.theoryHours}
+                        onChange={e => setGeneralInfo({ ...generalInfo, theoryHours: Number(e.target.value) || 0 })}
+                    />
                 </Form.Item>
             </Col>
             <Col span={12}>
-                <Form.Item label="Prácticas de Aula/Seminario" name="seminarHours" rules={[{ required: true, message: 'introduzca las horas de prácticas de aula/seminario' }]}>
-                    <Input type="number" />
+                <Form.Item label="Prácticas de Aula/Seminario" rules={[{ required: true, message: 'Introduzca las horas de prácticas de aula/seminario' }]}>
+                    <Input
+                        type="number"
+                        value={generalInfo.practiceHours}
+                        onChange={e => setGeneralInfo({ ...generalInfo, practiceHours: Number(e.target.value) || 0 })}
+                    />
                 </Form.Item>
             </Col>
         </Row>
         <Row gutter={16}>
             <Col span={12}>
-                <Form.Item label="Prácticas de Laboratorio" name="labHours" rules={[{ required: true, message: 'introduzca las horas de prácticas de laboratorio' }]}>
-                    <Input type="number" />
+                <Form.Item label="Prácticas de Laboratorio" rules={[{ required: true, message: 'Introduzca las horas de prácticas de laboratorio' }]}>
+                    <Input
+                        type="number"
+                        value={generalInfo.labHours}
+                        onChange={e => setGeneralInfo({ ...generalInfo, labHours: Number(e.target.value) || 0 })}
+                    />
                 </Form.Item>
             </Col>
             <Col span={12}>
-                <Form.Item label="Tutorías Grupales" name="tutoringHours" rules={[{ required: true, message: 'introduzca las horas de tutorías grupales' }]}>
-                    <Input type="number" />
+                <Form.Item label="Tutorías Grupales" rules={[{ required: true, message: 'Introduzca las horas de tutorías grupales' }]}>
+                    <Input
+                        type="number"
+                        value={generalInfo.tutorialHours}
+                        onChange={e => setGeneralInfo({ ...generalInfo, tutorialHours: Number(e.target.value) || 0 })}
+                    />
                 </Form.Item>
             </Col>
         </Row>
 
-        <Form.Item name="keySubject" valuePropName="checked">
-            <Checkbox>Asignatura Llave</Checkbox>
+        <Form.Item>
+            <Checkbox
+                checked={generalInfo.isKey}
+                onChange={e => setGeneralInfo({ ...generalInfo, isKey: e.target.checked })}
+            >
+                Asignatura Llave
+            </Checkbox>
         </Form.Item>
     </Card>
 );
