@@ -118,7 +118,7 @@ const SubjectInformationForm: React.FC<SubjectInformationFormProps> = ({ general
             <Col span={12}>
                 <Form.Item label="Materia" rules={[{ required: true, message: 'Introduzca una materia' }]}>
                     <Input
-                        value={generalInfo.subjectMatter}
+                        value={generalInfo.materia}
                         onChange={e => setGeneralInfo({ ...generalInfo, materia: e.target.value })}
                     />
                 </Form.Item>
