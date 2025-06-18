@@ -132,6 +132,7 @@ const AddSubjectToMemory: React.FC = () => {
             content: (
                 <LearningOutcomesTable
                     outcomes={learningOutcomes}
+                    skills={skills}
                 />
             )
         }
