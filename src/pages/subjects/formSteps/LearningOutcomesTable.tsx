@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, Table, Form, Input, Row, Col, Typography, Tag } from 'antd';
+import { Table, Typography, Tag } from 'antd';
 import { LearningOutcome, Skill } from '../SubjectForm';
 
 const { Text } = Typography;

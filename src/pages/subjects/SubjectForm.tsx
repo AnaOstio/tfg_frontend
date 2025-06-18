@@ -77,7 +77,7 @@ const AddSubjectToMemory: React.FC = () => {
     };
 
     const handleRemoveSkill = (id: string) => {
-        const newSkills = skills.filter(skill => skill.id !== id);
+        const newSkills = skills.filter(skill => skill._id !== id);
         setSkills(newSkills);
 
         const { [id]: _, ...updatedSkillsHours } = skillsHours;
