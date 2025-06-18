@@ -81,7 +81,7 @@ export function transformData(input: InputData): OutputData {
             newSkills.push({
                 name: skill.name,
                 description: skill.description,
-                type: capitalize(skill.type),
+                type: skill.type,
                 generated_id: skill.id
             });
         } else {

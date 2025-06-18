@@ -20,6 +20,10 @@ export interface Skill {
 export interface LearningOutcome {
     outcome: string;
     skillId: string;
+    skills_id: string[];
+    _id?: string; // Optional for compatibility with existing data
+    description?: string; // Optional for compatibility with existing data
+    name?: string; // Optional for compatibility with existing data
 }
 
 const AddSubjectToMemory: React.FC = () => {
@@ -32,6 +36,7 @@ const AddSubjectToMemory: React.FC = () => {
     const [_, setTitleMemory] = useState<any>(null);
     const [skillsHours, setSkillsHours] = useState<{ [key: string]: number }>({});
     const { mutateAsync: getBtId } = useGetTileMemoryById();
+    const [availableOutcomes, setAvailableOutcomes] = useState([]);
 
     const [generalInfo, setGeneralInfo] = useState({
         subjectCode: '',
@@ -52,6 +57,7 @@ const AddSubjectToMemory: React.FC = () => {
         const data = await getBtId(memoryId);
         setTitleMemory(data);
         setAvailableSkills(data.skills || []);
+        setAvailableOutcomes(data.learningOutcomes || []);
     }
 
     useEffect(() => {
@@ -71,25 +77,35 @@ const AddSubjectToMemory: React.FC = () => {
     };
 
     const handleRemoveSkill = (id: string) => {
-        setSkills(skills.filter(skill => skill.id !== id));
-    };
+        const newSkills = skills.filter(skill => skill.id !== id);
+        setSkills(newSkills);
 
-    const handleAddOutcome = () => {
-        setLearningOutcomes([...learningOutcomes, { outcome: '', skillId: '' }]);
-    };
+        const { [id]: _, ...updatedSkillsHours } = skillsHours;
+        setSkillsHours(updatedSkillsHours);
 
-    const handleRemoveOutcome = (index: number) => {
-        const newOutcomes = [...learningOutcomes];
-        newOutcomes.splice(index, 1);
-        setLearningOutcomes(newOutcomes);
+        const selectedSkillIds = Object.keys(updatedSkillsHours);
+        const filtered = availableOutcomes.filter((outcome: LearningOutcome) =>
+            outcome.skills_id.every(skillId =>
+                selectedSkillIds.includes(skillId)
+            )
+        );
+
+        setLearningOutcomes(filtered);
     };
 
     const handleHourSkillChange = (skillId: string, hours: number) => {
 
-        setSkillsHours({
+        const newSkillsHours = {
             ...skillsHours,
             [skillId]: hours
-        });
+        };
+        setSkillsHours(newSkillsHours);
+
+        const filtered = availableOutcomes.filter((outcome: LearningOutcome) =>
+            outcome.skills_id.every(id => Object.keys(newSkillsHours).includes(id))
+        );
+
+        setLearningOutcomes(filtered)
     }
 
 
@@ -116,8 +132,6 @@ const AddSubjectToMemory: React.FC = () => {
             content: (
                 <LearningOutcomesTable
                     outcomes={learningOutcomes}
-                    onAddOutcome={handleAddOutcome}
-                    onRemoveOutcome={handleRemoveOutcome}
                 />
             )
         }
