@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Steps, Typography, Button, Form, message } from 'antd';
-import { useParams } from 'react-router-dom';
+import { data, useParams } from 'react-router-dom';
 import SkillSelectorTable from './formSteps/SkillSelectorTable';
 import SubjectInformationForm from './formSteps/SubjectInformationForm';
 import LearningOutcomesTable from './formSteps/LearningOutcomesTable';
 import { useGetTileMemoryById } from '../../hooks/useTitleMemories';
+import { useSubjectsCreate } from '../../hooks/useSubjects';
 
 const { Step } = Steps;
 const { Title } = Typography;
@@ -37,6 +38,8 @@ const AddSubjectToMemory: React.FC = () => {
     const [skillsHours, setSkillsHours] = useState<{ [key: string]: number }>({});
     const { mutateAsync: getBtId } = useGetTileMemoryById();
     const [availableOutcomes, setAvailableOutcomes] = useState([]);
+
+    const { mutateAsync: saveSubject } = useSubjectsCreate();
 
     const [generalInfo, setGeneralInfo] = useState({
         subjectCode: '',
@@ -144,22 +147,20 @@ const AddSubjectToMemory: React.FC = () => {
 
     const prev = () => setCurrentStep(prev => prev - 1);
 
-    const onFinish = (values: any) => {
-
-        for (const key in values) {
-            if (values[key] === undefined || values[key] === null) {
-                values[key] = '';
-            }
-        }
-
+    const onFinish = () => {
         console.log('General Info:', generalInfo);
-
-        console.log('Form values:', values);
         console.log('Memory ID:', id);
-        console.log('Form:', values);
         console.log('Skills:', skills);
         console.log('Outcomes:', learningOutcomes);
         console.log('Skills Hours:', skillsHours);
+
+        saveSubject({
+            generalInfo,
+            skills,
+            outcomes: learningOutcomes,
+            skillHours: skillsHours,
+            titleMemoryId: id
+        });
     };
 
     return (
@@ -176,9 +177,15 @@ const AddSubjectToMemory: React.FC = () => {
                         <Button onClick={prev} style={{ marginRight: 8 }}>Atrás</Button>
                     )}
                     {currentStep < steps.length - 1 ? (
-                        <Button type="primary" onClick={next}>Siguiente</Button>
+                        <Button type="primary" onClick={e => {
+                            e.preventDefault();
+                            next();
+                        }} htmlType='button'>Siguiente</Button>
                     ) : (
-                        <Button type="primary" htmlType="submit" onClick={onFinish}>Guardar Asignatura</Button>
+                        <Button type="primary" htmlType="submit" onClick={e => {
+                            e.preventDefault();
+                            onFinish();
+                        }}>Guardar Asignatura</Button>
                     )}
                 </div>
             </Form>
