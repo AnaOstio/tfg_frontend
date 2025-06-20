@@ -1,12 +1,13 @@
 import { useMutation } from "@tanstack/react-query";
 import { TitleMemoriesSearchParams } from "../utils/titleMemory";
 import { titleMemoriesCreate, titleMemoriesDelete, titleMemoriesGetById, titleMemoriesSearch, titleMemoriesUpdate } from "../api/titleMemories";
-import { message } from "antd"; // Asegúrate de importar message si usas antd
+import { toast } from "antd"; // Asegúrate de importar toast si usas antd
 import { transformData } from "../helper/transformData";
 import { useNavigate } from "react-router-dom";
 import { assignPermissions, getPermissionsByMemoriesIds } from "../api/permissions";
 import { useSelector } from "react-redux";
 import { selectCurrentUser } from "../redux/slices/authSlice";
+import { toast } from "react-toastify";
 
 interface UseTitleMemoriesSearchOptions {
     onSuccess?: (data: any) => void;
@@ -48,9 +49,9 @@ export const useTitleMemoriesSearch = ({
             }
         },
         onError: (error) => {
-            message.error('Error al cargar las memorias de título');
             console.error('Error:', error);
             setLoading(false);
+            toast.error('Lo sentimos, ha ocurrido un error');
         },
     });
 };
@@ -79,11 +80,11 @@ export const useTitleMemoriesCreate = () => {
 
             navigate('/title-memory/details/' + data._id);
             console.log('Memoria de título creada:', data);
-            message.success('Memoria de título creada con éxito');
+            toast.success('Memoria de título creada con éxito');
         },
         onError: (error) => {
-            message.error('Error al crear la memoria de título');
             console.error('Error:', error);
+            toast.error('Lo sentimos, ha ocurrido un error');
         },
     });
 }
@@ -98,11 +99,11 @@ export const useTitleMemoriesUpdate = () => {
         onSuccess: (data) => {
             navigate('/title-memory/details/' + data._id);
             console.log('Memoria de título actualizada:', data);
-            message.success('Memoria de título actualizada con éxito');
+            toast.success('Memoria de título actualizada con éxito');
         },
         onError: (error) => {
-            message.error('Error al actualizar la memoria de título');
             console.error('Error:', error);
+            toast.error('Lo sentimos, ha ocurrido un error');
         },
     });
 }
@@ -115,6 +116,7 @@ export const useGetTileMemoryById = () => {
         },
         onError: (error) => {
             console.error('Error al obtener la memoria de título:', error);
+            toast.error('Lo sentimos, ha ocurrido un error');
             navigate('/not-found');
         },
     });
@@ -126,10 +128,10 @@ export const useDeleteTitleMemory = () => {
             return titleMemoriesDelete(id);
         },
         onSuccess: () => {
-            message.success('Memoria de título eliminada con éxito');
+            toast.success('Memoria de título eliminada con éxito');
         },
         onError: (error) => {
-            message.error('Error al eliminar la memoria de título');
+            toast.error('Error al eliminar la memoria de título');
             console.error('Error:', error);
         },
     });

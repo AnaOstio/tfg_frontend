@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Upload, Button, Select, Card, Typography, message, Form, Row, Col } from 'antd';
+import { Upload, Button, Select, Card, Typography, Form, Row, Col } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
+import { toast } from 'react-toastify';
 
 const { Title } = Typography;
 const { Option } = Select;
@@ -25,12 +26,12 @@ const UploadSubjectsScreen: React.FC = () => {
 
     const handleUpload = () => {
         if (!selectedMemory) {
-            message.error('Por favor selecciona una memoria de título');
+            toast.error('Por favor selecciona una memoria de título');
             return;
         }
 
         if (fileList.length === 0) {
-            message.error('Por favor selecciona un archivo para subir');
+            toast.error('Por favor selecciona un archivo para subir');
             return;
         }
 
@@ -39,7 +40,7 @@ const UploadSubjectsScreen: React.FC = () => {
         // Simulación de subida de archivo - reemplazar con llamada a API real
         setTimeout(() => {
             setLoading(false);
-            message.success(`Archivo subido correctamente para la memoria ${selectedMemory}`);
+            toast.success(`Archivo subido correctamente para la memoria ${selectedMemory}`);
             setFileList([]);
         }, 2000);
     };
@@ -47,7 +48,7 @@ const UploadSubjectsScreen: React.FC = () => {
     const beforeUpload = (file: File) => {
         const isTxt = file.type === 'text/plain' || file.name.endsWith('.txt');
         if (!isTxt) {
-            message.error('Solo se permiten archivos TXT');
+            toast.error('Solo se permiten archivos TXT');
         }
         return isTxt;
     };

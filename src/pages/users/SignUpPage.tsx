@@ -5,6 +5,7 @@ import { useSignup } from '../../hooks/useUsers';
 import { SignUpUserParams } from '../../utils/user';
 import { useSelector } from 'react-redux';
 import { selectIsAuthenticated } from '../../redux/slices/authSlice';
+import { toast } from 'react-toastify';
 
 const { Title, Text } = Typography;
 
@@ -15,7 +16,7 @@ const SignUpPage = () => {
 
     const onFinish = (values: SignUpUserParams) => {
         if (values.password !== values.confirmPassword) {
-            message.error('Las contraseñas no coinciden');
+            toast.error('Las contraseñas no coinciden');
             return;
         }
         signup(values);

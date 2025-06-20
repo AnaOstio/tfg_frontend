@@ -5,7 +5,7 @@ import { LoginUserParams, SignUpUserParams, AuthResponse } from '../utils/user';
 import { message } from 'antd';
 import { useAppDispatch } from '../redux/hooks';
 import { clearCredentials, setCredentials } from '../redux/slices/authSlice';
-import { AxiosError } from 'axios';
+import { toast } from 'react-toastify';
 
 export const useLogin = () => {
     const dispatch = useAppDispatch();
@@ -21,11 +21,12 @@ export const useLogin = () => {
         onSuccess: (data) => {
             dispatch(setCredentials(data)); // Guarda en Redux
             localStorage.setItem('authToken', data.data.token);
-            message.success(`Bienvenido ${data.data.user.email}`);
+            toast.success(`Bienvenido ${data.data.user.email}`);
             navigate('/dashboard');
         },
         onError: (error) => {
-            message.error(error.message || 'Error al iniciar sesión');
+            toast.error(error.message || 'Error al iniciar sesión');
+            toast.error('Lo sentimos, ha ocurrido un error');
         }
     });
 };
@@ -49,11 +50,11 @@ export const useSignup = () => {
         onSuccess: (data) => {
             dispatch(setCredentials(data)); // Guarda en Redux
             localStorage.setItem('authToken', data.data.token);
-            message.success(`Cuenta creada para ${data.data.user.email}`);
+            toast.success('Usuario registrado correctamente');
             navigate('/dashboard');
         },
         onError: (error) => {
-            message.error(error.message || 'Error al registrarse');
+            toast.error('Lo sentimos, ha ocurrido un error');
         }
     });
 };
@@ -66,6 +67,7 @@ export const useLogout = () => {
         dispatch(clearCredentials());
         localStorage.removeItem('authToken');
         navigate('/');
+        toast.success('Sesión cerrada correctamente');
     };
 }
 
@@ -79,7 +81,7 @@ export const useVerifyToken = () => {
         onError: (_) => {
             dispatch(clearCredentials());
             localStorage.removeItem('authToken');
-            message.error('La sesión ha expirado');
+            toast.error('Lo sentimos, tu sesión ha expirado');
         }
     });
 };
@@ -91,7 +93,6 @@ interface SearchUsersVariables {
     page: number
 }
 
-// 2) El hook
 export const useSearchUsers = () => {
     return useMutation<
         { data: { email: string }[]; hasMore: boolean; total: number },
@@ -100,9 +101,9 @@ export const useSearchUsers = () => {
     >({
         mutationFn: ({ search, page }) => searchUsers(search, page),
 
-        // opcional: callbacks
         onError: (error) => {
             console.error('Error buscando usuarios:', error)
+            toast.error('Lo sentimos, ha ocurrido un error');
         },
         onSuccess: (data) => {
             console.log('Usuarios recibidos:', data)

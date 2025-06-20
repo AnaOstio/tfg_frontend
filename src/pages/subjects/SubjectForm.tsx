@@ -6,6 +6,7 @@ import SubjectInformationForm from './formSteps/SubjectInformationForm';
 import LearningOutcomesTable from './formSteps/LearningOutcomesTable';
 import { useGetTileMemoryById } from '../../hooks/useTitleMemories';
 import { useSubjectsCreate } from '../../hooks/useSubjects';
+import { toast } from 'react-toastify';
 
 const { Step } = Steps;
 const { Title } = Typography;
@@ -73,7 +74,7 @@ const AddSubjectToMemory: React.FC = () => {
         const skill = availableSkills.find(s => s._id === id);
         if (!skill) return;
         if (skills.some(s => s.id === skill._id)) {
-            message.warning('Esta habilidad ya está añadida');
+            toast.warning('Esta habilidad ya está añadida');
             return;
         }
         setSkills([...skills, skill]);

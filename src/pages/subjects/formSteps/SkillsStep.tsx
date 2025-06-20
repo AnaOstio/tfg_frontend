@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { Input, Button, Table, Space, Typography, Select, message } from 'antd';
 import { PlusOutlined, DeleteOutlined, SearchOutlined } from '@ant-design/icons';
+import { toast } from 'react-toastify';
 
 const { Title } = Typography;
 const { Option } = Select;
@@ -36,7 +37,7 @@ const SkillsScreen: React.FC = () => {
                 ];
                 setAvailableSkills(mockSkills);
             } catch (error) {
-                message.error('Error al cargar las habilidades disponibles');
+                toast.error('Error al cargar las habilidades disponibles');
             } finally {
                 setLoading(false);
             }
@@ -56,7 +57,7 @@ const SkillsScreen: React.FC = () => {
                 ];
                 setSkills(mockAssignedSkills);
             } catch (error) {
-                message.error('Error al cargar las habilidades asignadas');
+                toast.error('Error al cargar las habilidades asignadas');
             }
         };
 
@@ -65,7 +66,7 @@ const SkillsScreen: React.FC = () => {
 
     const handleAddSkill = () => {
         if (!selectedSkill) {
-            message.warning('Por favor selecciona una habilidad');
+            toast.warning('Por favor selecciona una habilidad');
             return;
         }
 
@@ -74,18 +75,18 @@ const SkillsScreen: React.FC = () => {
 
         // Verificar si la habilidad ya está añadida
         if (skills.some(skill => skill.id === selectedSkill)) {
-            message.warning('Esta habilidad ya está añadida');
+            toast.warning('Esta habilidad ya está añadida');
             return;
         }
 
         setSkills([...skills, skillToAdd]);
         setSelectedSkill(null);
-        message.success('Habilidad añadida correctamente');
+        toast.success('Habilidad añadida correctamente');
     };
 
     const handleRemoveSkill = (skillId: string) => {
         setSkills(skills.filter(skill => skill.id !== skillId));
-        message.success('Habilidad eliminada');
+        toast.success('Habilidad eliminada');
     };
 
     const filteredSkills = availableSkills.filter(skill =>

@@ -1,7 +1,7 @@
 import { useMutation } from '@tanstack/react-query';
-import { message } from 'antd';
 import { LearningOutcome } from '../utils/titleMemory';
 import { searchLearningOutcomes } from '../api/learningOutcomes';
+import { toast } from 'react-toastify';
 
 interface LearningOutcomeSearchParams {
     search: string;
@@ -31,7 +31,7 @@ export const useLearningOutcomesSearch = ({ onSuccess, onError, setLoading }: Us
             setLoading?.(false);
         },
         onError: (error) => {
-            message.error('Error al buscar competencias');
+            toast.error('Error al buscar competencias');
             console.error('Error:', error);
             onError?.(error);
             setLoading?.(false);

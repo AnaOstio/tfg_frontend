@@ -1,8 +1,8 @@
 import { useNavigate } from "react-router-dom";
 import { transformSubject } from "../helper/tranformSubject";
 import { useMutation } from "@tanstack/react-query";
-import message from "antd/es/message";
 import { titleSubjectsCreate, titleSubjectsGetById, titleSubjectsGetByTitleMemoryId } from "../api/subjects";
+import { toast } from "react-toastify";
 
 export const useSubjectsCreate = () => {
     const navigate = useNavigate();
@@ -14,10 +14,10 @@ export const useSubjectsCreate = () => {
         onSuccess: (data) => {
             navigate('/title-memory/details/' + data.titleMemoryId);
             console.log('Memoria de título creada:', data);
-            message.success('Memoria de título creada con éxito');
+            toast.success('Memoria de título creada con éxito');
         },
         onError: (error) => {
-            message.error('Error al crear la memoria de título');
+            toast.error('Error al crear la memoria de título');
             console.error('Error:', error);
         },
     });
@@ -34,7 +34,7 @@ export const useGetSubjectsByTitleMemoryId = (titleMemoryId: string) => {
         },
         onError: (error) => {
             navigate('/not-found');
-            message.error('Error al obtener las materias');
+            toast.error('Error al obtener las materias');
             console.error('Error:', error);
         },
     });
@@ -51,7 +51,7 @@ export const useGetSubjectById = (subjectId: string) => {
         },
         onError: (error) => {
             navigate('/not-found');
-            message.error('Error al obtener la materia');
+            toast.error('Error al obtener la materia');
             console.error('Error:', error);
         },
     });

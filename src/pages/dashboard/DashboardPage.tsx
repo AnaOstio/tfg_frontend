@@ -201,11 +201,9 @@ const TitleMemoriesView: React.FC<TitleMemoriesViewProps> = ({ fromUser = false 
         setLoading(true);
         try {
             await deleteTitleMemory(id);
-            message.success('Memoria de título eliminada correctamente');
             fetchData();
         } catch (error) {
             console.error('Error al eliminar la memoria de título:', error);
-            message.error('Error al eliminar la memoria de título');
         } finally {
             setLoading(false);
         }

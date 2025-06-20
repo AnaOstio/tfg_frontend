@@ -1,8 +1,8 @@
 // hooks/useSkillSearch.ts
 import { useMutation } from '@tanstack/react-query';
-import { message } from 'antd';
 import { Skill } from '../utils/skill';
 import { searchSkills } from '../api/skills';
+import { toast } from 'react-toastify';
 
 interface SkillSearchParams {
     search: string;
@@ -33,7 +33,7 @@ export const useSkillSearch = ({ onSuccess, onError, setLoading }: UseSkillSearc
             setLoading?.(false);
         },
         onError: (error) => {
-            message.error('Error al buscar competencias');
+            toast.error('Error al buscar competencias');
             console.error('Error:', error);
             onError?.(error);
             setLoading?.(false);
