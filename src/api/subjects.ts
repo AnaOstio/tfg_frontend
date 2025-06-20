@@ -11,3 +11,12 @@ export const titleSubjectsCreate = async (data: any): Promise<any> => {
     });
     return response.data;
 };
+
+export const titleSubjectsGetByTitleMemoryId = async (titleMemoryId: string): Promise<any> => {
+    const response = await axios.get(`${API_BASE_URL}/subjects/by-memory/${titleMemoryId}`, {
+        headers: {
+            Authorization: `Bearer ${localStorage.getItem('authToken')}`
+        }
+    });
+    return response.data;
+}
