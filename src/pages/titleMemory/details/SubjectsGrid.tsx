@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Card, Row, Col, Pagination, Typography, Spin } from 'antd';
+import { Card, Row, Col, Pagination, Typography, Spin, Empty } from 'antd';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useGetSubjectsByTitleMemoryId } from '../../../hooks/useSubjects';
 
@@ -45,6 +45,14 @@ const SubjectsGrid: React.FC = () => {
 
     const startIndex = (currentPage - 1) * pageSize;
     const paginatedSubjects = subjects?.slice(startIndex, startIndex + pageSize) || [];
+
+    if (!loading && subjects.length === 0) {
+        return (
+            <div style={{ textAlign: 'center', padding: '80px' }}>
+                <Empty description={<Text>No hay asignaturas para esta memoria de título</Text>} />
+            </div>
+        );
+    }
 
     return (
         <>
