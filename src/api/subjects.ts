@@ -20,3 +20,12 @@ export const titleSubjectsGetByTitleMemoryId = async (titleMemoryId: string): Pr
     });
     return response.data;
 }
+
+export const titleSubjectsGetById = async (subjectId: string): Promise<any> => {
+    const response = await axios.get(`${API_BASE_URL}/subjects/${subjectId}`, {
+        headers: {
+            Authorization: `Bearer ${localStorage.getItem('authToken')}`
+        }
+    });
+    return response.data;
+};

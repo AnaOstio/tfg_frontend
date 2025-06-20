@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { Card, Row, Col, Typography, Divider, Tag, Table } from 'antd';
+import { Card, Row, Col, Typography, Divider, Tag, Table, Spin } from 'antd';
+import { useGetSubjectById } from '../../hooks/useSubjects';
 
 const { Title, Text } = Typography;
 
@@ -17,7 +18,7 @@ interface Subject {
 
 interface Skill {
     _id: string;
-    code: string;
+    name: string;
     description: string;
     type: string;
 }
@@ -28,86 +29,74 @@ interface LearningOutcome {
     associatedSkills: string[];
 }
 
-const mockSkills: Skill[] = [
-    {
-        _id: "681e34ab57faf39c006df5ab",
-        code: "SKL001",
-        description: "Capacidad para desarrollar software de calidad",
-        type: "Técnica",
-    },
-];
-
-const mockOutcomes: LearningOutcome[] = [
-    {
-        _id: "681f0d8f7627d592a98f8642",
-        description: "Capacidad para analizar problemas complejos",
-        associatedSkills: ["681e34ab57faf39c006df5ab"],
-    },
-];
-
-const mockSubject: Subject = {
-    _id: "6828ae32746eb3747517101b",
-    code: "MAT101",
-    name: "Matemáticas I",
-    credits: 6,
-    nature: "Obligatoria",
-    duration: "Anual",
-    skills: {
-        "681e34ab57faf39c006df5ab": 20,
-    },
-    learningsOutcomes: ["681f0d8f7627d592a98f8642"],
-};
-
 const SubjectDetails: React.FC = () => {
     const { subjectId } = useParams<{ subjectId: string }>();
     const [subject, setSubject] = useState<Subject | null>(null);
+    const [skills, setSkills] = useState<Skill[]>([]);
+    const [outcomes, setOutcomes] = useState<LearningOutcome[]>([]);
     const [loading, setLoading] = useState(true);
+    const { mutateAsync: getById } = useGetSubjectById(subjectId || '');
+
+    const fetchSubject = async (id: string) => {
+        setLoading(true);
+        try {
+            const response = await getById(id);
+            setSubject(response.subject);
+            setSkills(response.validSkills);
+            setOutcomes(response.validLearningOutcomes);
+        } catch (error) {
+            console.error('Error fetching subject:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     useEffect(() => {
-        // Simular carga de datos
-        setTimeout(() => {
-            setSubject(mockSubject);
-            setLoading(false);
-        }, 500);
+        if (subjectId) fetchSubject(subjectId);
     }, [subjectId]);
 
+    if (loading) return <Spin tip="Cargando detalles de la asignatura..." />;
     if (!subject) return null;
 
-    const associatedSkills = Object.keys(subject.skills).map(skillId =>
-        mockSkills.find(s => s._id === skillId)
-    );
+    const associatedSkills = Object.keys(subject.skills)
+        .map(id => skills.find(s => s._id === id))
+        .filter((s): s is Skill => !!s);
 
-    const associatedOutcomes = subject.learningsOutcomes.map(outcomeId =>
-        mockOutcomes.find(o => o._id === outcomeId)
-    );
+    const associatedOutcomes = outcomes;
 
     return (
-        <div style={{ padding: 24 }}>
+        <div style={{ padding: 24, width: '80%', margin: '0 auto' }}>
             <Title level={2}>{subject.name}</Title>
             <Divider />
 
-            <Card title="Datos Generales" loading={loading} style={{ marginBottom: 24 }}>
+            <Card title="Datos Generales" style={{ marginBottom: 24 }}>
                 <Row gutter={16}>
-                    <Col span={12}><Text strong>Código: </Text> <div>{subject.code}</div></Col>
-                    <Col span={12}><Text strong>Créditos:</Text> <div>{subject.credits}</div></Col>
-                    <Col span={12}><Text strong>Naturaleza:</Text> <div>{subject.nature}</div></Col>
-                    <Col span={12}><Text strong>Duración:</Text> <div>{subject.duration}</div></Col>
+                    <Col span={12}>
+                        <Text strong>Código:</Text> <div>{subject.code}</div>
+                    </Col>
+                    <Col span={12}>
+                        <Text strong>Créditos:</Text> <div>{subject.credits}</div>
+                    </Col>
+                    <Col span={12}>
+                        <Text strong>Naturaleza:</Text> <div>{subject.nature}</div>
+                    </Col>
+                    <Col span={12}>
+                        <Text strong>Duración:</Text> <div>{subject.duration}</div>
+                    </Col>
                 </Row>
             </Card>
 
-            <Card title="Competencias Asociadas" loading={loading} style={{ marginBottom: 24 }}>
-                {associatedSkills.map(skill =>
-                    skill ? (
-                        <Card type="inner" key={skill._id} style={{ marginBottom: 12 }}>
-                            <Text strong>Código:</Text> {skill.code}<br />
-                            <Text strong>Descripción:</Text> {skill.description}<br />
-                            <Text strong>Tipo:</Text> {skill.type}
-                        </Card>
-                    ) : null
-                )}
+            <Card title="Competencias Asociadas" style={{ marginBottom: 24 }}>
+                {associatedSkills.map(skill => (
+                    <Card type="inner" key={skill._id} style={{ marginBottom: 12 }}>
+                        <Text strong>Nombre:</Text> {skill.name}<br />
+                        <Text strong>Descripción:</Text> {skill.description}<br />
+                        <Text strong>Tipo:</Text> {skill.type}
+                    </Card>
+                ))}
             </Card>
 
-            <Card title="Resultados de Aprendizaje" loading={loading}>
+            <Card title="Resultados de Aprendizaje">
                 <Table
                     dataSource={associatedOutcomes}
                     columns={[
@@ -119,11 +108,11 @@ const SubjectDetails: React.FC = () => {
                         {
                             title: 'Competencias Asociadas',
                             key: 'associatedSkills',
-                            render: (_, record) => (
+                            render: (_, record: LearningOutcome) => (
                                 <>
-                                    {record?.associatedSkills.map(id => {
-                                        const skill = mockSkills.find(s => s._id === id);
-                                        return skill ? <Tag key={id}>{skill.code}</Tag> : null;
+                                    {record.associatedSkills.map(id => {
+                                        const skill = skills.find(s => s._id === id);
+                                        return skill ? <Tag key={id}>{skill.name}</Tag> : null;
                                     })}
                                 </>
                             ),

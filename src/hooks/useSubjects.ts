@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { transformSubject } from "../helper/tranformSubject";
 import { useMutation } from "@tanstack/react-query";
 import message from "antd/es/message";
-import { titleSubjectsCreate, titleSubjectsGetByTitleMemoryId } from "../api/subjects";
+import { titleSubjectsCreate, titleSubjectsGetById, titleSubjectsGetByTitleMemoryId } from "../api/subjects";
 
 export const useSubjectsCreate = () => {
     const navigate = useNavigate();
@@ -33,6 +33,21 @@ export const useGetSubjectsByTitleMemoryId = (titleMemoryId: string) => {
         },
         onError: (error) => {
             message.error('Error al obtener las materias');
+            console.error('Error:', error);
+        },
+    });
+}
+
+export const useGetSubjectById = (subjectId: string) => {
+    return useMutation<any, Error, any>({
+        mutationFn: () => {
+            return titleSubjectsGetById(subjectId);
+        },
+        onSuccess: (data) => {
+            console.log('Materia obtenida:', data);
+        },
+        onError: (error) => {
+            message.error('Error al obtener la materia');
             console.error('Error:', error);
         },
     });
