@@ -115,7 +115,7 @@ export const useGetTileMemoryById = () => {
         },
         onError: (error) => {
             console.error('Error al obtener la memoria de título:', error);
-            navigate('/error');
+            navigate('/not-found');
         },
     });
 }
