@@ -24,6 +24,7 @@ export const useSubjectsCreate = () => {
 }
 
 export const useGetSubjectsByTitleMemoryId = (titleMemoryId: string) => {
+    const navigate = useNavigate();
     return useMutation<any, Error, any>({
         mutationFn: () => {
             return titleSubjectsGetByTitleMemoryId(titleMemoryId);
@@ -32,6 +33,7 @@ export const useGetSubjectsByTitleMemoryId = (titleMemoryId: string) => {
             console.log('Materias obtenidas:', data);
         },
         onError: (error) => {
+            navigate('/not-found');
             message.error('Error al obtener las materias');
             console.error('Error:', error);
         },
@@ -39,6 +41,7 @@ export const useGetSubjectsByTitleMemoryId = (titleMemoryId: string) => {
 }
 
 export const useGetSubjectById = (subjectId: string) => {
+    const navigate = useNavigate();
     return useMutation<any, Error, any>({
         mutationFn: () => {
             return titleSubjectsGetById(subjectId);
@@ -47,6 +50,7 @@ export const useGetSubjectById = (subjectId: string) => {
             console.log('Materia obtenida:', data);
         },
         onError: (error) => {
+            navigate('/not-found');
             message.error('Error al obtener la materia');
             console.error('Error:', error);
         },
