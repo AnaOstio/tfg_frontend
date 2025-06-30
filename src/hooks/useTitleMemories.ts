@@ -1,12 +1,9 @@
 import { useMutation } from "@tanstack/react-query";
 import { TitleMemoriesSearchParams } from "../utils/titleMemory";
-import { titleMemoriesCreate, titleMemoriesDelete, titleMemoriesGetById, titleMemoriesSearch, titleMemoriesUpdate } from "../api/titleMemories";
-import { toast } from "antd"; // Asegúrate de importar toast si usas antd
+import { titleMemoriesCreate, titleMemoriesDelete, titleMemoriesGetById, titleMemoriesSearch, titleMemoriesUpdate, titleMemoryFromFile } from "../api/titleMemories";
 import { transformData } from "../helper/transformData";
 import { useNavigate } from "react-router-dom";
 import { assignPermissions, getPermissionsByMemoriesIds } from "../api/permissions";
-import { useSelector } from "react-redux";
-import { selectCurrentUser } from "../redux/slices/authSlice";
 import { toast } from "react-toastify";
 
 interface UseTitleMemoriesSearchOptions {
@@ -133,6 +130,24 @@ export const useDeleteTitleMemory = () => {
         onError: (error) => {
             toast.error('Error al eliminar la memoria de título');
             console.error('Error:', error);
+        },
+    });
+}
+
+export const useUploadTitleMemories = () => {
+    const navigate = useNavigate();
+    return useMutation<any, Error, any>({
+        mutationFn: async (data) => {
+            return titleMemoryFromFile(data);
+        },
+        onSuccess: (data) => {
+            navigate('/dashboard/');
+            console.log('Memoria de título subida:', data);
+            toast.success('Memoria de título subida con éxito');
+        },
+        onError: (error) => {
+            console.error('Error al subir la memoria de título:', error);
+            toast.error('Lo sentimos, ha ocurrido un error');
         },
     });
 }

@@ -14,6 +14,8 @@ const AddSubjectPage = React.lazy(() => import("../pages/subjects/SubjectForm"))
 const TitleMemoryDetails = React.lazy(() => import("../pages/titleMemory/TitleMemoryDetails"));
 const SubjectDetails = React.lazy(() => import("../pages/subjects/SubjectDetails"));
 const UploadSubjectsScreen = React.lazy(() => import("../pages/subjects/upload/UploadSubjectsScreen"));
+const UploadTitleMemories = React.lazy(() => import("../pages/titleMemory/upload/UploadTitleMemories"));
+const SimilarityReview = React.lazy(() => import("../pages/similarities/SimilarityReview"));
 
 const router = createBrowserRouter([
     {
@@ -87,6 +89,14 @@ const router = createBrowserRouter([
                 )
             },
             {
+                path: "/upload-title-memories",
+                element: (
+                    <ProtectedRoute>
+                        <UploadTitleMemories />
+                    </ProtectedRoute>
+                )
+            },
+            {
                 path: "/title-memory/details/:id",
                 element: (
                     <ProtectedRoute>
@@ -99,6 +109,14 @@ const router = createBrowserRouter([
                 element: (
                     <ProtectedRoute>
                         <SubjectDetails />
+                    </ProtectedRoute>
+                )
+            },
+            {
+                path: "/check-similiraties",
+                element: (
+                    <ProtectedRoute>
+                        <SimilarityReview />
                     </ProtectedRoute>
                 )
             },

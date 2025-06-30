@@ -28,6 +28,11 @@ const NavBar = () => {
                 minWidth: '120px'
             }}>
                 <Link to="/" style={{ color: 'inherit' }}>
+                    <img
+                        src="/logo.svg"
+                        alt="Logo TFG"
+                        style={{ width: 32, height: 32, marginRight: 8 }}
+                    />
                     TFG
                 </Link>
             </div>

@@ -45,3 +45,12 @@ export const titleMemoriesDelete = async (id: string): Promise<void> => {
         }
     });
 }
+
+export const titleMemoryFromFile = async (files: File[]): Promise<any> => {
+    const response = await axios.post(`${API_BASE_URL}/title-memories/from-file`, files, {
+        headers: {
+            Authorization: `Bearer ${localStorage.getItem('authToken')}`
+        }
+    });
+    return response.data;
+}
