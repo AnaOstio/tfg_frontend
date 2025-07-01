@@ -1,28 +1,21 @@
-import React, { useState } from 'react';
-import { Upload, Button, Select, Card, Typography, Form, Row, Col } from 'antd';
+import React, { useEffect, useState } from 'react';
+import { Upload, Button, Select, Card, Typography, Form, Row, Col, Table } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 import { toast } from 'react-toastify';
+import { useGetTileMemoriesByUser } from '../../../hooks/useTitleMemories';
+import { useGetSkillsByIds } from '../../../hooks/useSkills';
 
 const { Title } = Typography;
 const { Option } = Select;
-
-interface TitleMemory {
-    _id: string;
-    name: string;
-    titleCode: number;
-}
 
 const UploadSubjectsScreen: React.FC = () => {
     const [selectedMemory, setSelectedMemory] = useState<string | null>(null);
     const [fileList, setFileList] = useState<any[]>([]);
     const [loading, setLoading] = useState(false);
-
-    // Datos mock de memorias de título - reemplazar con llamada a API real
-    const titleMemories: TitleMemory[] = [
-        { _id: '1', name: 'Ing. Informática 2023', titleCode: 202301 },
-        { _id: '2', name: 'Ing. Telecomunicaciones 2023', titleCode: 202302 },
-        { _id: '3', name: 'Matemáticas 2023', titleCode: 202303 },
-    ];
+    const { mutateAsync: getByUserId } = useGetTileMemoriesByUser();
+    const { mutateAsync: getSkills } = useGetSkillsByIds();
+    const [titleMemories, setTitleMemories] = useState([]);
+    const [selectedSkills, setSelectedSkills] = useState([]);
 
     const handleUpload = () => {
         if (!selectedMemory) {
@@ -56,6 +49,68 @@ const UploadSubjectsScreen: React.FC = () => {
     const onFileChange = ({ fileList }: { fileList: any[] }) => {
         setFileList(fileList);
     };
+
+    const fetchTitleMemories = async () => {
+        try {
+            const memories = await getByUserId();
+            const allowedRoles = ['Propietario', 'Asignaturas'];
+
+            const ownedMemories = memories.result.data.filter(memoria => {
+                return memories.permissions.some(perm =>
+                    perm.memoryId === memoria._id
+                    && perm.permissions.some(role => allowedRoles.includes(role))
+                );
+            });
+            setTitleMemories(ownedMemories);
+
+            return memories;
+        } catch (error) {
+            console.error('Error al obtener las memorias de título:', error);
+            toast.error('Lo sentimos, ha ocurrido un error al cargar las memorias de título');
+            return [];
+        }
+    }
+
+    const getSkillsByIds = async (memoryId: string) => {
+        try {
+            const memory = titleMemories.filter(memory => memory._id === memoryId);
+
+            const skillsIds = await getSkills(memory[0].skills || []);
+            setSelectedSkills(skillsIds);
+        } catch (error) {
+            console.error('Error al obtener las competencias:', error);
+            toast.error('Lo sentimos, ha ocurrido un error al cargar las competencias');
+        }
+    }
+
+    useEffect(() => {
+        fetchTitleMemories();
+    }, []);
+
+    useEffect(() => {
+        if (selectedMemory) {
+            getSkillsByIds(selectedMemory);
+        }
+    }, [selectedMemory]);
+
+    // Columnas para la tabla de competencias
+    const skillColumns = [
+        {
+            title: 'ID',
+            dataIndex: '_id',
+            key: '_id',
+        },
+        {
+            title: 'Nombre',
+            dataIndex: 'name',
+            key: 'name',
+        },
+        {
+            title: 'Descripción',
+            dataIndex: 'description',
+            key: 'description',
+        },
+    ];
 
     return (
         <div style={{ padding: '24px' }}>
@@ -117,6 +172,18 @@ const UploadSubjectsScreen: React.FC = () => {
                         </Col>
                     </Row>
                 </Form>
+            </Card>
+
+            <Card title="Competencias asociadas a la memoria seleccionada" style={{ marginTop: 24 }}>
+                <p>Listado de competencias asociadas a la memoria de título seleccionada:</p>
+                <Table
+                    columns={skillColumns}
+                    dataSource={selectedSkills}
+                    rowKey="_id"
+                    pagination={false}
+                    bordered
+                    size="small"
+                />
             </Card>
 
             <Card title="Instrucciones" style={{ marginTop: 24 }}>

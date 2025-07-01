@@ -31,3 +31,9 @@ export const searchSkills = async ({
         total,
     };
 };
+
+
+export const getSkillsByIds = async (skillIds: string[]): Promise<Skill[]> => {
+    const response = await axios.post(`${API_BASE_URL}/skills/getAll`, { skillIds });
+    return response.data;
+}

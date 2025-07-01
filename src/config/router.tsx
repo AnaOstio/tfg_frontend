@@ -67,7 +67,15 @@ const router = createBrowserRouter([
                 path: "/add-subject/:id",
                 element: (
                     <ProtectedRoute>
-                        <AddSubjectPage />
+                        <AddSubjectPage mode="add" />
+                    </ProtectedRoute>
+                )
+            },
+            {
+                path: "/edit-subject/:id/:subjectId",
+                element: (
+                    <ProtectedRoute>
+                        <AddSubjectPage mode="edit" />
                     </ProtectedRoute>
                 )
             },

@@ -54,3 +54,12 @@ export const titleMemoryFromFile = async (files: File[]): Promise<any> => {
     });
     return response.data;
 }
+
+export const getTitleMemoriesByUser = async (): Promise<any> => {
+    const response = await axios.get(`${API_BASE_URL}/title-memories/user/memories`, {
+        headers: {
+            Authorization: `Bearer ${localStorage.getItem('authToken')}`
+        }
+    });
+    return response.data;
+}

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Card, Row, Col, Form, Input, Select, Checkbox, Typography } from 'antd';
+import { C } from 'vitest/dist/chunks/reporters.d.DG9VKi4m.js';
 
 const { Option } = Select;
 const { Title } = Typography;
@@ -56,7 +57,7 @@ const SubjectInformationForm: React.FC<SubjectInformationFormProps> = ({ general
             <Col span={8}>
                 <Form.Item label="Curso Académico" rules={[{ required: true, message: 'Introduzca el curso académico' }]}>
                     <Select
-                        value={generalInfo.academicYear}
+                        value={COURSES[Number(generalInfo.academicYear)] || ''}
                         onChange={value => setGeneralInfo({ ...generalInfo, academicYear: value })}
                     >
                         {[...Array(6)].map((_, index) => (

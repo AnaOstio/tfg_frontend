@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { transformSubject } from "../helper/tranformSubject";
 import { useMutation } from "@tanstack/react-query";
-import { titleSubjectsCreate, titleSubjectsGetById, titleSubjectsGetByTitleMemoryId } from "../api/subjects";
+import { titleSubjectsCreate, titleSubjectsGetById, titleSubjectsGetByTitleMemoryId, titleSubjectsUpdate } from "../api/subjects";
 import { toast } from "react-toastify";
 
 export const useSubjectsCreate = () => {
@@ -52,6 +52,25 @@ export const useGetSubjectById = (subjectId: string) => {
         onError: (error) => {
             navigate('/not-found');
             toast.error('Error al obtener la materia');
+            console.error('Error:', error);
+        },
+    });
+}
+
+export const useSubjectsUpdate = () => {
+    const navigate = useNavigate();
+    return useMutation<any, Error, any>({
+        mutationFn: (data) => {
+            const transformed = transformSubject(data.generalInfo, data.skills, data.outcomes, data.skillHours, data.titleMemoryId);
+            return titleSubjectsUpdate(data.id, transformed);
+        },
+        onSuccess: (data) => {
+            navigate('/title-memory/details/' + data.titleMemoryId);
+            console.log('Materia actualizada:', data);
+            toast.success('Materia actualizada con éxito');
+        },
+        onError: (error) => {
+            toast.error('Error al actualizar la materia');
             console.error('Error:', error);
         },
     });

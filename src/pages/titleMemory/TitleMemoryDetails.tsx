@@ -153,7 +153,7 @@ const TitleMemoryDetails: React.FC = () => {
             case 'outcomes':
                 return <OutcomesTable outcomes={titleMemory.learningOutcomes} skills={titleMemory.skills} loading={loading} />;
             case 'subjects':
-                return <SubjectsGrid />;
+                return <SubjectsGrid permissions={permissions} />;
             default:
                 return null;
         }

@@ -1,6 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
 import { TitleMemoriesSearchParams } from "../utils/titleMemory";
-import { titleMemoriesCreate, titleMemoriesDelete, titleMemoriesGetById, titleMemoriesSearch, titleMemoriesUpdate, titleMemoryFromFile } from "../api/titleMemories";
+import { getTitleMemoriesByUser, titleMemoriesCreate, titleMemoriesDelete, titleMemoriesGetById, titleMemoriesSearch, titleMemoriesUpdate, titleMemoryFromFile } from "../api/titleMemories";
 import { transformData } from "../helper/transformData";
 import { useNavigate } from "react-router-dom";
 import { assignPermissions, getPermissionsByMemoriesIds } from "../api/permissions";
@@ -148,6 +148,21 @@ export const useUploadTitleMemories = () => {
         onError: (error) => {
             console.error('Error al subir la memoria de título:', error);
             toast.error('Lo sentimos, ha ocurrido un error');
+        },
+    });
+}
+
+export const useGetTileMemoriesByUser = () => {
+    const navigate = useNavigate();
+    return useMutation<any, Error, void>({
+        mutationFn: async () => {
+            const response = await getTitleMemoriesByUser();
+            return response;
+        },
+        onError: (error) => {
+            console.error('Error al obtener las memorias de título del usuario:', error);
+            toast.error('Lo sentimos, ha ocurrido un error');
+            navigate('/not-found');
         },
     });
 }

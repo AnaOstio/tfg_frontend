@@ -1,7 +1,7 @@
 // hooks/useSkillSearch.ts
 import { useMutation } from '@tanstack/react-query';
 import { Skill } from '../utils/skill';
-import { searchSkills } from '../api/skills';
+import { getSkillsByIds, searchSkills } from '../api/skills';
 import { toast } from 'react-toastify';
 
 interface SkillSearchParams {
@@ -40,3 +40,15 @@ export const useSkillSearch = ({ onSuccess, onError, setLoading }: UseSkillSearc
         },
     });
 };
+
+export const useGetSkillsByIds = () => {
+    return useMutation<any, Error, string[]>({
+        mutationFn: async (ids) => {
+            return getSkillsByIds(ids);
+        },
+        onError: (error) => {
+            console.error('Error al obtener habilidades por IDs:', error);
+            toast.error('Error al obtener habilidades');
+        },
+    });
+}

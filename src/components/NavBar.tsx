@@ -30,10 +30,10 @@ const NavBar = () => {
                 <Link to="/" style={{ color: 'inherit' }}>
                     <img
                         src="/logo.svg"
-                        alt="Logo TFG"
+                        alt="Logo PLaCo"
                         style={{ width: 32, height: 32, marginRight: 8 }}
                     />
-                    TFG
+                    PLaCo
                 </Link>
             </div>
             <Menu

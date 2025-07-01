@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Card, Row, Col, Pagination, Typography, Spin, Empty } from 'antd';
+import { Card, Row, Col, Pagination, Typography, Spin, Empty, Dropdown, Button, MenuProps } from 'antd';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useGetSubjectsByTitleMemoryId } from '../../../hooks/useSubjects';
 
@@ -14,7 +14,11 @@ interface Subject {
     duration: string;
 }
 
-const SubjectsGrid: React.FC = () => {
+interface SubjectsGridProps {
+    permissions?: any[];
+}
+
+const SubjectsGrid: React.FC<SubjectsGridProps> = ({ permissions = [] }) => {
     const { id: titleId } = useParams<{ id: string }>();
     const [currentPage, setCurrentPage] = useState(1);
     const [subjects, setSubjects] = useState<Subject[]>([]);
@@ -23,6 +27,15 @@ const SubjectsGrid: React.FC = () => {
     const navigate = useNavigate();
     const fetchedRef = useRef(false);
     const { mutateAsync: getSubjectsByTitleMemoryId } = useGetSubjectsByTitleMemoryId(titleId || '');
+
+    type SubjectActionKey = 'edit' | 'delete';
+    const REQUIRED_PERMISSIONS: Record<SubjectActionKey, string[]> = {
+        edit: ['Propietario', 'Asignaturas'],
+        delete: ['Propietario', 'Asignaturas'],
+    };
+
+    const hasAny = (userPerms: string[], needed: string[]) =>
+        needed.length === 0 || needed.some(p => userPerms.includes(p));
 
     const fetchSubjects = async (titleMemoryId: string) => {
         setLoading(true);
@@ -42,6 +55,38 @@ const SubjectsGrid: React.FC = () => {
             fetchedRef.current = true;
         }
     }, [titleId]);
+
+    const getSubjectActions = (subjectId: string): MenuProps['items'] => [
+        {
+            key: 'edit',
+            disabled: !hasAny(permissions, REQUIRED_PERMISSIONS.edit),
+            label: (
+                <div
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        navigate(`/edit-subject/${titleId}/${subjectId}`);
+                    }}
+                >
+                    Editar
+                </div>
+            ),
+        },
+        {
+            key: 'delete',
+            disabled: !hasAny(permissions, REQUIRED_PERMISSIONS.delete),
+            label: (
+                <div
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        // Aquí puedes agregar la lógica para eliminar la asignatura
+                        console.log('Eliminar asignatura', subjectId);
+                    }}
+                >
+                    Eliminar
+                </div>
+            ),
+        },
+    ];
 
     const startIndex = (currentPage - 1) * pageSize;
     const paginatedSubjects = subjects?.slice(startIndex, startIndex + pageSize) || [];
@@ -69,6 +114,20 @@ const SubjectsGrid: React.FC = () => {
                                     onClick={() => navigate(
                                         `/title-memory/details/${titleId}/subjects/${subject._id}`
                                     )}
+                                    extra={
+                                        <Dropdown
+                                            menu={{ items: getSubjectActions(subject._id) }}
+                                            trigger={['click']}
+                                            onClick={(e) => e.stopPropagation()}
+                                        >
+                                            <Button
+                                                size="small"
+                                                onClick={(e) => e.stopPropagation()}
+                                            >
+                                                Acciones
+                                            </Button>
+                                        </Dropdown>
+                                    }
                                 >
                                     <Link to={`/title-memory/details/${titleId}/subjects/${subject._id}`} />
                                     <Text strong>Código:</Text> <div style={{ textTransform: 'capitalize' }}>{subject.code}</div>
