@@ -38,3 +38,12 @@ export const titleSubjectsUpdate = async (subjectId: string, data: any): Promise
     });
     return response.data;
 };
+
+export const titleSubjectsDelete = async (subjectId: string): Promise<any> => {
+    const response = await axios.delete(`${API_BASE_URL}/subjects/${subjectId}`, {
+        headers: {
+            Authorization: `Bearer ${localStorage.getItem('authToken')}`
+        }
+    });
+    return response.data;
+};

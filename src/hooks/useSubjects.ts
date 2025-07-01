@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { transformSubject } from "../helper/tranformSubject";
 import { useMutation } from "@tanstack/react-query";
-import { titleSubjectsCreate, titleSubjectsGetById, titleSubjectsGetByTitleMemoryId, titleSubjectsUpdate } from "../api/subjects";
+import { titleSubjectsCreate, titleSubjectsDelete, titleSubjectsGetById, titleSubjectsGetByTitleMemoryId, titleSubjectsUpdate } from "../api/subjects";
 import { toast } from "react-toastify";
 
 export const useSubjectsCreate = () => {
@@ -71,6 +71,22 @@ export const useSubjectsUpdate = () => {
         },
         onError: (error) => {
             toast.error('Error al actualizar la materia');
+            console.error('Error:', error);
+        },
+    });
+}
+
+export const useSubjectsDelete = () => {
+    return useMutation<any, Error, string>({
+        mutationFn: (subjectId) => {
+            return titleSubjectsDelete(subjectId);
+        },
+        onSuccess: (data) => {
+            console.log('Materia eliminada:', data);
+            toast.success('Materia eliminada con éxito');
+        },
+        onError: (error) => {
+            toast.error('Error al eliminar la materia');
             console.error('Error:', error);
         },
     });

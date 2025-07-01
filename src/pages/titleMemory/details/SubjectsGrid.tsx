@@ -1,7 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Card, Row, Col, Pagination, Typography, Spin, Empty, Dropdown, Button, MenuProps } from 'antd';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { useGetSubjectsByTitleMemoryId } from '../../../hooks/useSubjects';
+import { useGetSubjectsByTitleMemoryId, useSubjectsDelete } from '../../../hooks/useSubjects';
+import useConfirmation from '../../../hooks/useConfirmation';
 
 const { Text } = Typography;
 
@@ -27,6 +28,8 @@ const SubjectsGrid: React.FC<SubjectsGridProps> = ({ permissions = [] }) => {
     const navigate = useNavigate();
     const fetchedRef = useRef(false);
     const { mutateAsync: getSubjectsByTitleMemoryId } = useGetSubjectsByTitleMemoryId(titleId || '');
+    const { mutateAsync: deleteSubject } = useSubjectsDelete();
+    const { showConfirmation, ConfirmationModal } = useConfirmation();
 
     type SubjectActionKey = 'edit' | 'delete';
     const REQUIRED_PERMISSIONS: Record<SubjectActionKey, string[]> = {
@@ -48,6 +51,18 @@ const SubjectsGrid: React.FC<SubjectsGridProps> = ({ permissions = [] }) => {
             setLoading(false);
         }
     };
+
+    const handleDelete = async (subjectId: string) => {
+        setLoading(true);
+        try {
+            await deleteSubject(subjectId);
+            setSubjects(prev => prev.filter(subject => subject._id !== subjectId));
+        } catch (error) {
+            console.error('Error deleting subject:', error);
+        } finally {
+            setLoading(false);
+        }
+    }
 
     useEffect(() => {
         if (titleId && !fetchedRef.current) {
@@ -78,8 +93,10 @@ const SubjectsGrid: React.FC<SubjectsGridProps> = ({ permissions = [] }) => {
                 <div
                     onClick={(e) => {
                         e.stopPropagation();
-                        // Aquí puedes agregar la lógica para eliminar la asignatura
-                        console.log('Eliminar asignatura', subjectId);
+                        showConfirmation(
+                            '¿Desea eliminar esta memoria de asignatura?',
+                            () => handleDelete(subjectId),
+                        );
                     }}
                 >
                     Eliminar
@@ -148,6 +165,7 @@ const SubjectsGrid: React.FC<SubjectsGridProps> = ({ permissions = [] }) => {
                     />
                 </>
             )}
+            <ConfirmationModal />
         </>
     );
 };
