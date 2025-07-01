@@ -32,15 +32,6 @@ interface SubjectFormProps {
     mode: 'add' | 'edit';
 }
 
-const ordinales: Record<number, string> = {
-    1: "Primero",
-    2: "Segundo",
-    3: "Tercero",
-    4: "Cuarto",
-    5: "Quinto",
-    6: "Sexto",
-};
-
 const SubjectForm: React.FC<SubjectFormProps> = ({ mode = 'add' }) => {
     const { id: titleId, subjectId } = useParams<{ id: string; subjectId?: string }>();
     const [form] = Form.useForm();
@@ -55,7 +46,6 @@ const SubjectForm: React.FC<SubjectFormProps> = ({ mode = 'add' }) => {
     const { mutateAsync: getSubjectById } = useGetSubjectById(subjectId || '');
     const { mutateAsync: saveSubject } = useSubjectsCreate();
     const { mutateAsync: updateSubject } = useSubjectsUpdate();
-    const navigate = useNavigate();
     const [api, contextHolder] = notification.useNotification();
 
     const [generalInfo, setGeneralInfo] = useState({
@@ -88,7 +78,7 @@ const SubjectForm: React.FC<SubjectFormProps> = ({ mode = 'add' }) => {
             setGeneralInfo({
                 subjectCode: subjectData.subject.code,
                 subjectName: subjectData.subject.name,
-                academicYear: ordinales[subjectData.subject.year] || '',
+                academicYear: subjectData.subject.year || '',
                 temporality: subjectData.subject.duration || '',
                 credits: subjectData.subject.credits,
                 type: subjectData.subject.nature || '',
@@ -192,7 +182,7 @@ const SubjectForm: React.FC<SubjectFormProps> = ({ mode = 'add' }) => {
             />
         },
         {
-            title: 'Competencias y Resultados',
+            title: 'Competencias de la Asignatura',
             content: (
                 <SkillSelectorTable
                     skills={skills}
