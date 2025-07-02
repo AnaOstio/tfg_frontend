@@ -25,6 +25,7 @@ import { useParams } from 'react-router-dom';
 import { TitleMemoryState } from '../../utils/titleMemory';
 import { UsersStep, UserItem } from './formSteps/UsersStep';
 import { selectCurrentUser } from '../../redux/slices/authSlice';
+import { toast } from 'react-toastify';
 
 type SkillType = 'basic' | 'general' | 'transversal' | 'specific';
 type SkillState = Record<SkillType, Skill | null>;
@@ -115,25 +116,25 @@ export const TitleMemoryForm: React.FC<TitleMemoryFormProps> = ({ mode = 'add' }
                 skills: {
                     basic: data.skills.filter((item: any) => item.type === 'basic').map((item: any) => ({
                         id: item._id,
-                        name: item.code,
+                        name: item.name,
                         description: item.description,
                         type: item.type
                     })),
                     general: data.skills.filter((item: any) => item.type === 'general').map((item: any) => ({
                         id: item._id,
-                        name: item.code,
+                        name: item.name,
                         description: item.description,
                         type: item.type
                     })),
                     transversal: data.skills.filter((item: any) => item.type === 'transversal').map((item: any) => ({
                         id: item._id,
-                        name: item.code,
+                        name: item.name,
                         description: item.description,
                         type: item.type
                     })),
                     specific: data.skills.filter((item: any) => item.type === 'specific').map((item: any) => ({
                         id: item._id,
-                        name: item.code,
+                        name: item.name,
                         description: item.description,
                         type: item.type
                     }))
@@ -263,10 +264,7 @@ export const TitleMemoryForm: React.FC<TitleMemoryFormProps> = ({ mode = 'add' }
 
         // Validar campos no vacíos
         if (!name.trim() || !description.trim()) {
-            api.warning({
-                message: 'Campos incompletos',
-                description: 'Por favor complete tanto el código como la descripción'
-            });
+            toast.warning('Campos incompletos,Por favor complete tanto el código como la descripción');
             return;
         }
 
@@ -277,10 +275,7 @@ export const TitleMemoryForm: React.FC<TitleMemoryFormProps> = ({ mode = 'add' }
         );
 
         if (skillExists) {
-            api.error({
-                message: 'Competencia duplicada',
-                description: 'Esta competencia ya está añadida en la lista'
-            });
+            toast.error('Esta competencia ya está añadida en la lista');
             return;
         }
 
@@ -364,13 +359,10 @@ export const TitleMemoryForm: React.FC<TitleMemoryFormProps> = ({ mode = 'add' }
     const handleSubmit = useCallback(() => {
         if (mode === 'edit') {
             updateMemoryMutate({ id: id, ...titleMemory })
+        } else {
+            dispatch(saveTitleMemory(titleMemory));
+            saveTitleMemoryMutate({ data: titleMemory, users: users, currentUser: currentUser });
         }
-        dispatch(saveTitleMemory(titleMemory));
-        api.success({
-            message: 'Memoria guardada',
-            description: 'Se ha guardado correctamente.'
-        });
-        saveTitleMemoryMutate({ data: titleMemory, users: users, currentUser: currentUser });
 
     }, [dispatch, titleMemory, users]);
 
