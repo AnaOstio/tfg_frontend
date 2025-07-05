@@ -122,11 +122,12 @@ export function transformData(input: InputData): OutputData {
         status: 'Activo',
         yearDelivery: generalInfo.year,
         totalCredits:
-            credits.basic +
-            credits.mandatory +
-            credits.optional +
-            credits.finalWork +
-            credits.practices,
+            Number(
+                Number(credits.basic).toFixed(0) +
+                Number(credits.mandatory).toFixed(0) +
+                Number(credits.optional).toFixed(0) +
+                Number(credits.finalWork).toFixed(0)
+            ),
         distributedCredits: {
             'Básicos': credits.basic,
             'Obligatoria': credits.mandatory,
