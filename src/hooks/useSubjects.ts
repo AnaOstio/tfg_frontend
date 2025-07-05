@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { transformSubject } from "../helper/tranformSubject";
 import { useMutation } from "@tanstack/react-query";
-import { titleSubjectsCreate, titleSubjectsDelete, titleSubjectsGetById, titleSubjectsGetByTitleMemoryId, titleSubjectsUpdate } from "../api/subjects";
+import { subjectFromFile, titleSubjectsCreate, titleSubjectsDelete, titleSubjectsGetById, titleSubjectsGetByTitleMemoryId, titleSubjectsUpdate } from "../api/subjects";
 import { toast } from "react-toastify";
 
 export const useSubjectsCreate = () => {
@@ -87,6 +87,23 @@ export const useSubjectsDelete = () => {
         },
         onError: (error) => {
             toast.error('Error al eliminar la materia');
+            console.error('Error:', error);
+        },
+    });
+}
+
+export const useUploadSubjects = () => {
+    const navigate = useNavigate();
+    return useMutation<any, Error, any>({
+        mutationFn: (data) => {
+            return subjectFromFile(data);
+        },
+        onSuccess: (data) => {
+            navigate('/title-memory/details/' + data.memoryId);
+            toast.success('Asignaturas subidas con éxito');
+        },
+        onError: (error) => {
+            toast.error('Error al subir las asignaturas');
             console.error('Error:', error);
         },
     });

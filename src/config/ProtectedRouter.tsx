@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { selectIsAuthenticated, selectAuthStatus } from '../redux/slices/authSlice';
@@ -14,8 +14,13 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
     const isAuthenticated = useSelector(selectIsAuthenticated);
     const authStatus = useSelector(selectAuthStatus);
     const { mutate: verifyToken } = useVerifyToken();
+    const didRun = React.useRef(false);
 
-    React.useEffect(() => { verifyToken() }, []);
+    useEffect(() => {
+        if (didRun.current) return;
+        didRun.current = true;
+        verifyToken()
+    }, []);
 
     if (authStatus === 'loading') {
         return <Spin size="large" fullscreen />;

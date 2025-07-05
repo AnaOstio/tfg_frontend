@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Upload, Button, Select, Card, Typography, Form, Row, Col, Table } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 import { toast } from 'react-toastify';
 import { useGetTileMemoriesByUser } from '../../../hooks/useTitleMemories';
 import { useGetSkillsByIds } from '../../../hooks/useSkills';
+import { useUploadSubjects } from '../../../hooks/useSubjects';
 
 const { Title } = Typography;
 const { Option } = Select;
@@ -16,8 +17,11 @@ const UploadSubjectsScreen: React.FC = () => {
     const { mutateAsync: getSkills } = useGetSkillsByIds();
     const [titleMemories, setTitleMemories] = useState([]);
     const [selectedSkills, setSelectedSkills] = useState([]);
+    const { mutateAsync: subjectFromFile } = useUploadSubjects();
+    const didRun = useRef(false);
 
-    const handleUpload = () => {
+
+    const handleUpload = async () => {
         if (!selectedMemory) {
             toast.error('Por favor selecciona una memoria de título');
             return;
@@ -30,18 +34,29 @@ const UploadSubjectsScreen: React.FC = () => {
 
         setLoading(true);
 
-        // Simulación de subida de archivo - reemplazar con llamada a API real
-        setTimeout(() => {
+        const formData = new FormData();
+        formData.append('memoryId', selectedMemory);
+        fileList.forEach(file => {
+            formData.append('files', file.originFileObj as File);
+        })
+
+        setLoading(true);
+        try {
+            await subjectFromFile(formData);
+            toast.success('Asignaturas subidas correctamente');
+        } catch (error) {
+            console.error('Error al subir el archivo:', error);
+            toast.error('Lo sentimos, ha ocurrido un error al subir el archivo');
+        } finally {
             setLoading(false);
-            toast.success(`Archivo subido correctamente para la memoria ${selectedMemory}`);
-            setFileList([]);
-        }, 2000);
+        }
+
     };
 
     const beforeUpload = (file: File) => {
-        const isTxt = file.type === 'text/plain' || file.name.endsWith('.txt');
+        const isTxt = file.name.endsWith('.json');
         if (!isTxt) {
-            toast.error('Solo se permiten archivos TXT');
+            toast.error('Solo se permiten archivos JSON');
         }
         return isTxt;
     };
@@ -84,6 +99,8 @@ const UploadSubjectsScreen: React.FC = () => {
     }
 
     useEffect(() => {
+        if (didRun.current) return;
+        didRun.current = true;
         fetchTitleMemories();
     }, []);
 
@@ -113,8 +130,8 @@ const UploadSubjectsScreen: React.FC = () => {
     ];
 
     return (
-        <div style={{ padding: '24px' }}>
-            <Title level={2}>Subir Asignaturas desde Archivo TXT</Title>
+        <div style={{ padding: '24px', width: '80%', margin: '0 auto' }}>
+            <Title level={2}>Subir Asignaturas desde Archivo JSON</Title>
 
             <Card style={{ marginTop: 16 }}>
                 <Form layout="vertical">
@@ -143,7 +160,7 @@ const UploadSubjectsScreen: React.FC = () => {
                     <Row gutter={16}>
                         <Col span={24}>
                             <Form.Item
-                                label="Archivo TXT de Asignaturas"
+                                label="Archivo JSON de Asignaturas"
                                 required
                                 rules={[{ required: true, message: 'Este campo es obligatorio' }]}
                             >
@@ -151,7 +168,7 @@ const UploadSubjectsScreen: React.FC = () => {
                                     beforeUpload={beforeUpload}
                                     onChange={onFileChange}
                                     fileList={fileList}
-                                    accept=".txt"
+                                    accept=".json"
                                 >
                                     <Button icon={<UploadOutlined />}>Seleccionar Archivo</Button>
                                 </Upload>
