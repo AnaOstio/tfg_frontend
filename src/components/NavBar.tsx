@@ -1,15 +1,38 @@
-import { Layout, Menu, Button, Space, Avatar } from 'antd';
+import { Layout, Menu, Dropdown, Button, Space } from 'antd';
 import { Link } from 'react-router-dom';
-import { LogoutOutlined } from '@ant-design/icons';
+import { LogoutOutlined, DownOutlined } from '@ant-design/icons';
 import { useLogout } from '../hooks/useUsers';
-import { selectIsAuthenticated } from '../redux/slices/authSlice';
+import { selectIsAdmin, selectIsAuthenticated } from '../redux/slices/authSlice';
 import { useSelector } from 'react-redux';
 
 const { Header } = Layout;
 
 const NavBar = () => {
     const isAuthenticated = useSelector(selectIsAuthenticated);
+    const isAdmin = useSelector(selectIsAdmin);
     const logout = useLogout();
+
+    const adminMenu = (
+        <Menu>
+            <Menu.Item key="check-similarities">
+                <Link to="/check-similiraties">Similitud de Competencias</Link>
+            </Menu.Item>
+            <Menu.Item key="check-similarities-los">
+                <Link to="/check-similiraties-los">Similitud de Resultados de Aprendizaje</Link>
+            </Menu.Item>
+        </Menu>
+    );
+
+    const uploadMenu = (
+        <Menu>
+            <Menu.Item key="upload-subjects">
+                <Link to="/upload-subjects">Subir asignaturas</Link>
+            </Menu.Item>
+            <Menu.Item key="upload-title-memories">
+                <Link to="/upload-title-memories">Subir Memorias de Título</Link>
+            </Menu.Item>
+        </Menu>
+    );
 
     return (
         <Header style={{
@@ -36,6 +59,7 @@ const NavBar = () => {
                     PLaCo
                 </Link>
             </div>
+
             <Menu
                 theme="dark"
                 mode="horizontal"
@@ -58,28 +82,37 @@ const NavBar = () => {
                         <Menu.Item key="create-title-memory">
                             <Link to="/title-memory" style={{ color: 'white' }}>Crear memoria de título</Link>
                         </Menu.Item>
-                        <Menu.Item key="upload-subjects">
-                            <Link to="/upload-subjects" style={{ color: 'white' }}>Subir asignaturas</Link>
-                        </Menu.Item>
-                        <Menu.Item key="upload-title-memories">
-                            <Link to="/upload-title-memories" style={{ color: 'white' }}>Subir Memorias de Título</Link>
+                        <Menu.Item key="upload-dropdown">
+                            <Dropdown overlay={uploadMenu} trigger={['click']}>
+                                <a onClick={e => e.preventDefault()} style={{ color: 'white' }}>
+                                    Subir Datos <DownOutlined />
+                                </a>
+                            </Dropdown>
                         </Menu.Item>
                     </>
+                )}
+
+                {isAdmin && (
+                    <Menu.Item key="admin-dropdown">
+                        <Dropdown overlay={adminMenu} trigger={['click']}>
+                            <a onClick={e => e.preventDefault()} style={{ color: 'white' }}>
+                                Comprobar Similitudes <DownOutlined />
+                            </a>
+                        </Dropdown>
+                    </Menu.Item>
                 )}
             </Menu>
 
             <Space size="middle" style={{ minWidth: '120px', justifyContent: 'flex-end' }}>
                 {isAuthenticated ? (
-                    <>
-                        <Button
-                            type="primary"
-                            danger
-                            icon={<LogoutOutlined />}
-                            onClick={logout}
-                        >
-                            Cerrar sesión
-                        </Button>
-                    </>
+                    <Button
+                        type="primary"
+                        danger
+                        icon={<LogoutOutlined />}
+                        onClick={logout}
+                    >
+                        Cerrar sesión
+                    </Button>
                 ) : (
                     <>
                         <Button type="default">
