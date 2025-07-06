@@ -124,7 +124,15 @@ const router = createBrowserRouter([
                 path: "/check-similiraties",
                 element: (
                     <ProtectedRoute>
-                        <SimilarityReview />
+                        <SimilarityReview type="skills" />
+                    </ProtectedRoute>
+                )
+            },
+            {
+                path: "/check-similiraties-los",
+                element: (
+                    <ProtectedRoute>
+                        <SimilarityReview type="los" />
                     </ProtectedRoute>
                 )
             },
