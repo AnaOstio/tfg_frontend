@@ -11,8 +11,8 @@ import {
     Popconfirm
 } from 'antd';
 import { CheckOutlined, CloseOutlined, EyeOutlined } from '@ant-design/icons';
-import { useSimilarLOsGet, useSimilarsGet } from '../../hooks/useSimilars';
-import { normalizeSkills, normalizeLOs, NormalizedSimilarity } from '../../utils/normalizeSimilarities';
+import { useSimilarLOsGet, useSimilarsGet, useUpdateSimilars, useUpdateSimilarsOutcomes } from '../../hooks/useSimilars';
+import { normalizeSkills, NormalizedSimilarity } from '../../utils/normalizeSimilarities';
 
 const { Text } = Typography;
 
@@ -28,6 +28,9 @@ const SimilarityReview: React.FC<SimilarityReviewProps> = ({ type }) => {
     const [selected, setSelected] = useState<NormalizedSimilarity | null>(null);
     const { mutateAsync: getSimilars } = useSimilarsGet();
     const { mutateAsync: getSimilarsLO } = useSimilarLOsGet();
+    const { mutateAsync: updateSimilars } = useUpdateSimilars();
+    const { mutateAsync: updateSimilarsOutcomes } = useUpdateSimilarsOutcomes();
+
 
     const fetchsimilars = async () => {
         try {
@@ -57,9 +60,7 @@ const SimilarityReview: React.FC<SimilarityReviewProps> = ({ type }) => {
         }
     }, [page, type]);
 
-    // cada vez que raw cambie, normalizamos
     useEffect(() => {
-        // tras recibir raw, aplicamos el normalizador correcto
         if (type === 'los') {
             setData(normalizeSkills(raw));
         } else {
@@ -67,11 +68,15 @@ const SimilarityReview: React.FC<SimilarityReviewProps> = ({ type }) => {
         }
     }, [raw, type]);
 
-    const handleGlobalAction = (key: string, action: 'approve' | 'reject') => {
-        // TODO: llamada real al backend
+    const handleGlobalAction = async (key: string, action: boolean) => {
+        console.log(key);
+
+        if (type === 'los') {
+            updateSimilarsOutcomes({ id: key, value: { action } });
+        } else if (type === 'skills') {
+            updateSimilars({ id: key, value: { action } });
+        }
         setData(d => d.filter(item => item.key !== key));
-        const main = data.find(i => i.key === key)?.main.name;
-        message.success(`Has ${action === 'approve' ? 'aprobado' : 'rechazado'} todas para "${main}"`);
     };
 
     const columns = [
@@ -108,7 +113,7 @@ const SimilarityReview: React.FC<SimilarityReviewProps> = ({ type }) => {
                     </Button>
                     <Popconfirm
                         title={`¿Aprobar todas para "${record.main.name}"?`}
-                        onConfirm={() => handleGlobalAction(record.key, 'approve')}
+                        onConfirm={() => handleGlobalAction(record.key, true)}
                         okText="Sí"
                         cancelText="No"
                     >
@@ -118,7 +123,7 @@ const SimilarityReview: React.FC<SimilarityReviewProps> = ({ type }) => {
                     </Popconfirm>
                     <Popconfirm
                         title={`¿Rechazar todas para "${record.main.name}"?`}
-                        onConfirm={() => handleGlobalAction(record.key, 'reject')}
+                        onConfirm={() => handleGlobalAction(record.key, false)}
                         okText="Sí"
                         cancelText="No"
                         okButtonProps={{ danger: true }}
