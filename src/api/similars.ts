@@ -20,3 +20,21 @@ export const getSimilarsOutcomes = async (data: any): Promise<any> => {
     });
     return response.data;
 }
+
+export const updateSimilars = async (data: any): Promise<any> => {
+    const response = await axios.put(`${API_BASE_URL}/similars/${data.id}`, data.value, {
+        headers: {
+            Authorization: `Bearer ${localStorage.getItem('authToken')}`
+        }
+    });
+    return response.data;
+}
+
+export const updateSimilarsOutcomes = async (data: any): Promise<any> => {
+    const response = await axios.put(`${API_BASE_URL}/similars/outcomes/${data.id}`, data.value, {
+        headers: {
+            Authorization: `Bearer ${localStorage.getItem('authToken')}`
+        }
+    });
+    return response.data;
+}
