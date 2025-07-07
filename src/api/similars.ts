@@ -22,7 +22,8 @@ export const getSimilarsOutcomes = async (data: any): Promise<any> => {
 }
 
 export const updateSimilars = async (data: any): Promise<any> => {
-    const response = await axios.put(`${API_BASE_URL}/similars/${data.id}`, data.value, {
+    console.log('Updating similars:', data);
+    const response = await axios.put(`${API_BASE_URL}/similars/${data.id}`, data, {
         headers: {
             Authorization: `Bearer ${localStorage.getItem('authToken')}`
         }
@@ -31,7 +32,7 @@ export const updateSimilars = async (data: any): Promise<any> => {
 }
 
 export const updateSimilarsOutcomes = async (data: any): Promise<any> => {
-    const response = await axios.put(`${API_BASE_URL}/similars/outcomes/${data.id}`, data.value, {
+    const response = await axios.put(`${API_BASE_URL}/similars/outcomes/${data.id}`, data, {
         headers: {
             Authorization: `Bearer ${localStorage.getItem('authToken')}`
         }

@@ -70,11 +70,12 @@ const SimilarityReview: React.FC<SimilarityReviewProps> = ({ type }) => {
 
     const handleGlobalAction = async (key: string, action: boolean) => {
         console.log(key);
+        const doc = data.find(item => item.key === key);
 
         if (type === 'los') {
-            updateSimilarsOutcomes({ id: key, value: { action } });
+            updateSimilarsOutcomes({ id: key, value: { action }, similars: doc?.similars.map(s => s.other_id) });
         } else if (type === 'skills') {
-            updateSimilars({ id: key, value: { action } });
+            updateSimilars({ id: key, value: { action }, similars: doc?.similars.map(s => s.other_id) });
         }
         setData(d => d.filter(item => item.key !== key));
     };
@@ -117,7 +118,7 @@ const SimilarityReview: React.FC<SimilarityReviewProps> = ({ type }) => {
                         okText="Sí"
                         cancelText="No"
                     >
-                        <Button type="primary" icon={<CheckOutlined />}>
+                        <Button type="primary" icon={<CheckOutlined />} disabled={record.similars.length === 0}>
                             Aprobar
                         </Button>
                     </Popconfirm>
@@ -128,7 +129,7 @@ const SimilarityReview: React.FC<SimilarityReviewProps> = ({ type }) => {
                         cancelText="No"
                         okButtonProps={{ danger: true }}
                     >
-                        <Button danger icon={<CloseOutlined />}>
+                        <Button danger icon={<CloseOutlined />} disabled={record.similars.length === 0}>
                             Rechazar
                         </Button>
                     </Popconfirm>
