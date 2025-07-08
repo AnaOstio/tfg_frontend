@@ -32,6 +32,10 @@ const TitleMemoryCard: React.FC<TitleMemoryCardProps> = ({ item, fromUser, getAc
         textOverflow: 'ellipsis',
     };
 
+    const getEllipsisName = (name: string) => {
+        return name.length > 20 ? name.slice(0, 20) + '…' : name;
+    };
+
     const handleCardClick = () => {
         navigate(`/title-memory/details/${item._id}`);
     };
@@ -43,7 +47,7 @@ const TitleMemoryCard: React.FC<TitleMemoryCardProps> = ({ item, fromUser, getAc
             onClick={handleCardClick}
             title={
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span>{item.name}</span>
+                    <span title={item.name}>{getEllipsisName(item.name)}</span>
                     <Dropdown
                         menu={{ items: getActionItems(item) }}
                         trigger={['click']}

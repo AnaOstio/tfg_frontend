@@ -5,6 +5,7 @@ import { transformData } from "../helper/transformData";
 import { useNavigate } from "react-router-dom";
 import { assignPermissions, getPermissionsByMemoriesIds } from "../api/permissions";
 import { toast } from "react-toastify";
+import { useAuthState } from "../redux/states/useAuthState";
 
 interface UseTitleMemoriesSearchOptions {
     onSuccess?: (data: any) => void;
@@ -136,11 +137,23 @@ export const useDeleteTitleMemory = () => {
 
 export const useUploadTitleMemories = () => {
     const navigate = useNavigate();
+    const auth = useAuthState();
     return useMutation<any, Error, any>({
         mutationFn: async (data) => {
             return titleMemoryFromFile(data);
         },
         onSuccess: (data) => {
+
+            data.forEach((memory: any) => {
+                const owner = {
+                    email: auth.user.email,
+                    roles: ['OWNER'],
+                    memoryId: memory._id,
+                };
+                // Asignar permisos al propietario
+                assignPermissions(owner, memory._id);
+            });
+
             navigate('/dashboard/');
             console.log('Memoria de título subida:', data);
             toast.success('Memoria de título subida con éxito');
