@@ -5,12 +5,13 @@ export interface UsersRoles {
     roles: string[];
 }
 
-export const assignPermissions = async (user: UsersRoles, memoryId: string): Promise<void> => {
-    const API_BASE_URL = 'http://localhost:3000/api/permissions';
+const API_BASE_URL = import.meta.env.VITE_USERS_API_URL!;
 
+
+export const assignPermissions = async (user: UsersRoles, memoryId: string): Promise<void> => {
     try {
         await axios.post(
-            `${API_BASE_URL}`,
+            `${API_BASE_URL}/permissions`,
             {
                 userId: user.email,
                 permissions: user.roles,
@@ -30,10 +31,8 @@ export const assignPermissions = async (user: UsersRoles, memoryId: string): Pro
 }
 
 export const getPermissionsByMemoriesIds = async (memoryIds: string[]): Promise<any> => {
-    const API_BASE_URL = 'http://localhost:3000/api/permissions/getByMemoryIds';
-
     try {
-        const response = await axios.post(`${API_BASE_URL}`,
+        const response = await axios.post(`${API_BASE_URL}/permissions/getByMemoryIds`,
             memoryIds,
             {
                 headers: {

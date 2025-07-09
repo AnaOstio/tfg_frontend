@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { LoginUserParams, SignUpUserParams, AuthResponse, VerifyTokenResponse } from '../utils/user';
 
-const API_BASE_URL = 'http://localhost:3000/api';
+const API_BASE_URL = import.meta.env.VITE_USERS_API_URL!;
 
 export const login = async (data: LoginUserParams): Promise<AuthResponse> => {
     const response = await axios.post(`${API_BASE_URL}/auth/login`, data);
