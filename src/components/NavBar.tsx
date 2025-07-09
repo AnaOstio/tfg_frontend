@@ -59,19 +59,18 @@ const NavBar = () => {
                     PLaCo
                 </Link>
             </div>
-
-            <Menu
-                theme="dark"
-                mode="horizontal"
-                style={{
-                    flex: 1,
-                    minWidth: 0,
-                    background: 'transparent',
-                    borderBottom: 'none'
-                }}
-                selectedKeys={[]}
-            >
-                {isAuthenticated && (
+            {isAuthenticated &&
+                <Menu
+                    theme="dark"
+                    mode="horizontal"
+                    style={{
+                        flex: 1,
+                        minWidth: 0,
+                        background: 'transparent',
+                        borderBottom: 'none'
+                    }}
+                    selectedKeys={[]}
+                >
                     <>
                         <Menu.Item key="dashboard">
                             <Link to="/dashboard" style={{ color: 'white' }}>Dashboard</Link>
@@ -90,18 +89,18 @@ const NavBar = () => {
                             </Dropdown>
                         </Menu.Item>
                     </>
-                )}
 
-                {isAdmin && (
-                    <Menu.Item key="admin-dropdown">
-                        <Dropdown overlay={adminMenu} trigger={['click']}>
-                            <a onClick={e => e.preventDefault()} style={{ color: 'white' }}>
-                                Comprobar Similitudes <DownOutlined />
-                            </a>
-                        </Dropdown>
-                    </Menu.Item>
-                )}
-            </Menu>
+                    {isAdmin && (
+                        <Menu.Item key="admin-dropdown">
+                            <Dropdown overlay={adminMenu} trigger={['click']}>
+                                <a onClick={e => e.preventDefault()} style={{ color: 'white' }}>
+                                    Comprobar Similitudes <DownOutlined />
+                                </a>
+                            </Dropdown>
+                        </Menu.Item>
+                    )}
+                </Menu>
+            }
 
             <Space size="middle" style={{ minWidth: '120px', justifyContent: 'flex-end' }}>
                 {isAuthenticated ? (
