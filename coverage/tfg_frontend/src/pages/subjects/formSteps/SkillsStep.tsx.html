@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/150</span>
+                <span class='fraction'>0/151</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/150</span>
+                <span class='fraction'>0/151</span>
             </div>
         
             
@@ -248,7 +248,9 @@
 <a name='L183'></a><a href='#L183'>183</a>
 <a name='L184'></a><a href='#L184'>184</a>
 <a name='L185'></a><a href='#L185'>185</a>
-<a name='L186'></a><a href='#L186'>186</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
+<a name='L186'></a><a href='#L186'>186</a>
+<a name='L187'></a><a href='#L187'>187</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -437,6 +439,7 @@
 <span class="cstat-no" title="statement not covered" >import { useParams } from 'react-router-dom';</span>
 <span class="cstat-no" title="statement not covered" >import { Input, Button, Table, Space, Typography, Select, message } from 'antd';</span>
 <span class="cstat-no" title="statement not covered" >import { PlusOutlined, DeleteOutlined, SearchOutlined } from '@ant-design/icons';</span>
+<span class="cstat-no" title="statement not covered" >import { toast } from 'react-toastify';</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >const { Title } = Typography;</span>
 <span class="cstat-no" title="statement not covered" >const { Option } = Select;</span>
@@ -471,7 +474,7 @@ interface Skill {
 <span class="cstat-no" title="statement not covered" >                ];</span>
 <span class="cstat-no" title="statement not covered" >                setAvailableSkills(mockSkills);</span>
 <span class="cstat-no" title="statement not covered" >            } catch (error) {</span>
-<span class="cstat-no" title="statement not covered" >                message.error('Error al cargar las habilidades disponibles');</span>
+<span class="cstat-no" title="statement not covered" >                toast.error('Error al cargar las habilidades disponibles');</span>
 <span class="cstat-no" title="statement not covered" >            } finally {</span>
 <span class="cstat-no" title="statement not covered" >                setLoading(false);</span>
 <span class="cstat-no" title="statement not covered" >            }</span>
@@ -491,7 +494,7 @@ interface Skill {
 <span class="cstat-no" title="statement not covered" >                ];</span>
 <span class="cstat-no" title="statement not covered" >                setSkills(mockAssignedSkills);</span>
 <span class="cstat-no" title="statement not covered" >            } catch (error) {</span>
-<span class="cstat-no" title="statement not covered" >                message.error('Error al cargar las habilidades asignadas');</span>
+<span class="cstat-no" title="statement not covered" >                toast.error('Error al cargar las habilidades asignadas');</span>
 <span class="cstat-no" title="statement not covered" >            }</span>
 <span class="cstat-no" title="statement not covered" >        };</span>
 &nbsp;
@@ -500,7 +503,7 @@ interface Skill {
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    const handleAddSkill = () =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >        if (!selectedSkill) {</span>
-<span class="cstat-no" title="statement not covered" >            message.warning('Por favor selecciona una habilidad');</span>
+<span class="cstat-no" title="statement not covered" >            toast.warning('Por favor selecciona una habilidad');</span>
 <span class="cstat-no" title="statement not covered" >            return;</span>
 <span class="cstat-no" title="statement not covered" >        }</span>
 &nbsp;
@@ -509,18 +512,18 @@ interface Skill {
 &nbsp;
         // Verificar si la habilidad ya está añadida
 <span class="cstat-no" title="statement not covered" >        if (skills.some(skill =&gt; skill.id === selectedSkill)) {</span>
-<span class="cstat-no" title="statement not covered" >            message.warning('Esta habilidad ya está añadida');</span>
+<span class="cstat-no" title="statement not covered" >            toast.warning('Esta habilidad ya está añadida');</span>
 <span class="cstat-no" title="statement not covered" >            return;</span>
 <span class="cstat-no" title="statement not covered" >        }</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        setSkills([...skills, skillToAdd]);</span>
 <span class="cstat-no" title="statement not covered" >        setSelectedSkill(null);</span>
-<span class="cstat-no" title="statement not covered" >        message.success('Habilidad añadida correctamente');</span>
+<span class="cstat-no" title="statement not covered" >        toast.success('Habilidad añadida correctamente');</span>
 <span class="cstat-no" title="statement not covered" >    };</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    const handleRemoveSkill = (skillId: string) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >        setSkills(skills.filter(skill =&gt; skill.id !== skillId));</span>
-<span class="cstat-no" title="statement not covered" >        message.success('Habilidad eliminada');</span>
+<span class="cstat-no" title="statement not covered" >        toast.success('Habilidad eliminada');</span>
 <span class="cstat-no" title="statement not covered" >    };</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    const filteredSkills = availableSkills.filter(skill =&gt;</span>
@@ -625,7 +628,7 @@ interface Skill {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-05-18T10:37:42.742Z
+                at 2025-07-09T06:46:41.023Z
             </div>
         <script src="../../../../../prettify.js"></script>
         <script>

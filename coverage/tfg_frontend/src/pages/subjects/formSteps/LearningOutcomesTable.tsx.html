@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/40</span>
+                <span class='fraction'>0/34</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/40</span>
+                <span class='fraction'>0/34</span>
             </div>
         
             
@@ -113,13 +113,10 @@
 <a name='L48'></a><a href='#L48'>48</a>
 <a name='L49'></a><a href='#L49'>49</a>
 <a name='L50'></a><a href='#L50'>50</a>
-<a name='L51'></a><a href='#L51'>51</a>
-<a name='L52'></a><a href='#L52'>52</a>
-<a name='L53'></a><a href='#L53'>53</a>
-<a name='L54'></a><a href='#L54'>54</a>
-<a name='L55'></a><a href='#L55'>55</a>
-<a name='L56'></a><a href='#L56'>56</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L51'></a><a href='#L51'>51</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -127,18 +124,10 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -156,6 +145,13 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -165,67 +161,56 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import React from 'react';
-<span class="cstat-no" title="statement not covered" >import { Card, Table, Button, Form, Input } from 'antd';</span>
-<span class="cstat-no" title="statement not covered" >import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';</span>
-import { LearningOutcome } from '../SubjectForm';
+<span class="cstat-no" title="statement not covered" >import { Table, Typography, Tag } from 'antd';</span>
+import { LearningOutcome, Skill } from '../SubjectForm';
+&nbsp;
+<span class="cstat-no" title="statement not covered" >const { Text } = Typography;</span>
 &nbsp;
 interface Props {
     outcomes: LearningOutcome[];
-    onAddOutcome: () =&gt; void;
-    onRemoveOutcome: (index: number) =&gt; void;
+    skills: Skill[];
 }
 &nbsp;
-<span class="cstat-no" title="statement not covered" >const LearningOutcomesTable: React.FC&lt;Props&gt; = ({ outcomes, onAddOutcome, onRemoveOutcome }) =&gt; (</span>
-<span class="cstat-no" title="statement not covered" >    &lt;Card title="Resultados de Aprendizaje" style={{ marginTop: 16 }}&gt;</span>
-<span class="cstat-no" title="statement not covered" >        &lt;Table</span>
-<span class="cstat-no" title="statement not covered" >            dataSource={outcomes}</span>
-<span class="cstat-no" title="statement not covered" >            rowKey={(_, index) =&gt; `${index}`}</span>
-<span class="cstat-no" title="statement not covered" >            pagination={false}</span>
-<span class="cstat-no" title="statement not covered" >            columns={[</span>
-<span class="cstat-no" title="statement not covered" >                {</span>
-<span class="cstat-no" title="statement not covered" >                    title: 'Resultado',</span>
-<span class="cstat-no" title="statement not covered" >                    dataIndex: 'outcome',</span>
-<span class="cstat-no" title="statement not covered" >                    render: (_, __, index) =&gt; (</span>
-<span class="cstat-no" title="statement not covered" >                        &lt;Form.Item name={['outcomes', index, 'outcome']} rules={[{ required: true }]}&gt;</span>
-<span class="cstat-no" title="statement not covered" >                            &lt;Input placeholder="Descripción del resultado" /&gt;</span>
-<span class="cstat-no" title="statement not covered" >                        &lt;/Form.Item&gt;</span>
-                    )
-<span class="cstat-no" title="statement not covered" >                },</span>
-<span class="cstat-no" title="statement not covered" >                {</span>
-<span class="cstat-no" title="statement not covered" >                    title: 'ID Habilidad Asociada',</span>
-<span class="cstat-no" title="statement not covered" >                    dataIndex: 'skillId',</span>
-<span class="cstat-no" title="statement not covered" >                    render: (_, __, index) =&gt; (</span>
-<span class="cstat-no" title="statement not covered" >                        &lt;Form.Item name={['outcomes', index, 'skillId']} rules={[{ required: true }]}&gt;</span>
-<span class="cstat-no" title="statement not covered" >                            &lt;Input placeholder="ID de habilidad" /&gt;</span>
-<span class="cstat-no" title="statement not covered" >                        &lt;/Form.Item&gt;</span>
-                    )
-<span class="cstat-no" title="statement not covered" >                },</span>
-<span class="cstat-no" title="statement not covered" >                {</span>
-<span class="cstat-no" title="statement not covered" >                    title: 'Acciones',</span>
-<span class="cstat-no" title="statement not covered" >                    render: (_, __, index) =&gt; (</span>
-<span class="cstat-no" title="statement not covered" >                        &lt;Button</span>
-<span class="cstat-no" title="statement not covered" >                            danger</span>
-<span class="cstat-no" title="statement not covered" >                            icon={&lt;DeleteOutlined /&gt;}</span>
-<span class="cstat-no" title="statement not covered" >                            onClick={() =&gt; onRemoveOutcome(index)}</span>
-<span class="cstat-no" title="statement not covered" >                        /&gt;</span>
-                    )
-<span class="cstat-no" title="statement not covered" >                }</span>
-<span class="cstat-no" title="statement not covered" >            ]}</span>
-<span class="cstat-no" title="statement not covered" >        /&gt;</span>
-<span class="cstat-no" title="statement not covered" >        &lt;Button type="dashed" onClick={onAddOutcome} icon={&lt;PlusOutlined /&gt;} style={{ marginTop: 8 }}&gt;</span>
-            Añadir Resultado
-<span class="cstat-no" title="statement not covered" >        &lt;/Button&gt;</span>
-<span class="cstat-no" title="statement not covered" >    &lt;/Card&gt;</span>
-);
+<span class="cstat-no" title="statement not covered" >const LearningOutcomesTable: React.FC&lt;Props&gt; = ({ outcomes, skills }) =&gt; {</span>
+    // Preparar datos para la tabla
+<span class="cstat-no" title="statement not covered" >    const dataSource = outcomes.map(outcome =&gt; {</span>
+        // Mapear cada skills_id a su objeto Skill y luego a un Tag
+<span class="cstat-no" title="statement not covered" >        const skillTags = outcome.skills_id</span>
+<span class="cstat-no" title="statement not covered" >            .map(id =&gt; skills.find(skill =&gt; skill._id === id))</span>
+<span class="cstat-no" title="statement not covered" >            .filter((s): s is Skill =&gt; !!s)</span>
+<span class="cstat-no" title="statement not covered" >            .map(skill =&gt; &lt;Tag key={skill._id}&gt;{skill.name}&lt;/Tag&gt;);</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        return {</span>
+<span class="cstat-no" title="statement not covered" >            key: outcome._id,</span>
+<span class="cstat-no" title="statement not covered" >            outcome: (</span>
+<span class="cstat-no" title="statement not covered" >                &lt;&gt;</span>
+<span class="cstat-no" title="statement not covered" >                    &lt;Text strong&gt;{outcome.name}&lt;/Text&gt;</span>
+<span class="cstat-no" title="statement not covered" >                    &lt;br /&gt;</span>
+<span class="cstat-no" title="statement not covered" >                    &lt;Text&gt;{outcome.description}&lt;/Text&gt;</span>
+<span class="cstat-no" title="statement not covered" >                &lt;/&gt;</span>
+            ),
+<span class="cstat-no" title="statement not covered" >            skills: skillTags</span>
+<span class="cstat-no" title="statement not covered" >        };</span>
+<span class="cstat-no" title="statement not covered" >    });</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    const columns = [</span>
+<span class="cstat-no" title="statement not covered" >        {</span>
+<span class="cstat-no" title="statement not covered" >            title: 'Resultado de Aprendizaje',</span>
+<span class="cstat-no" title="statement not covered" >            dataIndex: 'outcome',</span>
+<span class="cstat-no" title="statement not covered" >            key: 'outcome'</span>
+<span class="cstat-no" title="statement not covered" >        },</span>
+<span class="cstat-no" title="statement not covered" >        {</span>
+<span class="cstat-no" title="statement not covered" >            title: 'Competencias Asociadas',</span>
+<span class="cstat-no" title="statement not covered" >            dataIndex: 'skills',</span>
+<span class="cstat-no" title="statement not covered" >            key: 'skills'</span>
+<span class="cstat-no" title="statement not covered" >        }</span>
+<span class="cstat-no" title="statement not covered" >    ];</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    return &lt;Table dataSource={dataSource} columns={columns} pagination={false} /&gt;;</span>
+<span class="cstat-no" title="statement not covered" >};</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >export default LearningOutcomesTable;</span>
 &nbsp;</pre></td></tr></table></pre>
@@ -235,7 +220,7 @@ interface Props {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-05-18T10:37:42.742Z
+                at 2025-07-09T06:46:41.023Z
             </div>
         <script src="../../../../../prettify.js"></script>
         <script>
